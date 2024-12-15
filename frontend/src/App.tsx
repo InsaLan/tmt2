@@ -30,14 +30,14 @@ const NavBar: Component = () => {
 			</div>
 			<div class="grow"></div>
 			<NavLink href="/create">{t('Create')}</NavLink>
-			<NavLink href="/matches">{t('Matches')}</NavLink>
-			<NavLink href="/gameservers">{t('Game Servers')}</NavLink>
 			<Switch>
 				<Match when={isLoggedIn() === undefined}>...</Match>
 				<Match when={isLoggedIn() === false}>
 					<NavLink href="/login">{t('Login')}</NavLink>
 				</Match>
 				<Match when={isLoggedIn() === true}>
+					<NavLink href="/matches">{t('Matches')}</NavLink>
+					<NavLink href="/gameservers">{t('Game Servers')}</NavLink>
 					<NavLink href="/logout">{t('Logout')}</NavLink>
 				</Match>
 			</Switch>
