@@ -1,20 +1,10 @@
 import { Request } from 'express';
+import { IAuthResponse, IAuthResponseOptional } from '../../common'
 import { generate as shortUuid } from 'short-uuid';
 import * as MatchService from './matchService';
 import * as Storage from './storage';
 
 const tokens: Map<string, ITokenContent> = new Map();
-
-export interface IAuthResponse {
-	type: 'GLOBAL' | 'MATCH';
-	comment?: string;
-}
-
-export type IAuthResponseOptional =
-	| IAuthResponse
-	| {
-			type: 'UNAUTHORIZED';
-	  };
 
 export type ExpressRequest<T extends IAuthResponse | IAuthResponseOptional> = Request & {
 	user: T;
@@ -127,3 +117,28 @@ export const isAuthorized = async (
 
 	return false;
 };
+
+export const getTokenType = async (
+	token: string,
+): Promise<IAuthResponseOptional> => {
+	const t = getGlobalToken(token);
+	if (t) {
+		return {
+			type: 'GLOBAL',
+			comment: t.comment,
+		};
+	}
+	
+	const allMatches = await MatchService.getAll();
+	for (const match of allMatches.live.concat(allMatches.notLive)) {
+		if (match.tmtSecret === token) {
+			return {
+				type: 'MATCH'
+			};
+		}
+	}
+	
+	return {
+		type: 'UNAUTHORIZED',
+	}
+}

@@ -4,29 +4,16 @@ import { existsSync, readFileSync } from 'fs';
 import http from 'http';
 import path from 'path';
 import * as Auth from './auth';
+import * as Config from './config';
 import * as Election from './election';
 import * as ManagedGameServers from './managedGameServers';
 import * as Match from './match';
-import { checkAndNormalizeLogAddress } from './match';
 import * as MatchMap from './matchMap';
 import * as MatchService from './matchService';
 import * as Presets from './presets';
 import { RegisterRoutes } from './routes';
 import * as Storage from './storage';
 import * as WebSocket from './webSocket';
-
-export const TMT_LOG_ADDRESS: string | null = (() => {
-	if (!process.env['TMT_LOG_ADDRESS']) {
-		console.warn('Environment variable TMT_LOG_ADDRESS is not set');
-		console.warn('Every match must be init with tmtLogAddress');
-		return null;
-	}
-	const addr = checkAndNormalizeLogAddress(process.env['TMT_LOG_ADDRESS']);
-	if (!addr) {
-		throw 'invalid environment variable: TMT_LOG_ADDRESS';
-	}
-	return addr;
-})();
 
 const APP_DIR = (() => {
 	if (__dirname.endsWith(path.join('/backend/dist/backend/src'))) {
@@ -128,6 +115,7 @@ const main = async () => {
 	await Auth.setup();
 	await WebSocket.setup(httpServer);
 	await ManagedGameServers.setup();
+	await Config.setup();
 	await Presets.setup();
 	Match.registerCommandHandlers();
 	MatchMap.registerCommandHandlers();

@@ -1,11 +1,12 @@
 import { A, AnchorProps, RouteSectionProps } from '@solidjs/router';
-import { Component, Match, Switch, onMount } from 'solid-js';
+import { Component, Match, Show, Switch, createEffect, createSignal, onMount } from 'solid-js';
 import { SvgComputer, SvgDarkMode, SvgLightMode } from './assets/Icons';
 import logo from './assets/logo.svg';
 
-import { isLoggedIn } from './utils/fetcher';
+import { loginType, createFetcher } from './utils/fetcher';
 import { t } from './utils/locale';
 import { currentTheme, cycleDarkMode, updateDarkClasses } from './utils/theme';
+import { IConfig } from '../../common';
 
 const NavLink = (props: AnchorProps) => {
 	return (
@@ -16,6 +17,15 @@ const NavLink = (props: AnchorProps) => {
 };
 
 const NavBar: Component = () => {
+	const fetcher = createFetcher();
+	const [config, setConfig] = createSignal<IConfig>();
+		
+	createEffect(() => {
+		fetcher<IConfig>('GET', `/api/config`).then((c) => {
+			setConfig(c);
+		});
+	});
+
 	return (
 		<nav class="bg-base-300 flex items-center justify-center space-x-1 p-2 lg:space-x-10">
 			<div class="w-1 lg:w-20"></div>
@@ -29,13 +39,19 @@ const NavBar: Component = () => {
 				</div>
 			</div>
 			<div class="grow"></div>
-			<NavLink href="/create">{t('Create')}</NavLink>
+			<Show when={config()?.allowUnregisteredMatchCreation === true || loginType()?.type === 'GLOBAL'}>
+				<NavLink href="/create">{t('Create')}</NavLink>
+			</Show>
 			<Switch>
-				<Match when={isLoggedIn() === undefined}>...</Match>
-				<Match when={isLoggedIn() === false}>
+				<Match when={loginType() === undefined}>...</Match>
+				<Match when={loginType()?.type === 'UNAUTHORIZED'}>
 					<NavLink href="/login">{t('Login')}</NavLink>
 				</Match>
-				<Match when={isLoggedIn() === true}>
+				<Match when={loginType()?.type === 'MATCH'}>
+					<NavLink href="/matches">{t('Matches')}</NavLink>
+					<NavLink href="/logout">{t('Logout')}</NavLink>
+				</Match>
+				<Match when={loginType()?.type === 'GLOBAL'}>
 					<NavLink href="/matches">{t('Matches')}</NavLink>
 					<NavLink href="/gameservers">{t('Game Servers')}</NavLink>
 					<NavLink href="/logout">{t('Logout')}</NavLink>

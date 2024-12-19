@@ -1,9 +1,9 @@
 import { useNavigate } from '@solidjs/router';
-import { Component, createSignal } from 'solid-js';
-import { IMatch } from '../../../common';
+import { Component, createSignal, onMount } from 'solid-js';
+import { IConfig, IMatch } from '../../../common';
 import { Card } from '../components/Card';
 import { CreateUpdateMatch, getSimpleElectionSteps } from '../components/CreateUpdateMatch';
-import { createFetcher } from '../utils/fetcher';
+import { loginType, createFetcher, redirectToLogin } from '../utils/fetcher';
 
 const DEFAULT_MAPS = [
 	'de_ancient',
@@ -33,7 +33,17 @@ const DEFAULT_RCON_END = ['say > MATCH END RCON LOADED <'];
 export const CreatePage: Component = () => {
 	const navigate = useNavigate();
 	const fetcher = createFetcher();
-
+	
+	onMount(() => {
+		fetcher<IConfig>('GET', `/api/config`).then((c) => {
+			if (c?.allowUnregisteredMatchCreation === false) {
+				if (loginType()?.type !== 'GLOBAL') {
+					redirectToLogin();
+				}
+			}
+		});
+	});
+	
 	return (
 		<Card>
 			<CreateUpdateMatch

@@ -11,7 +11,8 @@ import {
 	SuccessResponse,
 } from '@tsoa/runtime';
 import { IPreset, IPresetCreateDto } from '../../common';
-import { ExpressRequest, IAuthResponse } from './auth';
+import { ExpressRequest } from './auth';
+import { IAuthResponse } from '../../common';
 import * as Presets from './presets';
 
 @Route('/api/presets')
