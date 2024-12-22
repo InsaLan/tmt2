@@ -1,6 +1,6 @@
 import { ValidateError } from '@tsoa/runtime';
 import { generate as shortUuid } from 'short-uuid';
-import { COMMIT_SHA, IMAGE_BUILD_TIMESTAMP, TMT_LOG_ADDRESS, VERSION } from '.';
+import { COMMIT_SHA, IMAGE_BUILD_TIMESTAMP, VERSION } from '.';
 import {
 	IMatch,
 	IMatchCreateDto,
@@ -17,6 +17,7 @@ import {
 } from '../../common';
 import { addChangeListener } from './changeListener';
 import * as commands from './commands';
+import * as Config from './config';
 import * as Election from './election';
 import * as Events from './events';
 import * as GameServer from './gameServer';
@@ -66,7 +67,7 @@ export const createFromData = async (data: IMatch, logMessage?: string) => {
 			throw 'invalid tmtLogAddress';
 		}
 		match.data.tmtLogAddress = la;
-	} else if (!TMT_LOG_ADDRESS) {
+	} else if (!(await Config.get()).tmtLogAddress) {
 		throw 'tmtLogAddress must be set';
 	}
 
@@ -254,7 +255,7 @@ export const checkAndNormalizeLogAddress = (url: string): string | null => {
 };
 
 const ensureLogAddressIsRegistered = async (match: Match) => {
-	const logAddress = `${match.data.tmtLogAddress || TMT_LOG_ADDRESS}/api/matches/${
+	const logAddress = `${match.data.tmtLogAddress || (await Config.get()).tmtLogAddress}/api/matches/${
 		match.data.id
 	}/server/log/${match.data.logSecret}`;
 

@@ -5,13 +5,14 @@ import { Event, IMatchResponse } from '../../../common';
 import { SvgSettings } from '../assets/Icons';
 import { Card } from '../components/Card';
 import { SelectInput } from '../components/Inputs';
+import { ConfigCard } from '../components/ConfigCard';
 import {
 	MatchList,
 	MatchTableColumnLabels,
 	MatchTableColumns,
 	TColumnsToShow,
 } from '../components/MatchList';
-import { createFetcher, getToken } from '../utils/fetcher';
+import { loginType, createFetcher, getToken } from '../utils/fetcher';
 import { t } from '../utils/locale';
 import { createWebSocket } from '../utils/webSocket';
 
@@ -175,69 +176,81 @@ export const MatchesPage: Component = () => {
 	onCleanup(() => disconnect());
 
 	return (
-		<Card>
-			<div class="flex w-full flex-row space-x-8 place-items-end">
-				<SelectInput
-					onInput={(e) =>
-						setSearchParams({ searchString: e.currentTarget.value }, { replace: true })
-					}
-					labelBottomLeft={filterLabel()}
-				>
-					<Show when={getCurrentFilterOption() === undefined}>
-						<option selected={getCurrentFilterOption() === undefined}>
-							{t('Custom Filter')}
-						</option>
-					</Show>
-					<For each={filterOptions}>
-						{(filterOption) => (
-							<option
-								value={filterOption.search}
-								selected={searchParams.searchString === filterOption.search}
-							>
-								{filterOption.title}
-							</option>
-						)}
-					</For>
-				</SelectInput>
+		<>
+			{/* TODO: hide this if the user doesn't have a global token */}
+			<Show when={loginType()?.type === 'GLOBAL'}>
+				<ConfigCard />
 
-				<div class="flex-grow"></div>
+				<div class="h-8" />
+			</Show>
 
-				<div class="dropdown dropdown-end">
-					<label tabindex="0" class="btn btn-ghost m-1">
-						<SvgSettings />
-						{t('Column Settings')}
-					</label>
-					<div
-						tabindex="0"
-						class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
+			<Card>
+				<div class="flex w-full flex-row space-x-8 place-items-end">
+					<SelectInput
+						onInput={(e) =>
+							setSearchParams(
+								{ searchString: e.currentTarget.value },
+								{ replace: true }
+							)
+						}
+						labelBottomLeft={filterLabel()}
 					>
-						<For each={MatchTableColumns}>
-							{(column) => (
-								<div>
-									<label class="label justify-normal cursor-pointer space-x-2">
-										<input
-											type="checkbox"
-											checked={columnsToShow()[column]}
-											onInput={(e) => {
-												const cts = columnsToShow();
-												cts[column] = e.currentTarget.checked;
-												updateColumnsSearchParam(cts);
-											}}
-											class="checkbox"
-										/>
-										<span class="label-text">
-											{MatchTableColumnLabels[column]}
-										</span>
-									</label>
-								</div>
+						<Show when={getCurrentFilterOption() === undefined}>
+							<option selected={getCurrentFilterOption() === undefined}>
+								{t('Custom Filter')}
+							</option>
+						</Show>
+						<For each={filterOptions}>
+							{(filterOption) => (
+								<option
+									value={filterOption.search}
+									selected={searchParams.searchString === filterOption.search}
+								>
+									{filterOption.title}
+								</option>
 							)}
 						</For>
+					</SelectInput>
+
+					<div class="flex-grow"></div>
+
+					<div class="dropdown dropdown-end">
+						<label tabindex="0" class="btn btn-ghost m-1">
+							<SvgSettings />
+							{t('Column Settings')}
+						</label>
+						<div
+							tabindex="0"
+							class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
+						>
+							<For each={MatchTableColumns}>
+								{(column) => (
+									<div>
+										<label class="label justify-normal cursor-pointer space-x-2">
+											<input
+												type="checkbox"
+												checked={columnsToShow()[column]}
+												onInput={(e) => {
+													const cts = columnsToShow();
+													cts[column] = e.currentTarget.checked;
+													updateColumnsSearchParam(cts);
+												}}
+												class="checkbox"
+											/>
+											<span class="label-text">
+												{MatchTableColumnLabels[column]}
+											</span>
+										</label>
+									</div>
+								)}
+							</For>
+						</div>
 					</div>
 				</div>
-			</div>
-			<Show when={data.matches}>
-				{(matches) => <MatchList matches={matches()} columnsToShow={columnsToShow()} />}
-			</Show>
-		</Card>
+				<Show when={data.matches}>
+					{(matches) => <MatchList matches={matches()} columnsToShow={columnsToShow()} />}
+				</Show>
+			</Card>
+		</>
 	);
 };

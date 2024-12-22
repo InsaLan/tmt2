@@ -1,8 +1,9 @@
 import { Controller, Get, Route, Security } from '@tsoa/runtime';
-import { COMMIT_SHA, IMAGE_BUILD_TIMESTAMP, PORT, TMT_LOG_ADDRESS, VERSION } from '.';
+import { COMMIT_SHA, IMAGE_BUILD_TIMESTAMP, PORT, VERSION } from '.';
 import { IDebugResponse } from '../../common';
 import { Settings } from './settings';
 import { STORAGE_FOLDER } from './storage';
+import * as Config from './config';
 import * as WebSocket from './webSocket';
 
 @Route('/api/debug')
@@ -24,7 +25,7 @@ export class DebugController extends Controller {
 			tmtImageBuildTimestamp: IMAGE_BUILD_TIMESTAMP,
 			tmtStorageFolder: STORAGE_FOLDER,
 			tmtPort: PORT,
-			tmtLogAddress: TMT_LOG_ADDRESS,
+			tmtLogAddress: (await Config.get()).tmtLogAddress,
 			tmtSayPrefix: Settings.SAY_PREFIX,
 			webSockets: WebSocket.getClients(),
 		};

@@ -1,3 +1,4 @@
+export * from './auth';
 export * from './config';
 export * from './debug';
 export * from './election';

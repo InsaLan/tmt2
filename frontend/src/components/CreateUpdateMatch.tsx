@@ -24,7 +24,7 @@ import {
 	SvgVisiblityOff,
 } from '../assets/Icons';
 import { copyObject } from '../utils/copyObject';
-import { createFetcher, isLoggedIn } from '../utils/fetcher';
+import { createFetcher, loginType } from '../utils/fetcher';
 import { t } from '../utils/locale';
 import { AddElectionStep, getElectionStepString } from './ElectionStep';
 import { ErrorComponent } from './ErrorComponent';
@@ -51,7 +51,7 @@ const Presets: Component<{
 		});
 	};
 	const addPreset = () => {
-		if (!presetName() || !isLoggedIn()) {
+		if (!presetName() || loginType()?.type === 'UNAUTHORIZED') {
 			return;
 		}
 		const presetCreateDto: IPresetCreateDto = {
@@ -69,7 +69,7 @@ const Presets: Component<{
 		});
 	};
 	const updatePreset = () => {
-		if (!selectedPresetId() || !presetName() || !isLoggedIn()) {
+		if (!selectedPresetId() || !presetName() || loginType()?.type === 'UNAUTHORIZED') {
 			return;
 		}
 		const updatePresetDto: IPreset = {
@@ -88,7 +88,7 @@ const Presets: Component<{
 	};
 	const deletePreset = () => {
 		const presetIdToDelete = selectedPresetId();
-		if (!presetIdToDelete || !isLoggedIn()) {
+		if (!presetIdToDelete || loginType()?.type === 'UNAUTHORIZED') {
 			return;
 		}
 		fetcher('DELETE', `/api/presets/${presetIdToDelete}`).then(() => {
@@ -138,7 +138,7 @@ const Presets: Component<{
 						</For>
 					</SelectInput>
 				</div>
-				<Show when={isLoggedIn()}>
+				<Show when={loginType()?.type === 'UNAUTHORIZED'}>
 					<button
 						class="btn"
 						onClick={() => deletePreset()}
@@ -149,7 +149,7 @@ const Presets: Component<{
 					</button>
 				</Show>
 			</div>
-			<Show when={isLoggedIn()}>
+			<Show when={loginType()?.type === 'GLOBAL'}>
 				<div class="flex items-end space-x-2">
 					<div class="flex-grow">
 						<TextInput

@@ -3,8 +3,6 @@
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { TsoaRoute, fetchMiddlewares, ExpressTemplateService } from '@tsoa/runtime';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { LoginController } from './loginController';
-// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { MatchesController } from './matchesController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { GameServersController } from './gameServersController';
@@ -12,6 +10,8 @@ import { GameServersController } from './gameServersController';
 import { DebugController } from './debugController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { ConfigController } from './configController';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { AuthController } from './authController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { PresetsController } from './presetsController';
 import { expressAuthentication } from './auth';
@@ -1223,8 +1223,54 @@ const models: TsoaRoute.Models = {
 				subSchemas: [{ dataType: 'string' }, { dataType: 'enum', enums: [null] }],
 				required: true,
 			},
+			allowUnregisteredMatchCreation: { dataType: 'boolean', required: true },
 		},
 		additionalProperties: false,
+	},
+	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	IConfigUpdateDto: {
+		dataType: 'refObject',
+		properties: {
+			tmtLogAddress: {
+				dataType: 'union',
+				subSchemas: [{ dataType: 'string' }, { dataType: 'enum', enums: [null] }],
+			},
+			allowUnregisteredMatchCreation: { dataType: 'boolean' },
+		},
+		additionalProperties: false,
+	},
+	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	IAuthResponse: {
+		dataType: 'refObject',
+		properties: {
+			type: {
+				dataType: 'union',
+				subSchemas: [
+					{ dataType: 'enum', enums: ['GLOBAL'] },
+					{ dataType: 'enum', enums: ['MATCH'] },
+				],
+				required: true,
+			},
+			comment: { dataType: 'string' },
+		},
+		additionalProperties: false,
+	},
+	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	IAuthResponseOptional: {
+		dataType: 'refAlias',
+		type: {
+			dataType: 'union',
+			subSchemas: [
+				{ ref: 'IAuthResponse' },
+				{
+					dataType: 'nestedObjectLiteral',
+					nestedProperties: {
+						type: { dataType: 'enum', enums: ['UNAUTHORIZED'], required: true },
+					},
+				},
+			],
+			validators: {},
+		},
 	},
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 	IPreset: {
@@ -1262,37 +1308,6 @@ export function RegisterRoutes(app: Router) {
 	//      Please look into the "controllerPathGlobs" config option described in the readme: https://github.com/lukeautry/tsoa
 	// ###########################################################################################################
 
-	app.post(
-		'/api/login',
-		authenticateMiddleware([{ bearer_token: [] }]),
-		...fetchMiddlewares<RequestHandler>(LoginController),
-		...fetchMiddlewares<RequestHandler>(LoginController.prototype.login),
-
-		async function LoginController_login(request: ExRequest, response: ExResponse, next: any) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {};
-
-			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-			let validatedArgs: any[] = [];
-			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
-
-				const controller = new LoginController();
-
-				await templateService.apiHandler({
-					methodName: 'login',
-					controller,
-					response,
-					next,
-					validatedArgs,
-					successStatus: undefined,
-				});
-			} catch (err) {
-				return next(err);
-			}
-		}
-	);
-	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 	app.post(
 		'/api/matches',
 		authenticateMiddleware([{ bearer_token_optional: [] }]),
@@ -2119,6 +2134,84 @@ export function RegisterRoutes(app: Router) {
 
 				await templateService.apiHandler({
 					methodName: 'getConfig',
+					controller,
+					response,
+					next,
+					validatedArgs,
+					successStatus: undefined,
+				});
+			} catch (err) {
+				return next(err);
+			}
+		}
+	);
+	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	app.patch(
+		'/api/config',
+		authenticateMiddleware([{ bearer_token: [] }]),
+		...fetchMiddlewares<RequestHandler>(ConfigController),
+		...fetchMiddlewares<RequestHandler>(ConfigController.prototype.updateConfig),
+
+		async function ConfigController_updateConfig(
+			request: ExRequest,
+			response: ExResponse,
+			next: any
+		) {
+			const args: Record<string, TsoaRoute.ParameterSchema> = {
+				requestBody: {
+					in: 'body',
+					name: 'requestBody',
+					required: true,
+					ref: 'IConfigUpdateDto',
+				},
+			};
+
+			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+			let validatedArgs: any[] = [];
+			try {
+				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+				const controller = new ConfigController();
+
+				await templateService.apiHandler({
+					methodName: 'updateConfig',
+					controller,
+					response,
+					next,
+					validatedArgs,
+					successStatus: undefined,
+				});
+			} catch (err) {
+				return next(err);
+			}
+		}
+	);
+	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	app.get(
+		'/api/auth',
+		...fetchMiddlewares<RequestHandler>(AuthController),
+		...fetchMiddlewares<RequestHandler>(AuthController.prototype.getAuthType),
+
+		async function AuthController_getAuthType(
+			request: ExRequest,
+			response: ExResponse,
+			next: any
+		) {
+			const args: Record<string, TsoaRoute.ParameterSchema> = {
+				req: { in: 'request', name: 'req', required: true, dataType: 'object' },
+			};
+
+			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+			let validatedArgs: any[] = [];
+			try {
+				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+				const controller = new AuthController();
+
+				await templateService.apiHandler({
+					methodName: 'getAuthType',
 					controller,
 					response,
 					next,
