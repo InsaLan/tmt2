@@ -19,7 +19,7 @@ const NavLink = (props: AnchorProps) => {
 const NavBar: Component = () => {
 	const fetcher = createFetcher();
 	const [config, setConfig] = createSignal<IConfig>();
-		
+
 	createEffect(() => {
 		fetcher<IConfig>('GET', `/api/config`).then((c) => {
 			setConfig(c);
@@ -39,7 +39,12 @@ const NavBar: Component = () => {
 				</div>
 			</div>
 			<div class="grow"></div>
-			<Show when={config()?.allowUnregisteredMatchCreation === true || loginType()?.type === 'GLOBAL'}>
+			<Show
+				when={
+					config()?.allowUnregisteredMatchCreation === true ||
+					loginType()?.type === 'GLOBAL'
+				}
+			>
 				<NavLink href="/create">{t('Create')}</NavLink>
 			</Show>
 			<Switch>

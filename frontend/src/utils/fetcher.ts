@@ -36,7 +36,7 @@ export const redirectToLogin = () => {
 	const { pathname, search, hash } = window.location;
 	const encodedPath = encodeURIComponent(pathname + search + hash);
 	window.location.assign(`/login?path=${encodedPath}`);
-}
+};
 
 export const logout = () => {
 	localStorage.removeItem('token');

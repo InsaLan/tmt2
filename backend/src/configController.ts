@@ -13,14 +13,12 @@ export class ConfigController extends Controller {
 	async getConfig(): Promise<IConfig> {
 		return Config.get();
 	}
-	
+
 	/**
 	 * Update the configuration.
 	 */
 	@Patch()
-	async updateConfig(
-		@Body() requestBody: IConfigUpdateDto,
-	): Promise<IConfig> {
+	async updateConfig(@Body() requestBody: IConfigUpdateDto): Promise<IConfig> {
 		return await Config.set(requestBody);
 	}
 }

@@ -10,7 +10,7 @@ export class AuthController extends Controller {
 	@Get()
 	@NoSecurity()
 	async getAuthType(
-		@Request() req: Auth.ExpressRequest<IAuthResponseOptional>,
+		@Request() req: Auth.ExpressRequest<IAuthResponseOptional>
 	): Promise<IAuthResponseOptional> {
 		const token = req.get('authorization');
 		if (!token) {
