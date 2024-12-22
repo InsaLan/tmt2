@@ -180,15 +180,18 @@ export const MatchesPage: Component = () => {
 			{/* TODO: hide this if the user doesn't have a global token */}
 			<Show when={loginType()?.type === 'GLOBAL'}>
 				<ConfigCard />
-				
+
 				<div class="h-8" />
 			</Show>
-			
+
 			<Card>
 				<div class="flex w-full flex-row space-x-8 place-items-end">
 					<SelectInput
 						onInput={(e) =>
-							setSearchParams({ searchString: e.currentTarget.value }, { replace: true })
+							setSearchParams(
+								{ searchString: e.currentTarget.value },
+								{ replace: true }
+							)
 						}
 						labelBottomLeft={filterLabel()}
 					>

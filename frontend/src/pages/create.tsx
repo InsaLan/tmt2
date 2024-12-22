@@ -33,7 +33,7 @@ const DEFAULT_RCON_END = ['say > MATCH END RCON LOADED <'];
 export const CreatePage: Component = () => {
 	const navigate = useNavigate();
 	const fetcher = createFetcher();
-	
+
 	onMount(() => {
 		fetcher<IConfig>('GET', `/api/config`).then((c) => {
 			if (c?.allowUnregisteredMatchCreation === false) {
@@ -43,7 +43,7 @@ export const CreatePage: Component = () => {
 			}
 		});
 	});
-	
+
 	return (
 		<Card>
 			<CreateUpdateMatch

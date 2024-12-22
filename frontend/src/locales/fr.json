@@ -179,5 +179,7 @@
 	"Custom Filter": "Filtre Personnalisé",
 	"Column Settings": "Paramètres de Colonnes",
 	"Error": "Erreur",
-	"caution, please confirm": "attention, veuillez confirmer"
+	"caution, please confirm": "attention, veuillez confirmer",
+	"Allow Anyone to Create Matches": "Autoriser Tout le Monde à Créer des Matchs",
+	"Even visitors that are not logged in with a global token will be able to create matches": "Même les visiteurs qui ne sont pas connectés avec un token global pourront créer des matchs"
 }

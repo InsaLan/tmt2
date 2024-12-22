@@ -1,5 +1,5 @@
-import { IConfig, IConfigUpdateDto } from "../../common";
-import { checkAndNormalizeLogAddress } from "./match";
+import { IConfig, IConfigUpdateDto } from '../../common';
+import { checkAndNormalizeLogAddress } from './match';
 import * as Storage from './storage';
 
 const FILE_NAME = 'config.json';
@@ -7,7 +7,7 @@ const FILE_NAME = 'config.json';
 // These are not defaults, they're temporary until setup() is called
 let config: IConfig = {
 	tmtLogAddress: null,
-	allowUnregisteredMatchCreation: false
+	allowUnregisteredMatchCreation: false,
 };
 
 const defaults = (): IConfig => {
@@ -21,16 +21,16 @@ const defaults = (): IConfig => {
 			throw 'invalid environment variable: TMT_LOG_ADDRESS';
 		}
 	}
-	
+
 	return {
 		tmtLogAddress: tmtLogAdress,
-		allowUnregisteredMatchCreation: false
-	}
+		allowUnregisteredMatchCreation: false,
+	};
 };
 
 export const get = async (): Promise<IConfig> => {
 	return config;
-}
+};
 
 export const set = async (data: IConfigUpdateDto) => {
 	let tmtLogAdress = null;
@@ -44,16 +44,17 @@ export const set = async (data: IConfigUpdateDto) => {
 	} else {
 		tmtLogAdress = config.tmtLogAddress;
 	}
-	
-	let allowUnregisteredMatchCreation = data.allowUnregisteredMatchCreation ?? config.allowUnregisteredMatchCreation;
-	
+
+	let allowUnregisteredMatchCreation =
+		data.allowUnregisteredMatchCreation ?? config.allowUnregisteredMatchCreation;
+
 	config = {
 		tmtLogAddress: tmtLogAdress,
-		allowUnregisteredMatchCreation: allowUnregisteredMatchCreation
+		allowUnregisteredMatchCreation: allowUnregisteredMatchCreation,
 	};
-	
+
 	await write();
-	
+
 	return config;
 };
 
@@ -64,5 +65,5 @@ const write = async () => {
 export const setup = async () => {
 	// Only get the defaults if the config does not already exist
 	const data = await Storage.read(FILE_NAME, defaults());
-	set(data)
+	set(data);
 };

@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { IAuthResponse, IAuthResponseOptional } from '../../common'
+import { IAuthResponse, IAuthResponseOptional } from '../../common';
 import { generate as shortUuid } from 'short-uuid';
 import * as MatchService from './matchService';
 import * as Storage from './storage';
@@ -118,9 +118,7 @@ export const isAuthorized = async (
 	return false;
 };
 
-export const getTokenType = async (
-	token: string,
-): Promise<IAuthResponseOptional> => {
+export const getTokenType = async (token: string): Promise<IAuthResponseOptional> => {
 	const t = getGlobalToken(token);
 	if (t) {
 		return {
@@ -128,17 +126,17 @@ export const getTokenType = async (
 			comment: t.comment,
 		};
 	}
-	
+
 	const allMatches = await MatchService.getAll();
 	for (const match of allMatches.live.concat(allMatches.notLive)) {
 		if (match.tmtSecret === token) {
 			return {
-				type: 'MATCH'
+				type: 'MATCH',
 			};
 		}
 	}
-	
+
 	return {
 		type: 'UNAUTHORIZED',
-	}
-}
+	};
+};
