@@ -14,5 +14,8 @@
 	"devDependencies": {
 		"prettier": "^3.6.2",
 		"prettier-plugin-tailwindcss": "^0.7.1"
+	},
+	"dependencies": {
+		"sqlite3": "^5.1.7"
 	}
 }
