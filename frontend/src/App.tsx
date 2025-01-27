@@ -42,6 +42,7 @@ const NavBar: Component = () => {
 			</div>
 			<div class="flex-2">
 				<div class="flex justify-center gap-4">
+					<NavLink href="/stats">{t('Statistics')}</NavLink>
 					<Show
 						when={
 							config()?.allowUnregisteredMatchCreation === true ||
