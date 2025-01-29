@@ -1,4 +1,4 @@
-import { A, AnchorProps, RouteSectionProps } from '@solidjs/router';
+import { RouteSectionProps } from '@solidjs/router';
 import { Component, Match, Show, Switch, createEffect, createSignal, onMount } from 'solid-js';
 import { SvgComputer, SvgDarkMode, SvgLightMode } from './assets/Icons';
 import logo from './assets/logo.svg';
@@ -7,14 +7,7 @@ import { loginType, createFetcher } from './utils/fetcher';
 import { t } from './utils/locale';
 import { currentTheme, cycleDarkMode, updateDarkClasses } from './utils/theme';
 import { IConfig } from '../../common';
-
-const NavLink = (props: AnchorProps) => {
-	return (
-		<A {...props} class="btn btn-ghost hover:no-underline">
-			{props.children}
-		</A>
-	);
-};
+import { NavLink } from './components/NavLink';
 
 const NavBar: Component = () => {
 	const fetcher = createFetcher();

@@ -3268,7 +3268,7 @@
 		},
 		"/api/stats/players": {
 			"get": {
-				"operationId": "GetPlayerStats",
+				"operationId": "GetPlayersStats",
 				"responses": {
 					"200": {
 						"description": "Ok",
@@ -3295,7 +3295,7 @@
 		},
 		"/api/stats/players/match": {
 			"get": {
-				"operationId": "GetPlayerMatchStats",
+				"operationId": "GetMatchPlayersStats",
 				"responses": {
 					"200": {
 						"description": "Ok",
@@ -3311,7 +3311,7 @@
 						}
 					}
 				},
-				"description": "Get per-match player statistics.",
+				"description": "Get the stats of all the players for a match.",
 				"security": [
 					{
 						"bearer_token_optional": []
@@ -3331,7 +3331,7 @@
 		},
 		"/api/stats/matches": {
 			"get": {
-				"operationId": "GetMatchStats",
+				"operationId": "GetMatchesStats",
 				"responses": {
 					"200": {
 						"description": "Ok",
