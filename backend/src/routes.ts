@@ -4,6 +4,8 @@
 import type { TsoaRoute } from '@tsoa/runtime';
 import { fetchMiddlewares, ExpressTemplateService } from '@tsoa/runtime';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { StatsController } from './statsController';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { MatchesController } from './matchesController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { GameServersController } from './gameServersController';
@@ -15,8 +17,6 @@ import { ConfigController } from './configController';
 import { AuthController } from './authController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { PresetsController } from './presetsController';
-// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { StatsController } from './statsController';
 import { expressAuthentication } from './auth';
 // @ts-ignore - no great way to install types from subpackage
 import type { Request as ExRequest, Response as ExResponse, RequestHandler, Router } from 'express';
@@ -31,6 +31,39 @@ const expressAuthenticationRecasted = expressAuthentication as (
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 const models: TsoaRoute.Models = {
+	IPlayerStats: {
+		dataType: 'refObject',
+		properties: {
+			steamId: { dataType: 'string', required: true },
+			name: { dataType: 'string', required: true },
+			kills: { dataType: 'double', required: true },
+			deaths: { dataType: 'double', required: true },
+			assists: { dataType: 'double', required: true },
+			hits: { dataType: 'double', required: true },
+			headshots: { dataType: 'double', required: true },
+			rounds: { dataType: 'double', required: true },
+			damages: { dataType: 'double', required: true },
+			kd: { dataType: 'double' },
+			hsPct: { dataType: 'double' },
+			adr: { dataType: 'double' },
+			map: { dataType: 'string' },
+			matchId: { dataType: 'string' },
+		},
+		additionalProperties: false,
+	},
+	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	IMatchStats: {
+		dataType: 'refObject',
+		properties: {
+			matchId: { dataType: 'string', required: true },
+			teamA: { dataType: 'string', required: true },
+			teamAScore: { dataType: 'string', required: true },
+			teamB: { dataType: 'string', required: true },
+			teamBScore: { dataType: 'string', required: true },
+		},
+		additionalProperties: false,
+	},
+	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 	TMatchState: {
 		dataType: 'refAlias',
 		type: {
@@ -1297,41 +1330,6 @@ const models: TsoaRoute.Models = {
 		additionalProperties: false,
 	},
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-	IPlayerStats: {
-		dataType: 'refObject',
-		properties: {
-			steamId: { dataType: 'string', required: true },
-			name: { dataType: 'string', required: true },
-			kills: { dataType: 'double', required: true },
-			deaths: { dataType: 'double', required: true },
-			assists: { dataType: 'double', required: true },
-			diff: { dataType: 'double', required: true },
-			hits: { dataType: 'double', required: true },
-			headshots: { dataType: 'double', required: true },
-			hsPct: { dataType: 'double', required: true },
-			rounds: { dataType: 'double', required: true },
-			damages: { dataType: 'double', required: true },
-			adr: { dataType: 'double', required: true },
-			map: { dataType: 'string' },
-			matchId: { dataType: 'string' },
-		},
-		additionalProperties: false,
-	},
-	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-	IMatchStats: {
-		dataType: 'refObject',
-		properties: {
-			matchId: { dataType: 'string', required: true },
-			map: { dataType: 'string', required: true },
-			teamA: { dataType: 'string', required: true },
-			teamAScore: { dataType: 'string', required: true },
-			teamB: { dataType: 'string', required: true },
-			teamBScore: { dataType: 'string', required: true },
-			winner: { dataType: 'string', required: true },
-		},
-		additionalProperties: false,
-	},
-	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 };
 const templateService = new ExpressTemplateService(models, {
 	noImplicitAdditionalProperties: 'silently-remove-extras',
@@ -1346,6 +1344,242 @@ export function RegisterRoutes(app: Router) {
 	//      Please look into the "controllerPathGlobs" config option described in the readme: https://github.com/lukeautry/tsoa
 	// ###########################################################################################################
 
+	const argsStatsController_getPlayersStats: Record<string, TsoaRoute.ParameterSchema> = {};
+	app.get(
+		'/api/stats/players',
+		authenticateMiddleware([{ bearer_token_optional: [] }]),
+		...fetchMiddlewares<RequestHandler>(StatsController),
+		...fetchMiddlewares<RequestHandler>(StatsController.prototype.getPlayersStats),
+
+		async function StatsController_getPlayersStats(
+			request: ExRequest,
+			response: ExResponse,
+			next: any
+		) {
+			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+			let validatedArgs: any[] = [];
+			try {
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsStatsController_getPlayersStats,
+					request,
+					response,
+				});
+
+				const controller = new StatsController();
+
+				await templateService.apiHandler({
+					methodName: 'getPlayersStats',
+					controller,
+					response,
+					next,
+					validatedArgs,
+					successStatus: undefined,
+				});
+			} catch (err) {
+				return next(err);
+			}
+		}
+	);
+	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsStatsController_getMatchPlayersStats: Record<string, TsoaRoute.ParameterSchema> = {
+		id: { in: 'query', name: 'id', required: true, dataType: 'string' },
+	};
+	app.get(
+		'/api/stats/players/match',
+		authenticateMiddleware([{ bearer_token_optional: [] }]),
+		...fetchMiddlewares<RequestHandler>(StatsController),
+		...fetchMiddlewares<RequestHandler>(StatsController.prototype.getMatchPlayersStats),
+
+		async function StatsController_getMatchPlayersStats(
+			request: ExRequest,
+			response: ExResponse,
+			next: any
+		) {
+			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+			let validatedArgs: any[] = [];
+			try {
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsStatsController_getMatchPlayersStats,
+					request,
+					response,
+				});
+
+				const controller = new StatsController();
+
+				await templateService.apiHandler({
+					methodName: 'getMatchPlayersStats',
+					controller,
+					response,
+					next,
+					validatedArgs,
+					successStatus: undefined,
+				});
+			} catch (err) {
+				return next(err);
+			}
+		}
+	);
+	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsStatsController_getMatchesStats: Record<string, TsoaRoute.ParameterSchema> = {};
+	app.get(
+		'/api/stats/matches',
+		authenticateMiddleware([{ bearer_token_optional: [] }]),
+		...fetchMiddlewares<RequestHandler>(StatsController),
+		...fetchMiddlewares<RequestHandler>(StatsController.prototype.getMatchesStats),
+
+		async function StatsController_getMatchesStats(
+			request: ExRequest,
+			response: ExResponse,
+			next: any
+		) {
+			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+			let validatedArgs: any[] = [];
+			try {
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsStatsController_getMatchesStats,
+					request,
+					response,
+				});
+
+				const controller = new StatsController();
+
+				await templateService.apiHandler({
+					methodName: 'getMatchesStats',
+					controller,
+					response,
+					next,
+					validatedArgs,
+					successStatus: undefined,
+				});
+			} catch (err) {
+				return next(err);
+			}
+		}
+	);
+	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsStatsController_getMatchStats: Record<string, TsoaRoute.ParameterSchema> = {
+		id: { in: 'query', name: 'id', required: true, dataType: 'string' },
+	};
+	app.get(
+		'/api/stats/match',
+		authenticateMiddleware([{ bearer_token_optional: [] }]),
+		...fetchMiddlewares<RequestHandler>(StatsController),
+		...fetchMiddlewares<RequestHandler>(StatsController.prototype.getMatchStats),
+
+		async function StatsController_getMatchStats(
+			request: ExRequest,
+			response: ExResponse,
+			next: any
+		) {
+			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+			let validatedArgs: any[] = [];
+			try {
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsStatsController_getMatchStats,
+					request,
+					response,
+				});
+
+				const controller = new StatsController();
+
+				await templateService.apiHandler({
+					methodName: 'getMatchStats',
+					controller,
+					response,
+					next,
+					validatedArgs,
+					successStatus: undefined,
+				});
+			} catch (err) {
+				return next(err);
+			}
+		}
+	);
+	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsStatsController_getPlayerStats: Record<string, TsoaRoute.ParameterSchema> = {
+		id: { in: 'query', name: 'id', required: true, dataType: 'string' },
+	};
+	app.get(
+		'/api/stats/player',
+		authenticateMiddleware([{ bearer_token_optional: [] }]),
+		...fetchMiddlewares<RequestHandler>(StatsController),
+		...fetchMiddlewares<RequestHandler>(StatsController.prototype.getPlayerStats),
+
+		async function StatsController_getPlayerStats(
+			request: ExRequest,
+			response: ExResponse,
+			next: any
+		) {
+			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+			let validatedArgs: any[] = [];
+			try {
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsStatsController_getPlayerStats,
+					request,
+					response,
+				});
+
+				const controller = new StatsController();
+
+				await templateService.apiHandler({
+					methodName: 'getPlayerStats',
+					controller,
+					response,
+					next,
+					validatedArgs,
+					successStatus: undefined,
+				});
+			} catch (err) {
+				return next(err);
+			}
+		}
+	);
+	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsStatsController_getPlayerMatchesStats: Record<string, TsoaRoute.ParameterSchema> = {
+		id: { in: 'query', name: 'id', required: true, dataType: 'string' },
+	};
+	app.get(
+		'/api/stats/matches/player',
+		authenticateMiddleware([{ bearer_token_optional: [] }]),
+		...fetchMiddlewares<RequestHandler>(StatsController),
+		...fetchMiddlewares<RequestHandler>(StatsController.prototype.getPlayerMatchesStats),
+
+		async function StatsController_getPlayerMatchesStats(
+			request: ExRequest,
+			response: ExResponse,
+			next: any
+		) {
+			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+			let validatedArgs: any[] = [];
+			try {
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsStatsController_getPlayerMatchesStats,
+					request,
+					response,
+				});
+
+				const controller = new StatsController();
+
+				await templateService.apiHandler({
+					methodName: 'getPlayerMatchesStats',
+					controller,
+					response,
+					next,
+					validatedArgs,
+					successStatus: undefined,
+				});
+			} catch (err) {
+				return next(err);
+			}
+		}
+	);
+	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 	const argsMatchesController_createMatch: Record<string, TsoaRoute.ParameterSchema> = {
 		requestBody: { in: 'body', name: 'requestBody', required: true, ref: 'IMatchCreateDto' },
 		req: { in: 'request', name: 'req', required: true, dataType: 'object' },
@@ -2457,224 +2691,6 @@ export function RegisterRoutes(app: Router) {
 
 				await templateService.apiHandler({
 					methodName: 'deletePreset',
-					controller,
-					response,
-					next,
-					validatedArgs,
-					successStatus: undefined,
-				});
-			} catch (err) {
-				return next(err);
-			}
-		}
-	);
-	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-	app.get(
-		'/api/stats/players',
-		authenticateMiddleware([{ bearer_token_optional: [] }]),
-		...fetchMiddlewares<RequestHandler>(StatsController),
-		...fetchMiddlewares<RequestHandler>(StatsController.prototype.getPlayersStats),
-
-		async function StatsController_getPlayersStats(
-			request: ExRequest,
-			response: ExResponse,
-			next: any
-		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {};
-
-			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-			let validatedArgs: any[] = [];
-			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
-
-				const controller = new StatsController();
-
-				await templateService.apiHandler({
-					methodName: 'getPlayersStats',
-					controller,
-					response,
-					next,
-					validatedArgs,
-					successStatus: undefined,
-				});
-			} catch (err) {
-				return next(err);
-			}
-		}
-	);
-	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-	app.get(
-		'/api/stats/players/match',
-		authenticateMiddleware([{ bearer_token_optional: [] }]),
-		...fetchMiddlewares<RequestHandler>(StatsController),
-		...fetchMiddlewares<RequestHandler>(StatsController.prototype.getMatchPlayersStats),
-
-		async function StatsController_getMatchPlayersStats(
-			request: ExRequest,
-			response: ExResponse,
-			next: any
-		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				id: { in: 'query', name: 'id', required: true, dataType: 'string' },
-			};
-
-			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-			let validatedArgs: any[] = [];
-			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
-
-				const controller = new StatsController();
-
-				await templateService.apiHandler({
-					methodName: 'getMatchPlayersStats',
-					controller,
-					response,
-					next,
-					validatedArgs,
-					successStatus: undefined,
-				});
-			} catch (err) {
-				return next(err);
-			}
-		}
-	);
-	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-	app.get(
-		'/api/stats/matches',
-		authenticateMiddleware([{ bearer_token_optional: [] }]),
-		...fetchMiddlewares<RequestHandler>(StatsController),
-		...fetchMiddlewares<RequestHandler>(StatsController.prototype.getMatchesStats),
-
-		async function StatsController_getMatchesStats(
-			request: ExRequest,
-			response: ExResponse,
-			next: any
-		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {};
-
-			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-			let validatedArgs: any[] = [];
-			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
-
-				const controller = new StatsController();
-
-				await templateService.apiHandler({
-					methodName: 'getMatchesStats',
-					controller,
-					response,
-					next,
-					validatedArgs,
-					successStatus: undefined,
-				});
-			} catch (err) {
-				return next(err);
-			}
-		}
-	);
-	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-	app.get(
-		'/api/stats/match',
-		authenticateMiddleware([{ bearer_token_optional: [] }]),
-		...fetchMiddlewares<RequestHandler>(StatsController),
-		...fetchMiddlewares<RequestHandler>(StatsController.prototype.getMatchStats),
-
-		async function StatsController_getMatchStats(
-			request: ExRequest,
-			response: ExResponse,
-			next: any
-		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				id: { in: 'query', name: 'id', required: true, dataType: 'string' },
-			};
-
-			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-			let validatedArgs: any[] = [];
-			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
-
-				const controller = new StatsController();
-
-				await templateService.apiHandler({
-					methodName: 'getMatchStats',
-					controller,
-					response,
-					next,
-					validatedArgs,
-					successStatus: undefined,
-				});
-			} catch (err) {
-				return next(err);
-			}
-		}
-	);
-	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-	app.get(
-		'/api/stats/player',
-		authenticateMiddleware([{ bearer_token_optional: [] }]),
-		...fetchMiddlewares<RequestHandler>(StatsController),
-		...fetchMiddlewares<RequestHandler>(StatsController.prototype.getPlayerStats),
-
-		async function StatsController_getPlayerStats(
-			request: ExRequest,
-			response: ExResponse,
-			next: any
-		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				id: { in: 'query', name: 'id', required: true, dataType: 'string' },
-			};
-
-			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-			let validatedArgs: any[] = [];
-			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
-
-				const controller = new StatsController();
-
-				await templateService.apiHandler({
-					methodName: 'getPlayerStats',
-					controller,
-					response,
-					next,
-					validatedArgs,
-					successStatus: undefined,
-				});
-			} catch (err) {
-				return next(err);
-			}
-		}
-	);
-	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-	app.get(
-		'/api/stats/matches/player',
-		authenticateMiddleware([{ bearer_token_optional: [] }]),
-		...fetchMiddlewares<RequestHandler>(StatsController),
-		...fetchMiddlewares<RequestHandler>(StatsController.prototype.getPlayerMatchesStats),
-
-		async function StatsController_getPlayerMatchesStats(
-			request: ExRequest,
-			response: ExResponse,
-			next: any
-		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				id: { in: 'query', name: 'id', required: true, dataType: 'string' },
-			};
-
-			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-			let validatedArgs: any[] = [];
-			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
-
-				const controller = new StatsController();
-
-				await templateService.apiHandler({
-					methodName: 'getPlayerMatchesStats',
 					controller,
 					response,
 					next,

@@ -311,13 +311,10 @@ export const getPlayersStats = async (): Promise<IPlayerStats[]> => {
 		tKills AS kills,
 		tDeaths AS deaths,
 		tAssists AS assists,
-		tDiff AS diff,
 		tHits AS hits,
 		tHeadshots AS headshots,
-		tHsPct AS hsPct,
 		tRounds AS rounds,
-		tDamages AS damages,
-		tAdr AS adr
+		tDamages AS damages
 		FROM ${PLAYERS_TABLE}`
 	)) as IPlayerStats[];
 	cache.set('players', playerStats);
@@ -335,13 +332,10 @@ export const getMatchPlayersStats = async (matchId: string): Promise<IPlayerStat
 		t2.kills,
 		t2.deaths,
 		t2.assists,
-		t2.diff,
 		t2.hits,
 		t2.headshots,
-		t2.hsPct,
 		t2.rounds,
 		t2.damages,
-		t2.adr,
 		t2.map
 		FROM ${PLAYERS_TABLE} t1
 		INNER JOIN ${PLAYER_MATCH_STATS_TABLE} t2
@@ -400,13 +394,10 @@ export const getPlayerStats = async (steamId: string): Promise<IPlayerStats> => 
 			tKills AS kills,
 			tDeaths AS deaths,
 			tAssists AS assists,
-			tDiff AS diff,
 			tHits AS hits,
 			tHeadshots AS headshots,
-			tHsPct AS hsPct,
 			tRounds AS rounds,
-			tDamages AS damages,
-			tAdr AS adr
+			tDamages AS damages
 			FROM ${PLAYERS_TABLE}
 			WHERE steamId = '${steamId}'`
 		)) as IPlayerStats[]
