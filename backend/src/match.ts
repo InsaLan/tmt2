@@ -55,6 +55,7 @@ export const createFromData = async (data: IMatch, logMessage?: string) => {
 		log: () => {},
 		warnAboutWrongTeam: true,
 	};
+	await StatsLogger.onNewMatch(data);
 	match.data = addChangeListener(data, createOnDataChangeHandler(match));
 	match.log = createLogger(match);
 	if (logMessage) {
