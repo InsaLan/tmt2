@@ -1,6 +1,8 @@
 import { SqlAttribute, TableSchema } from './tableSchema';
 import { createTableDB, insertDB, queryDB, updateDB } from './storage';
 import { IMatch, IMatchMap } from '../../common';
+import { IPlayerStats, IMatchStats } from '../../common';
+import NodeCache from 'node-cache';
 
 export const PLAYERS_TABLE = 'players';
 export const MATCH_MAPS_TABLE = 'matchMaps';
@@ -237,4 +239,132 @@ export const onOtherDeath = async (matchId: string, map: string, victimId: strin
 
 export const updateRoundCount = async (match: IMatch, matchMap: IMatchMap) => {
 	// TODO
+};
+
+const cache = new NodeCache({ stdTTL: 10 });
+
+export const getPlayersStats = async (): Promise<IPlayerStats[]> => {
+	const cached = cache.get('players') as IPlayerStats[];
+	if (cached) return cached;
+
+	const playerStats = (await queryDB(
+		`SELECT
+		steamId,
+		name,
+		tKills AS kills,
+		tDeaths AS deaths,
+		tAssists AS assists,
+		tHits AS hits,
+		tHeadshots AS headshots,
+		tRounds AS rounds,
+		tDamages AS damages
+		FROM ${PLAYERS_TABLE}`
+	)) as IPlayerStats[];
+	cache.set('players', playerStats);
+	return playerStats;
+};
+
+export const getMatchPlayersStats = async (matchId: string): Promise<IPlayerStats[]> => {
+	const cached = cache.get('players/match/' + matchId) as IPlayerStats[];
+	if (cached) return cached;
+
+	const playerStats = (await queryDB(
+		`SELECT
+		t1.steamId,
+		t1.name,
+		t2.kills,
+		t2.deaths,
+		t2.assists,
+		t2.hits,
+		t2.headshots,
+		t2.rounds,
+		t2.damages,
+		t2.map
+		FROM ${PLAYERS_TABLE} t1
+		INNER JOIN ${PLAYER_MATCH_STATS_TABLE} t2
+		ON t1.steamId = t2.steamId
+		WHERE t2.matchId = '${matchId}'`
+	)) as IPlayerStats[];
+	cache.set('players/match/' + matchId, playerStats);
+	return playerStats;
+};
+
+export const getMatchesStats = async (steamId?: string): Promise<IMatchStats[]> => {
+	const cached = cache.get('matches') as IMatchStats[];
+	if (cached) return cached;
+
+	const matchStats = (await queryDB(`SELECT * FROM ${MATCHES_TABLE}`)) as IMatchStats[];
+	cache.set('matches', matchStats);
+	return matchStats;
+};
+
+export const getPlayerMatchesStats = async (steamId: string): Promise<IPlayerStats[]> => {
+	const cached = cache.get('matches/player/' + steamId) as IPlayerStats[];
+	if (cached) return cached;
+
+	const playerStats = (await queryDB(
+		`SELECT * FROM ${PLAYER_MATCH_STATS_TABLE} WHERE steamId = '${steamId}'`
+	)) as IPlayerStats[];
+	cache.set('matches/player/' + steamId, playerStats);
+	return playerStats;
+};
+
+export const getMatchStats = async (matchId: string): Promise<IMatchStats> => {
+	const cached = cache.get('matches/' + matchId) as IMatchStats;
+	if (cached) return cached;
+
+	const matchStats = (
+		(await queryDB(
+			`SELECT * FROM ${MATCHES_TABLE} WHERE matchId = '${matchId}'`
+		)) as IMatchStats[]
+	)[0];
+	if (matchStats) {
+		cache.set('matches/' + matchId, matchStats);
+		return matchStats;
+	}
+	throw { status: 404, message: `Match stats not found for matchId: ${matchId}` };
+};
+
+export const getPlayerStats = async (steamId: string): Promise<IPlayerStats> => {
+	const cached = cache.get('players/' + steamId) as IPlayerStats;
+	if (cached) return cached;
+
+	const playerStats = (
+		(await queryDB(
+			`SELECT
+			steamId,
+			name,
+			tKills AS kills,
+			tDeaths AS deaths,
+			tAssists AS assists,
+			tHits AS hits,
+			tHeadshots AS headshots,
+			tRounds AS rounds,
+			tDamages AS damages
+			FROM ${PLAYERS_TABLE}
+			WHERE steamId = '${steamId}'`
+		)) as IPlayerStats[]
+	)[0];
+	if (playerStats) {
+		cache.set('players/' + steamId, playerStats);
+		return playerStats;
+	}
+	throw { status: 404, message: `Player stats not found for steamId: ${steamId}` };
+};
+
+export const getTeamPlayers = async (teamName: string): Promise<string[]> => {
+	const cached = cache.get('team/' + teamName) as string[];
+	if (cached) return cached;
+
+	const teamPlayers = (
+		(await queryDB(
+			`SELECT p.name
+			FROM teams t
+			INNER JOIN ${PLAYERS_TABLE} p
+			ON t.steamId = p.steamId
+			WHERE t.teamName = '${teamName}'`
+		)) as Array<{ name: string }>
+	).map((row: { name: string }) => row.name) as string[];
+	cache.set('team/' + teamName, teamPlayers);
+	return teamPlayers;
 };

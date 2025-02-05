@@ -1,4 +1,4 @@
-import { A, AnchorProps, RouteSectionProps } from '@solidjs/router';
+import { RouteSectionProps } from '@solidjs/router';
 import { Component, Match, Switch, onMount } from 'solid-js';
 import { SvgComputer, SvgDarkMode, SvgLightMode } from './assets/Icons';
 import logo from './assets/logo.svg';
@@ -6,14 +6,7 @@ import logo from './assets/logo.svg';
 import { isLoggedIn } from './utils/fetcher';
 import { t } from './utils/locale';
 import { currentTheme, cycleDarkMode, updateDarkClasses } from './utils/theme';
-
-const NavLink = (props: AnchorProps) => {
-	return (
-		<A {...props} class="btn btn-ghost hover:no-underline">
-			{props.children}
-		</A>
-	);
-};
+import { NavLink } from './components/NavLink';
 
 const NavBar: Component = () => {
 	return (
@@ -29,6 +22,7 @@ const NavBar: Component = () => {
 				</div>
 			</div>
 			<div class="grow"></div>
+			<NavLink href="/stats">{t('Statistics')}</NavLink>
 			<NavLink href="/create">{t('Create')}</NavLink>
 			<NavLink href="/matches">{t('Matches')}</NavLink>
 			<NavLink href="/gameservers">{t('Game Servers')}</NavLink>
