@@ -1,6 +1,6 @@
 import { SqlAttribute, TableSchema } from './tableSchema';
 import { createTableDB, insertDB, queryDB, updateDB } from './storage';
-import { IMatch, IMatchMap } from '../../common';
+import { IMatch, IMatchMap, TTeamAB } from '../../common';
 
 export const PLAYERS_TABLE = 'players';
 export const MATCH_MAPS_TABLE = 'matchMaps';
@@ -69,7 +69,7 @@ export const setup = async () => {
 			constraints: `REFERENCES ${PLAYERS_TABLE} (steamId)`,
 		},
 	] as SqlAttribute[];
-	const teamsTableSchema = new TableSchema('teams', teamsAttributes, ['teamName']);
+	const teamsTableSchema = new TableSchema('teams', teamsAttributes, ['teamName', 'steamId']);
 	await createTableDB(teamsTableSchema);
 
 	// Create player match stats table
@@ -118,8 +118,18 @@ export const onNewMatch = async (data: IMatch) => {
 	);
 };
 
-export const onNewMap = async () => {
-	// TODO
+export const onNewMap = async (match: IMatch, map: string) => {
+	await insertDB(
+		MATCH_MAPS_TABLE,
+		new Map<string, string | number>([
+			['matchId', ''],
+			['map', ''],
+			['teamA', ''],
+			['teamAScore', 0],
+			['teamB', ''],
+			['teamBScore', 0],
+		])
+	);
 };
 
 export const onDamage = async (
@@ -236,5 +246,34 @@ export const onOtherDeath = async (matchId: string, map: string, victimId: strin
 };
 
 export const updateRoundCount = async (match: IMatch, matchMap: IMatchMap) => {
-	// TODO
+	const currentPlayersMatchStats = (await queryDB(
+		`SELECT steamId,rounds FROM ${PLAYER_MATCH_STATS_TABLE} WHERE matchId = '${match.id}' AND map = '${matchMap.name}'`
+	)) as Map<string, number>;
+
+	let currentPlayerGlobalStats: number | undefined;
+
+	for (const player of currentPlayersMatchStats.entries()) {
+		currentPlayerGlobalStats = (await queryDB(
+			`SELECT tRounds FROM ${PLAYERS_TABLE} WHERE steamId = '${player[0]}'`
+		)) as number;
+
+		await updateDB(
+			PLAYERS_TABLE,
+			new Map<string, number>([['tRounds', currentPlayerGlobalStats + 1]]),
+			`steamId = '${player[0]}'`
+		);
+		await updateDB(
+			PLAYER_MATCH_STATS_TABLE,
+			new Map<string, number>([['rounds', player[1] + 1]]),
+			`steamId = '${player[0]}' AND matchId = '${match.id}' AND map = '${matchMap.name}'`
+		);
+	}
+	await updateDB(
+		MATCH_MAPS_TABLE,
+		new Map<string, number>([
+			['teamAScore', matchMap.score.teamA],
+			['teamBScore', matchMap.score.teamB],
+		]),
+		`matchId = '${match.id}' AND map = '${matchMap.name}'`
+	);
 };
