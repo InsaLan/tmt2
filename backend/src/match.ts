@@ -534,6 +534,7 @@ const onLogLine = async (match: Match, line: string) => {
 					tScore,
 					winningTeam === 'CT' ? 'CT' : 'T'
 				);
+				await StatsLogger.updateRoundCount(match.data, currentMatchMap);
 			}
 			return;
 		}
@@ -602,44 +603,38 @@ const onPlayerLogLine = async (
 			const playerExists =
 				(
 					(await Storage.queryDB(
-						`SELECT * FROM ${StatsLogger.PLAYERS_TABLE} WHERE steamId = '${player.steamId64}'`
+						`SELECT * FROM ${StatsLogger.PLAYERS_TABLE} WHERE steamId = '${steamId}'`
 					)) as any[]
 				).length > 0;
 			if (!playerExists) {
 				await Storage.insertDB(
 					StatsLogger.PLAYERS_TABLE,
 					new Map<string, string | number>([
-						['steamId', player.steamId64],
+						['steamId', steamId],
 						['name', player.name],
 						['tKills', 0],
 						['tDeaths', 0],
 						['tAssists', 0],
-						['tDiff', 0],
 						['tHits', 0],
 						['tHeadshots', 0],
-						['tHsPct', 0],
 						['tRounds', 0],
 						['tDamages', 0],
-						['tAdr', 0],
 					])
 				);
 			}
 			await Storage.insertDB(
 				StatsLogger.PLAYERS_TABLE,
 				new Map<string, string | number>([
-					['steamId', player.steamId64],
+					['steamId', steamId],
 					['matchId', match.data.id],
 					['map', match.data.matchMaps[match.data.currentMap]?.name ?? ''],
 					['kills', 0],
 					['deaths', 0],
 					['assists', 0],
-					['diff', 0],
 					['hits', 0],
 					['headshots', 0],
-					['hsPct', 0],
 					['rounds', 0],
 					['damages', 0],
-					['adr', 0],
 				])
 			);
 			match.log(`Player ${player.steamId64} (${name}) created`);
@@ -720,7 +715,7 @@ const onPlayerLogLine = async (
 	const damageMatch = remainingLine.match(
 		/^attacked ".+<\d+><[\[\]\w:]+><(?:TERRORIST|CT)>" \[-?\d+ -?\d+ -?\d+\] with "\w+" \(damage "(\d+)"\) \(damage_armor "(\d+)"\) \(health "(\d+)"\) \(armor "(\d+)"\) \(hitgroup "([\w ]+)"\)$/
 	);
-	if (damageMatch) {
+	if (damageMatch && getCurrentMatchMap(match)?.state === 'IN_PROGRESS') {
 		const damage = Number(damageMatch[1]);
 		const damageArmor = Number(damageMatch[2]);
 		const headshot = damageMatch[3] === 'head';
@@ -739,7 +734,7 @@ const onPlayerLogLine = async (
 	const killMatch = remainingLine.match(
 		/^killed ".+<\d+><([\[\]\w:]+)><(?:|Unassigned|TERRORIST|CT)>" \[-?\d+ -?\d+ -?\d+\] with "\w+" ?\(?(headshot|penetrated|headshot penetrated)?\)?$/
 	);
-	if (killMatch) {
+	if (killMatch && getCurrentMatchMap(match)?.state === 'IN_PROGRESS') {
 		const victimId = killMatch[1]!;
 		await StatsLogger.onKill(
 			match.data.id,
@@ -752,7 +747,7 @@ const onPlayerLogLine = async (
 
 	//assisted killing "PlayerName2<3><STEAM_1:1:87654321><CT>"
 	const assistMatch = remainingLine.match(/^assisted killing/);
-	if (assistMatch) {
+	if (assistMatch && getCurrentMatchMap(match)?.state === 'IN_PROGRESS') {
 		await StatsLogger.onAssist(
 			match.data.id,
 			match.data.matchMaps[match.data.currentMap]?.name ?? '',
@@ -766,7 +761,7 @@ const onPlayerLogLine = async (
 	const otherDeathMatch = remainingLine.match(
 		/^(?:was killed by the bomb|committed suicide with)/
 	);
-	if (otherDeathMatch) {
+	if (otherDeathMatch && getCurrentMatchMap(match)?.state === 'IN_PROGRESS') {
 		await StatsLogger.onOtherDeath(
 			match.data.id,
 			match.data.matchMaps[match.data.currentMap]?.name ?? '',

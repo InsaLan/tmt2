@@ -164,7 +164,6 @@ export const onRoundEnd = async (
 			match.log('Switching sides');
 			await Match.say(match, 'SWITCHING SIDES');
 		}
-		await StatsLogger.updateRoundCount(match.data, matchMap);
 		return;
 	}
 };
