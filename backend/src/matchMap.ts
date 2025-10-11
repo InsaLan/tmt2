@@ -236,6 +236,7 @@ const startMatch = async (match: Match.Match, matchMap: IMatchMap) => {
 	await Match.say(match, 'MAP IS LIVE!');
 
 	Events.onMapStart(match, matchMap);
+	StatsLogger.onNewMap(match.data, match.data.mapPool[match.data.currentMap]!);
 };
 
 export const parseMapParts = (mapName: string) => {
