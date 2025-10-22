@@ -716,9 +716,9 @@ const onPlayerLogLine = async (
 		return;
 	}
 
-	//attacked "PlayerName<1><U:1:12345678><CT>" [2397 2079 133] with "glock" (damage "117") (damage_armor "0") (health "0") (armor "0") (hitgroup "head")
+	//[2397 2079 133] attacked "PlayerName<1><U:1:12345678><CT>" [2397 2079 133] with "glock" (damage "117") (damage_armor "0") (health "0") (armor "0") (hitgroup "head")
 	const damageMatch = remainingLine.match(
-		/^attacked ".+<\d+><[\[\]\w:]+><(?:TERRORIST|CT)>" \[-?\d+ -?\d+ -?\d+\] with "\w+" \(damage "(\d+)"\) \(damage_armor "(\d+)"\) \(health "(\d+)"\) \(armor "(\d+)"\) \(hitgroup "([\w ]+)"\)$/
+		/^\[-?\d+ -?\d+ -?\d+\] attacked ".+<\d+><[\[\]\w:]+><(?:TERRORIST|CT)>" \[-?\d+ -?\d+ -?\d+\] with "\w+" \(damage "(\d+)"\) \(damage_armor "(\d+)"\) \(health "(\d+)"\) \(armor "(\d+)"\) \(hitgroup "([\w ]+)"\)$/
 	);
 	if (damageMatch && getCurrentMatchMap(match)?.state === 'IN_PROGRESS') {
 		const damage = Number(damageMatch[1]);
@@ -738,9 +738,9 @@ const onPlayerLogLine = async (
 		return;
 	}
 
-	//killed "PlayerName<2><STEAM_1:1:12345678><TERRORIST>" [-100 150 60] with "ak47" (headshot)
+	//[2397 2079 133] killed "PlayerName<2><STEAM_1:1:12345678><TERRORIST>" [-100 150 60] with "ak47" (headshot)
 	const killMatch = remainingLine.match(
-		/^killed ".+<\d+><([\[\]\w:]+)><(?:|Unassigned|TERRORIST|CT)>" \[-?\d+ -?\d+ -?\d+\] with "\w+" ?\(?(headshot|penetrated|headshot penetrated)?\)?$/
+		/^\[-?\d+ -?\d+ -?\d+\] killed ".+<\d+><([\[\]\w:]+)><(?:|Unassigned|TERRORIST|CT)>" \[-?\d+ -?\d+ -?\d+\] with "\w+" ?\(?(headshot|penetrated|headshot penetrated)?\)?$/
 	);
 	if (killMatch && getCurrentMatchMap(match)?.state === 'IN_PROGRESS') {
 		const victimId = killMatch[1]!;
