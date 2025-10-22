@@ -143,27 +143,30 @@ export const onDamage = async (
 ) => {
 	const currentAttackerMapStats = (await queryDB(
 		`SELECT hits,headshots,damages FROM ${PLAYER_MAP_STATS_TABLE} WHERE steamId = '${attackerId}' AND matchId = '${matchId}' AND map = '${map}'`
-	)) as number[] | undefined;
+	)) as Array<{ hits: number; headshots: number; damages: number }>;
 	const currentAttackerGlobalStats = (await queryDB(
 		`SELECT tHits,tHeadshots,tDamages FROM ${PLAYERS_TABLE} WHERE steamId = '${attackerId}'`
-	)) as number[] | undefined;
+	)) as Array<{ tHits: number; tHeadshots: number; tDamages: number }>;
 
-	if (currentAttackerMapStats && currentAttackerGlobalStats) {
+	if (currentAttackerMapStats.length > 0 && currentAttackerGlobalStats.length > 0) {
 		await updateDB(
 			PLAYER_MAP_STATS_TABLE,
 			new Map<string, number>([
-				['hits', (currentAttackerMapStats[0] ?? 0) + 1],
-				['headshots', (currentAttackerMapStats[1] ?? 0) + (headshot ? 1 : 0)],
-				['damages', (currentAttackerMapStats[2] ?? 0) + damage + damageArmor],
+				['hits', (currentAttackerMapStats[0]!.hits ?? 0) + 1],
+				['headshots', (currentAttackerMapStats[0]!.headshots ?? 0) + (headshot ? 1 : 0)],
+				['damages', (currentAttackerMapStats[0]!.damages ?? 0) + damage + damageArmor],
 			]),
 			`steamId = '${attackerId}' AND matchId = '${matchId}' AND map = '${map}'`
 		);
 		await updateDB(
 			PLAYERS_TABLE,
 			new Map<string, number>([
-				['tHits', (currentAttackerGlobalStats[0] ?? 0) + 1],
-				['tHeadshots', (currentAttackerGlobalStats[1] ?? 0) + (headshot ? 1 : 0)],
-				['tDamages', (currentAttackerGlobalStats[2] ?? 0) + damage + damageArmor],
+				['tHits', (currentAttackerGlobalStats[0]!.tHits ?? 0) + 1],
+				[
+					'tHeadshots',
+					(currentAttackerGlobalStats[0]!.tHeadshots ?? 0) + (headshot ? 1 : 0),
+				],
+				['tDamages', (currentAttackerGlobalStats[0]!.tDamages ?? 0) + damage + damageArmor],
 			]),
 			`steamId = '${attackerId}'`
 		);
@@ -173,35 +176,35 @@ export const onDamage = async (
 export const onKill = async (matchId: string, map: string, killerId: string, victimId: string) => {
 	const currentKillerMapStats = (await queryDB(
 		`SELECT kills FROM ${PLAYER_MAP_STATS_TABLE} WHERE steamId = '${killerId}' AND matchId = '${matchId}' AND map = '${map}'`
-	)) as number;
+	)) as Array<{ kills: number }>;
 	const currentVictimMapStats = (await queryDB(
 		`SELECT deaths FROM ${PLAYER_MAP_STATS_TABLE} WHERE steamId = '${victimId}' AND matchId = '${matchId}' AND map = '${map}'`
-	)) as number;
+	)) as Array<{ deaths: number }>;
 	const currentKillerGlobalStats = (await queryDB(
 		`SELECT tKills FROM ${PLAYERS_TABLE} WHERE steamId = '${killerId}'`
-	)) as number;
+	)) as Array<{ tKills: number }>;
 	const currentVictimGlobalStats = (await queryDB(
 		`SELECT tDeaths FROM ${PLAYERS_TABLE} WHERE steamId = '${victimId}'`
-	)) as number;
+	)) as Array<{ tDeaths: number }>;
 
 	await updateDB(
 		PLAYER_MAP_STATS_TABLE,
-		new Map<string, number>([['kills', currentKillerMapStats + 1]]),
+		new Map<string, number>([['kills', (currentKillerMapStats[0]?.kills ?? 0) + 1]]),
 		`steamId = '${killerId}' AND matchId = '${matchId}' AND map = '${map}'`
 	);
 	await updateDB(
 		PLAYER_MAP_STATS_TABLE,
-		new Map<string, number>([['deaths', currentVictimMapStats + 1]]),
+		new Map<string, number>([['deaths', (currentVictimMapStats[0]?.deaths ?? 0) + 1]]),
 		`steamId = '${victimId}' AND matchId = '${matchId}' AND map = '${map}'`
 	);
 	await updateDB(
 		PLAYERS_TABLE,
-		new Map<string, number>([['tKills', currentKillerGlobalStats + 1]]),
+		new Map<string, number>([['tKills', (currentKillerGlobalStats[0]?.tKills ?? 0) + 1]]),
 		`steamId = '${killerId}'`
 	);
 	await updateDB(
 		PLAYERS_TABLE,
-		new Map<string, number>([['tDeaths', currentVictimGlobalStats + 1]]),
+		new Map<string, number>([['tDeaths', (currentVictimGlobalStats[0]?.tDeaths ?? 0) + 1]]),
 		`steamId = '${victimId}'`
 	);
 };
@@ -209,19 +212,19 @@ export const onKill = async (matchId: string, map: string, killerId: string, vic
 export const onAssist = async (matchId: string, map: string, attackerId: string) => {
 	const currentAttackerMapStats = (await queryDB(
 		`SELECT assists FROM ${PLAYER_MAP_STATS_TABLE} WHERE steamId = '${attackerId}' AND matchId = '${matchId}' AND map = '${map}'`
-	)) as number;
+	)) as Array<{ assists: number }>;
 	const currentAttackerGlobalStats = (await queryDB(
 		`SELECT tAssists FROM ${PLAYERS_TABLE} WHERE steamId = '${attackerId}'`
-	)) as number;
+	)) as Array<{ tAssists: number }>;
 
 	await updateDB(
 		PLAYER_MAP_STATS_TABLE,
-		new Map<string, number>([['assists', currentAttackerMapStats + 1]]),
+		new Map<string, number>([['assists', (currentAttackerMapStats[0]?.assists ?? 0) + 1]]),
 		`steamId = '${attackerId}' AND matchId = '${matchId}' AND map = '${map}'`
 	);
 	await updateDB(
 		PLAYERS_TABLE,
-		new Map<string, number>([['tAssists', currentAttackerGlobalStats + 1]]),
+		new Map<string, number>([['tAssists', (currentAttackerGlobalStats[0]?.tAssists ?? 0) + 1]]),
 		`steamId = '${attackerId}'`
 	);
 };
@@ -229,48 +232,44 @@ export const onAssist = async (matchId: string, map: string, attackerId: string)
 export const onOtherDeath = async (matchId: string, map: string, victimId: string) => {
 	const currentVictimMapStats = (await queryDB(
 		`SELECT deaths FROM ${PLAYER_MAP_STATS_TABLE} WHERE steamId = '${victimId}' AND matchId = '${matchId}' AND map = '${map}'`
-	)) as number;
+	)) as Array<{ deaths: number }>;
 	const currentVictimGlobalStats = (await queryDB(
 		`SELECT tDeaths FROM ${PLAYERS_TABLE} WHERE steamId = '${victimId}'`
-	)) as number;
+	)) as Array<{ tDeaths: number }>;
 
 	await updateDB(
 		PLAYER_MAP_STATS_TABLE,
-		new Map<string, number>([['deaths', currentVictimMapStats + 1]]),
+		new Map<string, number>([['deaths', (currentVictimMapStats[0]?.deaths ?? 0) + 1]]),
 		`steamId = '${victimId}' AND matchId = '${matchId}' AND map = '${map}'`
 	);
 	await updateDB(
 		PLAYERS_TABLE,
-		new Map<string, number>([['tDeaths', currentVictimGlobalStats + 1]]),
+		new Map<string, number>([['tDeaths', (currentVictimGlobalStats[0]?.tDeaths ?? 0) + 1]]),
 		`steamId = '${victimId}'`
 	);
 };
 
 export const updateRoundCount = async (match: IMatch, matchMap: IMatchMap) => {
-	console.info(`Updating round count for match ${match.id} map ${matchMap.name}`);
 	const currentPlayersMapStats = (await queryDB(
 		`SELECT steamId,rounds FROM ${PLAYER_MAP_STATS_TABLE} WHERE matchId = '${match.id}' AND map = '${matchMap.name}'`
-	)) as Map<string, number>;
+	)) as Array<{ steamId: string; rounds: number }>;
 
-	let currentPlayerGlobalStats: number | undefined;
-
-	for (const player of currentPlayersMapStats.entries()) {
-		currentPlayerGlobalStats = (await queryDB(
-			`SELECT tRounds FROM ${PLAYERS_TABLE} WHERE steamId = '${player[0]}'`
-		)) as number;
+	for (const player of currentPlayersMapStats) {
+		const currentPlayerGlobalStats = (await queryDB(
+			`SELECT tRounds FROM ${PLAYERS_TABLE} WHERE steamId = '${player.steamId}'`
+		)) as Array<{ tRounds: number }>;
 
 		await updateDB(
 			PLAYERS_TABLE,
-			new Map<string, number>([['tRounds', currentPlayerGlobalStats + 1]]),
-			`steamId = '${player[0]}'`
+			new Map<string, number>([['tRounds', (currentPlayerGlobalStats[0]?.tRounds ?? 0) + 1]]),
+			`steamId = '${player.steamId}'`
 		);
 		await updateDB(
 			PLAYER_MAP_STATS_TABLE,
-			new Map<string, number>([['rounds', player[1] + 1]]),
-			`steamId = '${player[0]}' AND matchId = '${match.id}' AND map = '${matchMap.name}'`
+			new Map<string, number>([['rounds', (player.rounds ?? 0) + 1]]),
+			`steamId = '${player.steamId}' AND matchId = '${match.id}' AND map = '${matchMap.name}'`
 		);
 	}
-	console.info(`teamAScore: ${matchMap.score.teamA}, teamBScore: ${matchMap.score.teamB}`);
 	await updateDB(
 		MATCH_MAPS_TABLE,
 		new Map<string, number>([
@@ -282,7 +281,6 @@ export const updateRoundCount = async (match: IMatch, matchMap: IMatchMap) => {
 };
 
 export const updateMapCount = async (data: IMatch) => {
-	console.info(`Updating map count for match ${data.id}`);
 	updateDB(
 		MATCHES_TABLE,
 		new Map<string, number>([
