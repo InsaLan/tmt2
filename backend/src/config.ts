@@ -59,11 +59,11 @@ export const set = async (data: IConfigUpdateDto) => {
 };
 
 const write = async () => {
-	await Storage.write(FILE_NAME, config);
+	await Storage.writeJson(FILE_NAME, config);
 };
 
 export const setup = async () => {
 	// Only get the defaults if the config does not already exist
-	const data = await Storage.read(FILE_NAME, defaults());
+	const data = await Storage.readJson(FILE_NAME, defaults());
 	set(data);
 };
