@@ -203,8 +203,11 @@
 	"This data does not exist.": "Ces données n'existent pas.",
 	"Date": "Date",
 	"Match ID": "ID Match",
-	"Data Management": "Gestion des Données",
-	"Download database": "Télécharger base de données",
-	"Import database file": "Importer fichier base de données",
-	"Empty database": "Vider base de données"
+	"Data Management": "Gestion des données",
+	"Database Management": "Gestion de la Base de Données",
+	"Download DB": "Télécharger DB",
+	"Import DB": "Importer DB",
+	"Empty DB": "Vider DB",
+	"Delete stats": "Supprimer statistiques",
+	"Cleanup": "Nettoyage"
 }

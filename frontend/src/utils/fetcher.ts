@@ -102,3 +102,28 @@ export const createFetcher = (token?: string) => {
 		}
 	};
 };
+
+export const downloadFile = async (url: string, filename: string) => {
+	try {
+		const tkn = getToken();
+		const response = await fetch(`${API_HOST}${url}`, {
+			headers: {
+				'Content-Type': 'application/json; charset=UTF-8',
+				...(tkn ? { Authorization: tkn } : {}),
+			},
+			body: undefined,
+		});
+		const blob = await response.blob();
+		const objectUrl = window.URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.style.display = 'none';
+		a.href = objectUrl;
+		a.download = filename;
+		document.body.appendChild(a);
+		a.click();
+		window.URL.revokeObjectURL(objectUrl);
+		document.body.removeChild(a);
+	} catch (error) {
+		console.error('Error downloading file:', error);
+	}
+};

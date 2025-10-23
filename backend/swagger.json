@@ -7,6 +7,16 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
+			"NodeJS.ReadableStream": {
+				"properties": {
+					"readable": {
+						"type": "boolean"
+					}
+				},
+				"required": ["readable"],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"IPlayerStats": {
 				"properties": {
 					"steamId": {
@@ -2280,6 +2290,35 @@
 		}
 	},
 	"paths": {
+		"/api/storage/database": {
+			"get": {
+				"operationId": "DownloadDatabase",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/NodeJS.ReadableStream"
+										},
+										{}
+									]
+								}
+							}
+						}
+					}
+				},
+				"description": "Download the DB containing all the stats.",
+				"security": [
+					{
+						"bearer_token": []
+					}
+				],
+				"parameters": []
+			}
+		},
 		"/api/stats/players": {
 			"get": {
 				"operationId": "GetPlayersStats",

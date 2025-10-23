@@ -15,7 +15,6 @@ import {
 } from '../utils/playerStatsUtils';
 import { StatsTable } from '../components/StatsTable';
 import { CopyableText } from '../components/CopyableText';
-import { SvgDelete, SvgDownloadArchive, SvgUploadCloud } from '../assets/Icons';
 
 export const MatchesStatsPage = () => {
 	const fetcher = createFetcher();
@@ -485,36 +484,3 @@ export const PlayerStatsPage = () => {
 		</>
 	);
 };
-
-export const DataManagementStatsPage = () => {
-	return (
-		<>
-			<StatsNavBar />
-			<Card>
-				<div class="items-center justify-center flex gap-4">
-					<button
-						class="btn"
-						onClick={() => {}}
-					>
-						<SvgDownloadArchive/>
-						{t('Download database')}
-					</button>
-					<button
-						class="btn text-error"
-						onClick={() => {}}
-					>
-						<SvgUploadCloud/>
-						{t('Import database file')}
-					</button>
-					<button
-						class="btn text-error"
-						onClick={() => {}}
-					>
-						<SvgDelete/>
-						{t('Empty database')}
-					</button>
-				</div>
-			</Card>
-		</>
-	)
-}

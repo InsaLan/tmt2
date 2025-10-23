@@ -21,7 +21,7 @@ const NavBar: Component = () => {
 	});
 
 	return (
-		<nav class="bg-base-300 flex items-center justify-center space-x-1 p-2 lg:space-x-10">
+		<nav class="bg-base-300 flex items-center justify-center space-x-1 p-2 lg:space-x-6">
 			<div class="w-1 lg:w-20"></div>
 			<div>
 				<img
@@ -54,6 +54,7 @@ const NavBar: Component = () => {
 				<Match when={loginType()?.type === 'GLOBAL'}>
 					<NavLink href="/matches">{t('Matches')}</NavLink>
 					<NavLink href="/gameservers">{t('Game Servers')}</NavLink>
+					<NavLink href="/data">{t('Data Management')}</NavLink>
 					<NavLink href="/logout">{t('Logout')}</NavLink>
 				</Match>
 			</Switch>

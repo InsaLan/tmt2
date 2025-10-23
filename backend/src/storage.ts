@@ -178,3 +178,12 @@ export const list = async (prefix: string, suffix: string) => {
 	const files = await fsp.readdir(STORAGE_FOLDER);
 	return files.filter((fileName) => fileName.startsWith(prefix) && fileName.endsWith(suffix));
 };
+
+export const downloadDB = async (): Promise<Buffer> => {
+	try {
+		return fs.readFileSync(DATABASE_PATH);
+	} catch (error) {
+		console.error('Failed to read database file:', error);
+		throw { status: 500, message: 'Failed to download database' };
+	}
+};
