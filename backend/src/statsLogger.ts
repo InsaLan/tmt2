@@ -16,7 +16,6 @@ export const setup = async () => {
 		{ name: 'tKills', type: 'INTEGER' },
 		{ name: 'tDeaths', type: 'INTEGER' },
 		{ name: 'tAssists', type: 'INTEGER' },
-		{ name: 'tDiff', type: 'INTEGER' },
 		{ name: 'tHits', type: 'INTEGER' },
 		{ name: 'tHeadshots', type: 'INTEGER' },
 		{ name: 'tRounds', type: 'INTEGER' },
