@@ -1,7 +1,6 @@
 import { SqlAttribute, TableSchema } from './tableSchema';
 import { createTableDB, insertDB, queryDB, updateDB } from './storage';
-import { IMatch, IMatchMap, TTeamAB } from '../../common';
-import { match } from 'assert';
+import { IMatch, IMatchMap } from '../../common';
 
 export const PLAYERS_TABLE = 'players';
 export const MATCH_MAPS_TABLE = 'matchMaps';
@@ -249,26 +248,31 @@ export const onOtherDeath = async (matchId: string, map: string, victimId: strin
 };
 
 export const updateRoundCount = async (match: IMatch, matchMap: IMatchMap) => {
-	const currentPlayersMapStats = (await queryDB(
-		`SELECT steamId,rounds FROM ${PLAYER_MAP_STATS_TABLE} WHERE matchId = '${match.id}' AND map = '${matchMap.name}'`
-	)) as Array<{ steamId: string; rounds: number }>;
+	if (matchMap.state === 'IN_PROGRESS') {
+		const currentPlayersMapStats = (await queryDB(
+			`SELECT steamId,rounds FROM ${PLAYER_MAP_STATS_TABLE} WHERE matchId = '${match.id}' AND map = '${matchMap.name}'`
+		)) as Array<{ steamId: string; rounds: number }>;
 
-	for (const player of currentPlayersMapStats) {
-		const currentPlayerGlobalStats = (await queryDB(
-			`SELECT tRounds FROM ${PLAYERS_TABLE} WHERE steamId = '${player.steamId}'`
-		)) as Array<{ tRounds: number }>;
+		for (const player of currentPlayersMapStats) {
+			const currentPlayerGlobalStats = (await queryDB(
+				`SELECT tRounds FROM ${PLAYERS_TABLE} WHERE steamId = '${player.steamId}'`
+			)) as Array<{ tRounds: number }>;
 
-		await updateDB(
-			PLAYERS_TABLE,
-			new Map<string, number>([['tRounds', (currentPlayerGlobalStats[0]?.tRounds ?? 0) + 1]]),
-			`steamId = '${player.steamId}'`
-		);
-		await updateDB(
-			PLAYER_MAP_STATS_TABLE,
-			new Map<string, number>([['rounds', (player.rounds ?? 0) + 1]]),
-			`steamId = '${player.steamId}' AND matchId = '${match.id}' AND map = '${matchMap.name}'`
-		);
+			await updateDB(
+				PLAYERS_TABLE,
+				new Map<string, number>([
+					['tRounds', (currentPlayerGlobalStats[0]?.tRounds ?? 0) + 1],
+				]),
+				`steamId = '${player.steamId}'`
+			);
+			await updateDB(
+				PLAYER_MAP_STATS_TABLE,
+				new Map<string, number>([['rounds', (player.rounds ?? 0) + 1]]),
+				`steamId = '${player.steamId}' AND matchId = '${match.id}' AND map = '${matchMap.name}'`
+			);
+		}
 	}
+
 	await updateDB(
 		MATCH_MAPS_TABLE,
 		new Map<string, number>([

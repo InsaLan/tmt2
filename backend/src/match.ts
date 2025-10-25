@@ -55,7 +55,15 @@ export const createFromData = async (data: IMatch, logMessage?: string) => {
 		log: () => {},
 		warnAboutWrongTeam: true,
 	};
-	await StatsLogger.onNewMatch(data);
+	const matchExists =
+		(
+			(await Storage.queryDB(
+				`SELECT * FROM ${StatsLogger.MATCHES_TABLE} WHERE matchId = '${data.id}'`
+			)) as Array<any>
+		).length > 0;
+	if (!matchExists) {
+		await StatsLogger.onNewMatch(data);
+	}
 	match.data = addChangeListener(data, createOnDataChangeHandler(match));
 	match.log = createLogger(match);
 	if (logMessage) {
@@ -609,7 +617,7 @@ const onPlayerLogLine = async (
 				(
 					(await Storage.queryDB(
 						`SELECT * FROM ${StatsLogger.PLAYERS_TABLE} WHERE steamId = '${steamId}'`
-					)) as any[]
+					)) as Array<any>
 				).length > 0;
 			if (!playerExists) {
 				await Storage.insertDB(
@@ -627,6 +635,18 @@ const onPlayerLogLine = async (
 					])
 				);
 			}
+			match.log(`Player ${player.steamId64} (${name}) created`);
+			match.data.players.push(player);
+			player = match.data.players[match.data.players.length - 1]!; // re-assign to work nicely with changeListener (ProxyHandler)
+			MatchService.scheduleSave(match);
+		}
+		const playerMapStatsExists =
+			(
+				(await Storage.queryDB(
+					`SELECT * FROM ${StatsLogger.PLAYER_MAP_STATS_TABLE} WHERE steamId = '${steamId}' AND matchId = '${match.data.id}' AND map = '${match.data.matchMaps[match.data.currentMap]?.name}'`
+				)) as any[]
+			).length > 0;
+		if (!playerMapStatsExists) {
 			await Storage.insertDB(
 				StatsLogger.PLAYER_MAP_STATS_TABLE,
 				new Map<string, string | number>([
@@ -642,10 +662,6 @@ const onPlayerLogLine = async (
 					['damages', 0],
 				])
 			);
-			match.log(`Player ${player.steamId64} (${name}) created`);
-			match.data.players.push(player);
-			player = match.data.players[match.data.players.length - 1]!; // re-assign to work nicely with changeListener (ProxyHandler)
-			MatchService.scheduleSave(match);
 		}
 		if (player.name !== name) {
 			match.log(`Player ${player.steamId64} (${player.name}) renamed to: ${name}`);
@@ -718,23 +734,26 @@ const onPlayerLogLine = async (
 
 	//[2397 2079 133] attacked "PlayerName<1><U:1:12345678><CT>" [2397 2079 133] with "glock" (damage "117") (damage_armor "0") (health "0") (armor "0") (hitgroup "head")
 	const damageMatch = remainingLine.match(
-		/^\[-?\d+ -?\d+ -?\d+\] attacked ".+<\d+><[\[\]\w:]+><(?:TERRORIST|CT)>" \[-?\d+ -?\d+ -?\d+\] with "\w+" \(damage "(\d+)"\) \(damage_armor "(\d+)"\) \(health "(\d+)"\) \(armor "(\d+)"\) \(hitgroup "([\w ]+)"\)$/
+		/^\[-?\d+ -?\d+ -?\d+\] attacked ".+<\d+><([\[\]\w:]+)><(?:TERRORIST|CT)>" \[-?\d+ -?\d+ -?\d+\] with "\w+" \(damage "(\d+)"\) \(damage_armor "(\d+)"\) \(health "(\d+)"\) \(armor "(\d+)"\) \(hitgroup "([\w ]+)"\)$/
 	);
 	if (damageMatch && getCurrentMatchMap(match)?.state === 'IN_PROGRESS') {
-		const damage = Number(damageMatch[1]);
-		const damageArmor = Number(damageMatch[2]);
-		const headshot = damageMatch[3] === 'head';
-		match.log(
-			`Player ${player.steamId64} (${player.name}) dealt damage: ${damage} (armor: ${damageArmor}, headshot: ${headshot})`
-		);
-		await StatsLogger.onDamage(
-			match.data.id,
-			match.data.matchMaps[match.data.currentMap]?.name ?? '',
-			steamId,
-			damage,
-			damageArmor,
-			headshot
-		);
+		if (damageMatch[1] !== 'BOT' && damageMatch[1] !== steamId) {
+			const damage = Number(damageMatch[2]);
+			const damageArmor = Number(damageMatch[3]);
+			const headshot = damageMatch[6] === 'head';
+			match.log(
+				`Player ${player.steamId64} (${player.name}) dealt damage: ${damage} (armor: ${damageArmor}, headshot: ${headshot})`
+			);
+			await StatsLogger.onDamage(
+				match.data.id,
+				match.data.matchMaps[match.data.currentMap]?.name ?? '',
+				steamId,
+				damage,
+				damageArmor,
+				headshot
+			);
+		}
+		// Ignore log if it was against a bot or himself
 		return;
 	}
 
@@ -744,13 +763,16 @@ const onPlayerLogLine = async (
 	);
 	if (killMatch && getCurrentMatchMap(match)?.state === 'IN_PROGRESS') {
 		const victimId = killMatch[1]!;
-		match.log(`Player ${player.steamId64} (${player.name}) killed ${victimId}`);
-		await StatsLogger.onKill(
-			match.data.id,
-			match.data.matchMaps[match.data.currentMap]?.name ?? '',
-			steamId,
-			victimId
-		);
+		if (victimId !== 'BOT' && victimId !== steamId) {
+			match.log(`Player ${player.steamId64} (${player.name}) killed ${victimId}`);
+			await StatsLogger.onKill(
+				match.data.id,
+				match.data.matchMaps[match.data.currentMap]?.name ?? '',
+				steamId,
+				victimId
+			);
+		}
+		// Ignore log if it was against a bot or himself
 		return;
 	}
 
@@ -760,12 +782,15 @@ const onPlayerLogLine = async (
 	);
 	if (assistMatch && getCurrentMatchMap(match)?.state === 'IN_PROGRESS') {
 		const victimId = assistMatch[1]!;
-		match.log(`Player ${player.steamId64} (${player.name}) assisted killing ${victimId}`);
-		await StatsLogger.onAssist(
-			match.data.id,
-			match.data.matchMaps[match.data.currentMap]?.name ?? '',
-			steamId
-		);
+		if (victimId !== 'BOT' && victimId !== steamId) {
+			match.log(`Player ${player.steamId64} (${player.name}) assisted killing ${victimId}`);
+			await StatsLogger.onAssist(
+				match.data.id,
+				match.data.matchMaps[match.data.currentMap]?.name ?? '',
+				steamId
+			);
+		}
+		// Ignore log if it was against a bot or himself (should not happen tho)
 		return;
 	}
 

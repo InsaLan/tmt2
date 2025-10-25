@@ -109,7 +109,7 @@ export const insertDB = async (table: string, values: Map<string, any>): Promise
 			const stmt = DATABASE.prepare(
 				`INSERT INTO ${table} (${columns}) VALUES (${placeholders})`
 			);
-			stmt.run(Array.from(values.values()), (err) => {
+			stmt.run(Array.from(values.values()), function (err) {
 				console.info(
 					`[DATABASE] Executing insert: INSERT INTO ${table} (${columns}) VALUES (${placeholders})`
 				);
@@ -119,9 +119,9 @@ export const insertDB = async (table: string, values: Map<string, any>): Promise
 					reject(err);
 					return;
 				}
+				stmt.finalize();
+				resolve();
 			});
-			stmt.finalize();
-			resolve();
 		});
 	});
 };
@@ -137,7 +137,7 @@ export const updateDB = async (
 				.map(([key]) => `${key} = ?`)
 				.join(', ');
 			const stmt = DATABASE.prepare(`UPDATE ${table} SET ${placeholders} WHERE ${where}`);
-			stmt.run(Array.from(values.values()), (err) => {
+			stmt.run(Array.from(values.values()), function (err) {
 				console.info(
 					`[DATABASE] Executing update: UPDATE ${table} SET ${placeholders} WHERE ${where}`
 				);
@@ -147,9 +147,9 @@ export const updateDB = async (
 					reject(err);
 					return;
 				}
+				stmt.finalize();
+				resolve();
 			});
-			stmt.finalize();
-			resolve();
 		});
 	});
 };
@@ -158,7 +158,7 @@ export const queryDB = async (query: string) => {
 	return new Promise((resolve, reject) => {
 		DATABASE.serialize(() => {
 			DATABASE.all(query, (err, rows) => {
-				console.info(`Executing query: ${query}`);
+				console.info(`[DATABASE] Executing query: ${query}`);
 				if (err) {
 					console.error('[DATABASE] ERROR reading the database:', err.message);
 					reject(err);
