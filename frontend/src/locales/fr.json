@@ -209,5 +209,9 @@
 	"Import DB": "Importer DB",
 	"Empty DB": "Vider DB",
 	"Delete stats": "Supprimer statistiques",
-	"Cleanup": "Nettoyage"
+	"Cleanup": "Nettoyage",
+	"Are you sure ?": "Êtes-vous sûr·e ?",
+	"This action is destructive. A backup of the DB will be downloaded, just in case.": "Cette action est destructive. Une sauvegarde de la DB sera téléchargée, au cas où.",
+	"Confirm": "Confirmer",
+	"Cancel": "Annuler"
 }

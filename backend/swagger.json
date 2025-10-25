@@ -2317,6 +2317,50 @@
 					}
 				],
 				"parameters": []
+			},
+			"post": {
+				"operationId": "ReplaceDatabase",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"security": [
+					{
+						"bearer_token": []
+					}
+				],
+				"parameters": []
+			},
+			"delete": {
+				"operationId": "DeleteDatabase",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"security": [
+					{
+						"bearer_token": []
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/api/storage/stats": {
+			"delete": {
+				"operationId": "DeleteStats",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"security": [
+					{
+						"bearer_token": []
+					}
+				],
+				"parameters": []
 			}
 		},
 		"/api/stats/players": {
