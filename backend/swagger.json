@@ -2071,11 +2071,59 @@
 					"tmtLogAddress": {
 						"type": "string",
 						"nullable": true
+					},
+					"allowUnregisteredMatchCreation": {
+						"type": "boolean"
 					}
 				},
-				"required": ["tmtLogAddress"],
+				"required": ["tmtLogAddress", "allowUnregisteredMatchCreation"],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"IConfigUpdateDto": {
+				"properties": {
+					"tmtLogAddress": {
+						"type": "string",
+						"nullable": true
+					},
+					"allowUnregisteredMatchCreation": {
+						"type": "boolean"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IAuthResponse": {
+				"properties": {
+					"type": {
+						"type": "string",
+						"enum": ["GLOBAL", "MATCH"]
+					},
+					"comment": {
+						"type": "string"
+					}
+				},
+				"required": ["type"],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IAuthResponseOptional": {
+				"anyOf": [
+					{
+						"$ref": "#/components/schemas/IAuthResponse"
+					},
+					{
+						"properties": {
+							"type": {
+								"type": "string",
+								"enum": ["UNAUTHORIZED"],
+								"nullable": false
+							}
+						},
+						"required": ["type"],
+						"type": "object"
+					}
+				]
 			},
 			"IPreset": {
 				"properties": {
@@ -2135,23 +2183,6 @@
 		}
 	},
 	"paths": {
-		"/api/login": {
-			"post": {
-				"operationId": "Login",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"description": "Dummy endpoint to check if given token is valid without executing anything.",
-				"security": [
-					{
-						"bearer_token": []
-					}
-				],
-				"parameters": []
-			}
-		},
 		"/api/matches": {
 			"post": {
 				"operationId": "CreateMatch",
@@ -2161,7 +2192,12 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/IMatch"
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/IMatch"
+										},
+										{}
+									]
 								}
 							}
 						}
@@ -2961,7 +2997,59 @@
 						}
 					}
 				},
-				"description": "Get some internal config variables. Currently only the set TMT_LOG_ADDRESS.",
+				"description": "Get some internal config variables.",
+				"security": [],
+				"parameters": []
+			},
+			"patch": {
+				"operationId": "UpdateConfig",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IConfig"
+								}
+							}
+						}
+					}
+				},
+				"description": "Update the configuration.",
+				"security": [
+					{
+						"bearer_token": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/IConfigUpdateDto"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/auth": {
+			"get": {
+				"operationId": "GetAuthType",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IAuthResponseOptional"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get the authentication type for a token.",
 				"security": [],
 				"parameters": []
 			}
