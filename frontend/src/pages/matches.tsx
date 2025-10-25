@@ -177,7 +177,6 @@ export const MatchesPage: Component = () => {
 
 	return (
 		<>
-			{/* TODO: hide this if the user doesn't have a global token */}
 			<Show when={loginType()?.type === 'GLOBAL'}>
 				<ConfigCard />
 
