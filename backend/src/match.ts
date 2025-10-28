@@ -29,6 +29,7 @@ import { Rcon } from './rcon-client';
 import { Settings } from './settings';
 import * as Storage from './storage';
 import * as Team from './team';
+import * as StatsLogger from './statsLogger';
 
 const STORAGE_LOGS_PREFIX = 'logs_';
 const STORAGE_LOGS_SUFFIX = '.jsonl';
@@ -54,6 +55,15 @@ export const createFromData = async (data: IMatch, logMessage?: string) => {
 		log: () => {},
 		warnAboutWrongTeam: true,
 	};
+	const matchExists =
+		(
+			(await Storage.queryDB(
+				`SELECT * FROM ${StatsLogger.MATCHES_TABLE} WHERE matchId = '${data.id}'`
+			)) as Array<any>
+		).length > 0;
+	if (!matchExists) {
+		await StatsLogger.onNewMatch(data);
+	}
 	match.data = addChangeListener(data, createOnDataChangeHandler(match));
 	match.log = createLogger(match);
 	if (logMessage) {
@@ -227,6 +237,7 @@ const setup = async (match: Match) => {
 	await setTeamNames(match);
 
 	await execRcon(match, 'log on');
+	await execRcon(match, 'mp_logdetail 1');
 	await execRcon(match, 'mp_warmuptime 600');
 	await execRcon(match, 'mp_warmup_pausetimer 1');
 	await execRcon(match, 'mp_autokick 0');
@@ -532,6 +543,7 @@ const onLogLine = async (match: Match, line: string) => {
 					tScore,
 					winningTeam === 'CT' ? 'CT' : 'T'
 				);
+				await StatsLogger.updateRoundCount(match.data, currentMatchMap);
 			}
 			return;
 		}
@@ -597,10 +609,55 @@ const onPlayerLogLine = async (
 		player = match.data.players.find((p) => p.steamId64 === steamId64);
 		if (!player) {
 			player = Player.create(match, steamId, name);
+			const playerExists =
+				(
+					(await Storage.queryDB(
+						`SELECT * FROM ${StatsLogger.PLAYERS_TABLE} WHERE steamId = '${steamId}'`
+					)) as Array<any>
+				).length > 0;
+			if (!playerExists) {
+				await Storage.insertDB(
+					StatsLogger.PLAYERS_TABLE,
+					new Map<string, string | number>([
+						['steamId', steamId],
+						['name', player.name],
+						['tKills', 0],
+						['tDeaths', 0],
+						['tAssists', 0],
+						['tHits', 0],
+						['tHeadshots', 0],
+						['tRounds', 0],
+						['tDamages', 0],
+					])
+				);
+			}
 			match.log(`Player ${player.steamId64} (${name}) created`);
 			match.data.players.push(player);
 			player = match.data.players[match.data.players.length - 1]!; // re-assign to work nicely with changeListener (ProxyHandler)
 			MatchService.scheduleSave(match);
+		}
+		const playerMapStatsExists =
+			(
+				(await Storage.queryDB(
+					`SELECT * FROM ${StatsLogger.PLAYER_MAP_STATS_TABLE} WHERE steamId = '${steamId}' AND matchId = '${match.data.id}' AND map = '${match.data.matchMaps[match.data.currentMap]?.name}'`
+				)) as any[]
+			).length > 0;
+		if (!playerMapStatsExists) {
+			await Storage.insertDB(
+				StatsLogger.PLAYER_MAP_STATS_TABLE,
+				new Map<string, string | number>([
+					['steamId', steamId],
+					['matchId', match.data.id],
+					['map', match.data.matchMaps[match.data.currentMap]?.name ?? ''],
+					['kills', 0],
+					['deaths', 0],
+					['assists', 0],
+					['hits', 0],
+					['headshots', 0],
+					['rounds', 0],
+					['damages', 0],
+				])
+			);
 		}
 		if (player.name !== name) {
 			match.log(`Player ${player.steamId64} (${player.name}) renamed to: ${name}`);
@@ -668,6 +725,77 @@ const onPlayerLogLine = async (
 		const isTeamChat = sayMatch[1] === '_team';
 		const message = sayMatch[2]!;
 		await onPlayerSay(match, player, message, isTeamChat, teamString);
+		return;
+	}
+
+	//[2397 2079 133] attacked "PlayerName<1><U:1:12345678><CT>" [2397 2079 133] with "glock" (damage "117") (damage_armor "0") (health "0") (armor "0") (hitgroup "head")
+	const damageMatch = remainingLine.match(
+		/^\[-?\d+ -?\d+ -?\d+\] attacked ".+<\d+><([\[\]\w:]+)><(?:TERRORIST|CT)>" \[-?\d+ -?\d+ -?\d+\] with "\w+" \(damage "(\d+)"\) \(damage_armor "(\d+)"\) \(health "(\d+)"\) \(armor "(\d+)"\) \(hitgroup "([\w ]+)"\)$/
+	);
+	if (damageMatch && getCurrentMatchMap(match)?.state === 'IN_PROGRESS') {
+		if (damageMatch[1] !== 'BOT' && damageMatch[1] !== steamId) {
+			const damage = Number(damageMatch[2]);
+			const damageArmor = Number(damageMatch[3]);
+			const headshot = damageMatch[6] === 'head';
+			await StatsLogger.onDamage(
+				match.data.id,
+				match.data.matchMaps[match.data.currentMap]?.name ?? '',
+				steamId,
+				damage,
+				damageArmor,
+				headshot
+			);
+		}
+		// Ignore log if it was against a bot or himself
+		return;
+	}
+
+	//[2397 2079 133] killed "PlayerName<2><STEAM_1:1:12345678><TERRORIST>" [-100 150 60] with "ak47" (headshot)
+	const killMatch = remainingLine.match(
+		/^\[-?\d+ -?\d+ -?\d+\] killed ".+<\d+><([\[\]\w:]+)><(?:|Unassigned|TERRORIST|CT)>" \[-?\d+ -?\d+ -?\d+\] with "\w+" ?\(?(headshot|penetrated|headshot penetrated)?\)?$/
+	);
+	if (killMatch && getCurrentMatchMap(match)?.state === 'IN_PROGRESS') {
+		const victimId = killMatch[1]!;
+		if (victimId !== 'BOT' && victimId !== steamId) {
+			await StatsLogger.onKill(
+				match.data.id,
+				match.data.matchMaps[match.data.currentMap]?.name ?? '',
+				steamId,
+				victimId
+			);
+		}
+		// Ignore log if it was against a bot or himself
+		return;
+	}
+
+	//assisted killing "PlayerName2<3><STEAM_1:1:87654321><CT>"
+	const assistMatch = remainingLine.match(
+		/^assisted killing ".+<\d+><([\[\]\w:]+)><(?:|Unassigned|TERRORIST|CT)>"/
+	);
+	if (assistMatch && getCurrentMatchMap(match)?.state === 'IN_PROGRESS') {
+		const victimId = assistMatch[1]!;
+		if (victimId !== 'BOT' && victimId !== steamId) {
+			await StatsLogger.onAssist(
+				match.data.id,
+				match.data.matchMaps[match.data.currentMap]?.name ?? '',
+				steamId
+			);
+		}
+		// Ignore log if it was against a bot or himself (should not happen tho)
+		return;
+	}
+
+	//committed suicide with "world"
+	//was killed by the bomb
+	const otherDeathMatch = remainingLine.match(
+		/^(?:was killed by the bomb|committed suicide with)/
+	);
+	if (otherDeathMatch && getCurrentMatchMap(match)?.state === 'IN_PROGRESS') {
+		await StatsLogger.onOtherDeath(
+			match.data.id,
+			match.data.matchMaps[match.data.currentMap]?.name ?? '',
+			steamId
+		);
 		return;
 	}
 };
@@ -875,6 +1003,7 @@ const onMapEnd = async (match: Match) => {
 	const currentMatchMap = getCurrentMatchMap(match);
 	if (currentMatchMap) {
 		await MatchMap.onMapEnd(match, currentMatchMap);
+		await StatsLogger.updateMapCount(match.data);
 		if (isMatchEnd(match)) {
 			match.log('Match finished');
 			await onMatchEnd(match);

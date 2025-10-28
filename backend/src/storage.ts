@@ -31,7 +31,7 @@ export const readJson: TRead = async <T>(fileName: string, fallback?: T) => {
 		const content = await fsp.readFile(fullPath, { encoding: 'utf-8' });
 		return JSON.parse(content);
 	} catch (err) {
-		console.warn(`Error storage read ${fileName}: ${err}. Use fallback.`);
+		console.warn(`[DATABASE] ERROR storage read ${fileName}: ${err}. Use fallback.`);
 		return fallback;
 	}
 };
@@ -40,7 +40,7 @@ export const appendLineJson = async (fileName: string, content: any) => {
 	try {
 		await fsp.appendFile(path.join(STORAGE_FOLDER, fileName), JSON.stringify(content) + '\n');
 	} catch (err) {
-		console.warn(`Error storage appendLine ${fileName}: ${err}`);
+		console.warn(`[DATABASE] ERROR storage appendLine ${fileName}: ${err}`);
 	}
 };
 
@@ -61,7 +61,7 @@ export const readLinesJson = async (
 			.map((line) => JSON.parse(line))
 			.slice(-(numberLastOfLines ?? 0));
 	} catch (err) {
-		console.warn(`Error storage readLines ${fileName}: ${err}. Use fallback.`);
+		console.warn(`[DATABASE] ERROR storage readLines ${fileName}: ${err}. Use fallback.`);
 		return fallback;
 	}
 };
@@ -73,7 +73,7 @@ export const createTableDB = async (tableSchema: TableSchema): Promise<void> => 
 				`CREATE TABLE IF NOT EXISTS ${tableSchema.generateCreateTableParameters()}`,
 				(err) => {
 					if (err) {
-						console.error('Error creating the table:', err.message);
+						console.error('[DATABASE] ERROR creating the table:', err.message);
 						reject(err);
 						return;
 					}
@@ -89,7 +89,7 @@ export const flushDB = async (table: string): Promise<void> => {
 		DATABASE.serialize(() => {
 			DATABASE.run(`DELETE FROM ${table}`, (err) => {
 				if (err) {
-					console.error('Error flushing the table:', err.message);
+					console.error('[DATABASE] ERROR flushing the table:', err.message);
 					reject(err);
 					return;
 				}
@@ -109,15 +109,19 @@ export const insertDB = async (table: string, values: Map<string, any>): Promise
 			const stmt = DATABASE.prepare(
 				`INSERT INTO ${table} (${columns}) VALUES (${placeholders})`
 			);
-			stmt.run(Array.from(values.values()), (err) => {
+			stmt.run(Array.from(values.values()), function (err) {
+				//console.info(
+				//	`[DATABASE] Executing insert: INSERT INTO ${table} (${columns}) VALUES (${placeholders})`
+				//);
+				console.info(`[DATABASE] With values: ${Array.from(values.values()).toString()}`);
 				if (err) {
-					console.error('Error inserting into the database:', err.message);
+					console.error('[DATABASE] ERROR inserting into the database:', err.message);
 					reject(err);
 					return;
 				}
+				stmt.finalize();
+				resolve();
 			});
-			stmt.finalize();
-			resolve();
 		});
 	});
 };
@@ -133,15 +137,19 @@ export const updateDB = async (
 				.map(([key]) => `${key} = ?`)
 				.join(', ');
 			const stmt = DATABASE.prepare(`UPDATE ${table} SET ${placeholders} WHERE ${where}`);
-			stmt.run(Array.from(values.values()), (err) => {
+			stmt.run(Array.from(values.values()), function (err) {
+				//console.info(
+				//	`[DATABASE] Executing update: UPDATE ${table} SET ${placeholders} WHERE ${where}`
+				//);
+				//console.info(`[DATABASE] With values: ${Array.from(values.values()).toString()}`);
 				if (err) {
-					console.error('Error updating the database:', err.message);
+					console.error('[DATABASE] ERROR updating the database:', err.message);
 					reject(err);
 					return;
 				}
+				stmt.finalize();
+				resolve();
 			});
-			stmt.finalize();
-			resolve();
 		});
 	});
 };
@@ -150,8 +158,9 @@ export const queryDB = async (query: string) => {
 	return new Promise((resolve, reject) => {
 		DATABASE.serialize(() => {
 			DATABASE.all(query, (err, rows) => {
+				//console.info(`[DATABASE] Executing query: ${query}`);
 				if (err) {
-					console.error('Error reading the database:', err.message);
+					console.error('[DATABASE] ERROR reading the database:', err.message);
 					reject(err);
 				} else {
 					resolve(rows);
