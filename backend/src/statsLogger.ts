@@ -2,6 +2,8 @@ import { SqlAttribute, TableSchema } from './tableSchema';
 import { createTableDB, insertDB, queryDB, updateDB } from './storage';
 import { IMatch, IMatchMap } from '../../common';
 
+// A big thank you to Eliot, Fabien, Quentin and Julien for helping me test this module !
+
 export const PLAYERS_TABLE = 'players';
 export const MATCH_MAPS_TABLE = 'matchMaps';
 export const MATCHES_TABLE = 'matches';
