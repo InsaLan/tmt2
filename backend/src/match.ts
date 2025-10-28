@@ -479,8 +479,6 @@ const onLogLine = async (match: Match, line: string) => {
 		return;
 	}
 
-	match.log(`Log line: ${line}`);
-
 	try {
 		//09/14/2020 - 15:11:58.307 - "PlayerName<2><[U:1:12345678]><TERRORIST>" say "Hello World"
 		// console.debug('line:', line);
@@ -565,7 +563,6 @@ const onLogLine = async (match: Match, line: string) => {
 };
 
 const onConsoleLogLine = async (match: Match, remainingLine: string) => {
-	match.log(`Log line from Console: ${remainingLine}`);
 	const sayMatch = remainingLine.match(/^say(_team)? "(.*)"$/);
 	if (sayMatch) {
 		const message = sayMatch[2]!;
@@ -606,7 +603,6 @@ const onPlayerLogLine = async (
 	teamString: TTeamString,
 	remainingLine: string
 ) => {
-	match.log(`Log line from player ${steamId} (${name}): ${remainingLine}`);
 	let player: IPlayer | undefined = undefined;
 	if (steamId !== 'BOT' && steamId !== 'Console') {
 		const steamId64 = Player.getSteamID64(steamId);
@@ -741,9 +737,6 @@ const onPlayerLogLine = async (
 			const damage = Number(damageMatch[2]);
 			const damageArmor = Number(damageMatch[3]);
 			const headshot = damageMatch[6] === 'head';
-			match.log(
-				`Player ${player.steamId64} (${player.name}) dealt damage: ${damage} (armor: ${damageArmor}, headshot: ${headshot})`
-			);
 			await StatsLogger.onDamage(
 				match.data.id,
 				match.data.matchMaps[match.data.currentMap]?.name ?? '',
@@ -764,7 +757,6 @@ const onPlayerLogLine = async (
 	if (killMatch && getCurrentMatchMap(match)?.state === 'IN_PROGRESS') {
 		const victimId = killMatch[1]!;
 		if (victimId !== 'BOT' && victimId !== steamId) {
-			match.log(`Player ${player.steamId64} (${player.name}) killed ${victimId}`);
 			await StatsLogger.onKill(
 				match.data.id,
 				match.data.matchMaps[match.data.currentMap]?.name ?? '',
@@ -783,7 +775,6 @@ const onPlayerLogLine = async (
 	if (assistMatch && getCurrentMatchMap(match)?.state === 'IN_PROGRESS') {
 		const victimId = assistMatch[1]!;
 		if (victimId !== 'BOT' && victimId !== steamId) {
-			match.log(`Player ${player.steamId64} (${player.name}) assisted killing ${victimId}`);
 			await StatsLogger.onAssist(
 				match.data.id,
 				match.data.matchMaps[match.data.currentMap]?.name ?? '',
@@ -800,7 +791,6 @@ const onPlayerLogLine = async (
 		/^(?:was killed by the bomb|committed suicide with)/
 	);
 	if (otherDeathMatch && getCurrentMatchMap(match)?.state === 'IN_PROGRESS') {
-		match.log(`Player ${player.steamId64} (${player.name}) died stupidly`);
 		await StatsLogger.onOtherDeath(
 			match.data.id,
 			match.data.matchMaps[match.data.currentMap]?.name ?? '',
@@ -1006,7 +996,6 @@ const onTeamCommand: commands.CommandHandler = async ({ match, player, parameter
 };
 
 const onMapEnd = async (match: Match) => {
-	match.log('onMapEnd');
 	if (match.data.state !== 'MATCH_MAP') {
 		return;
 	}

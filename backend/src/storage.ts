@@ -110,9 +110,9 @@ export const insertDB = async (table: string, values: Map<string, any>): Promise
 				`INSERT INTO ${table} (${columns}) VALUES (${placeholders})`
 			);
 			stmt.run(Array.from(values.values()), function (err) {
-				console.info(
-					`[DATABASE] Executing insert: INSERT INTO ${table} (${columns}) VALUES (${placeholders})`
-				);
+				//console.info(
+				//	`[DATABASE] Executing insert: INSERT INTO ${table} (${columns}) VALUES (${placeholders})`
+				//);
 				console.info(`[DATABASE] With values: ${Array.from(values.values()).toString()}`);
 				if (err) {
 					console.error('[DATABASE] ERROR inserting into the database:', err.message);
@@ -138,10 +138,10 @@ export const updateDB = async (
 				.join(', ');
 			const stmt = DATABASE.prepare(`UPDATE ${table} SET ${placeholders} WHERE ${where}`);
 			stmt.run(Array.from(values.values()), function (err) {
-				console.info(
-					`[DATABASE] Executing update: UPDATE ${table} SET ${placeholders} WHERE ${where}`
-				);
-				console.info(`[DATABASE] With values: ${Array.from(values.values()).toString()}`);
+				//console.info(
+				//	`[DATABASE] Executing update: UPDATE ${table} SET ${placeholders} WHERE ${where}`
+				//);
+				//console.info(`[DATABASE] With values: ${Array.from(values.values()).toString()}`);
 				if (err) {
 					console.error('[DATABASE] ERROR updating the database:', err.message);
 					reject(err);
@@ -158,7 +158,7 @@ export const queryDB = async (query: string) => {
 	return new Promise((resolve, reject) => {
 		DATABASE.serialize(() => {
 			DATABASE.all(query, (err, rows) => {
-				console.info(`[DATABASE] Executing query: ${query}`);
+				//console.info(`[DATABASE] Executing query: ${query}`);
 				if (err) {
 					console.error('[DATABASE] ERROR reading the database:', err.message);
 					reject(err);
