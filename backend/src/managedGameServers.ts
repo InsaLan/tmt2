@@ -28,8 +28,9 @@ export const setup = async () => {
 		{ name: 'ip', type: 'TEXT' },
 		{ name: 'port', type: 'INTEGER' },
 		{ name: 'rconPassword', type: 'TEXT' },
+		{ name: 'hideRconPassword', type: 'BOOLEAN' },
 		{ name: 'usedBy', type: 'TEXT' },
-		{ name: 'canBeUsed', type: 'INTEGER' },
+		{ name: 'canBeUsed', type: 'BOOLEAN' },
 	] as SqlAttribute[];
 	const tableSchema = new TableSchema(GAME_SERVERS_TABLE, attributes, ['ip', 'port']);
 	await Storage.createTableDB(tableSchema);
