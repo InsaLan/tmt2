@@ -338,7 +338,7 @@ export const getMatchPlayersStats = async (matchId: string): Promise<IPlayerStat
 		t2.damages,
 		t2.map
 		FROM ${PLAYERS_TABLE} t1
-		INNER JOIN ${PLAYER_MATCH_STATS_TABLE} t2
+		INNER JOIN ${PLAYER_MAP_STATS_TABLE} t2
 		ON t1.steamId = t2.steamId
 		WHERE t2.matchId = '${matchId}'`
 	)) as IPlayerStats[];
@@ -360,7 +360,7 @@ export const getPlayerMatchesStats = async (steamId: string): Promise<IPlayerSta
 	if (cached) return cached;
 
 	const playerStats = (await queryDB(
-		`SELECT * FROM ${PLAYER_MATCH_STATS_TABLE} WHERE steamId = '${steamId}'`
+		`SELECT * FROM ${PLAYER_MAP_STATS_TABLE} WHERE steamId = '${steamId}'`
 	)) as IPlayerStats[];
 	cache.set('matches/player/' + steamId, playerStats);
 	return playerStats;
