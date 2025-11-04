@@ -3,27 +3,26 @@ import { Card } from '../components/Card';
 import { Modal } from '../components/Modal';
 import { createFetcher, downloadFile } from '../utils/fetcher';
 import { t } from '../utils/locale';
+import { mustConfirm } from '../utils/mustConfirm';
 
 const downloadDB = async () => {
 	const now = new Date();
 	downloadFile(
 		'/api/storage/database',
 		'TMT2-' +
-		now.getFullYear() +
-		now.getMonth() +
-		now.getDate() +
-		'-' +
-		now.getHours() +
-		now.getMinutes() +
-		now.getSeconds() +
-		'.sqlite'
+			now.getFullYear() +
+			now.getMonth() +
+			now.getDate() +
+			'-' +
+			now.getHours() +
+			now.getMinutes() +
+			now.getSeconds() +
+			'.sqlite'
 	);
-}
+};
 
 export const DataManagementPage = () => {
 	const fetcher = createFetcher();
-	let modalAction = async () => {};
-	let modalRef: HTMLDialogElement | undefined;
 
 	return (
 		<div class="w-full max-w-4xl mx-auto px-4 sm:px-6">
@@ -43,12 +42,12 @@ export const DataManagementPage = () => {
 					</button>
 					<button
 						class="btn text-error"
-						onClick={() => {
-							let modalAction = () => {
+						onClick={
+							mustConfirm(() => {
+								downloadDB();
 								//TODO
-							};
-							modalRef?.showModal();
-						}}
+							}, t('This action is destructive. A backup of the DB will be downloaded, just in case.'))
+						}
 					>
 						<SvgUploadCloud />
 						{t('Import DB')}
@@ -60,56 +59,29 @@ export const DataManagementPage = () => {
 				<div class="items-center justify-center flex gap-4">
 					<button
 						class="btn text-error"
-						onClick={() => {
-							let modalAction = () => {
-								fetcher('DELETE', '/api/storage/stats')
-							};
-							modalRef?.showModal();
-						}}
+						onClick={
+							mustConfirm(() => {
+								downloadDB();
+								fetcher('DELETE', '/api/storage/stats');
+							}, t('This action is destructive. A backup of the DB will be downloaded, just in case.'))
+						}
 					>
 						<SvgDelete />
 						{t('Delete stats')}
 					</button>
 					<button
 						class="btn text-error"
-						onClick={() => {
-							let modalAction = () => {
+						onClick={
+							mustConfirm(() => {
+								downloadDB();
 								fetcher('DELETE', '/api/storage/database');
-							};
-							modalRef?.showModal();
-						}}
+							}, t('This action is destructive. A backup of the DB will be downloaded, just in case.'))
+						}
 					>
 						<SvgDelete />
 						{t('Empty DB')}
 					</button>
 				</div>
-				<Modal ref={modalRef}>
-					<div class="prose">
-						<h2>{t('Are you sure ?')}</h2>
-						<p>
-							{t(
-								'This action is destructive. A backup of the DB will be downloaded, just in case.'
-							)}
-						</p>
-						<div class="flex justify-end gap-4">
-							<button
-								class="btn btn-neutral text-error"
-								onClick={() => {
-									modalRef?.close();
-									downloadDB();
-									modalAction();
-								}}
-							>
-								<SvgCheck />
-								{t('Confirm')}
-							</button>
-							<button class="btn btn-neutral" onClick={() => modalRef?.close()}>
-								<SvgClear />
-								{t('Cancel')}
-							</button>
-						</div>
-					</div>
-				</Modal>
 			</Card>
 		</div>
 	);
