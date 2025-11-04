@@ -181,9 +181,7 @@ export const StatsTable: Component<{
 			{props.status === 'NOT_FOUND' && (
 				<div class="p-4">
 					<div class="flex justify-center items-center h-full p-4">
-						<span class="text-error">
-							{t('This data does not exist.')}
-						</span>
+						<span class="text-error">{t('This data does not exist.')}</span>
 					</div>
 				</div>
 			)}

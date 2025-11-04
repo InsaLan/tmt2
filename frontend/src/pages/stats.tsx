@@ -355,12 +355,18 @@ export const PlayerStatsPage = () => {
 							<h2 class="my-0">{t('Player') + ' ' + player()?.name}</h2>
 							<span class="text-gray-500 text-sm flex items-center justify-center gap-1">
 								{t('steamID') + ': ' + player()?.steamId}
-								<button class="align-middle" onClick={() => {
-									if (player() !== undefined && player()?.steamId !== undefined) {
-										copyToClipboard(player()?.steamId ?? '')
-									}
-								}}>
-									<SvgCopy class='size-4'/>
+								<button
+									class="align-middle"
+									onClick={() => {
+										if (
+											player() !== undefined &&
+											player()?.steamId !== undefined
+										) {
+											copyToClipboard(player()?.steamId ?? '');
+										}
+									}}
+								>
+									<SvgCopy class="size-4" />
 								</button>
 							</span>
 						</div>
