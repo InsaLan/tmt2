@@ -56,9 +56,9 @@ const models: TsoaRoute.Models = {
 		properties: {
 			matchId: { dataType: 'string', required: true },
 			teamA: { dataType: 'string', required: true },
-			teamAScore: { dataType: 'string', required: true },
+			teamAScore: { dataType: 'double', required: true },
 			teamB: { dataType: 'string', required: true },
-			teamBScore: { dataType: 'string', required: true },
+			teamBScore: { dataType: 'double', required: true },
 			timestamp: { dataType: 'datetime', required: true },
 		},
 		additionalProperties: false,
