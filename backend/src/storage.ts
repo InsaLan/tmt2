@@ -1,12 +1,30 @@
 import * as fs from 'fs';
 import * as fsp from 'fs/promises';
 import * as path from 'path';
-import { Database } from 'sqlite3';
+import Database from 'better-sqlite3';
 import { TableSchema } from './tableSchema';
 
 export const STORAGE_FOLDER = process.env['TMT_STORAGE_FOLDER'] || 'storage';
 const DATABASE_PATH = path.join(STORAGE_FOLDER, 'database.sqlite');
+if (!fs.existsSync(STORAGE_FOLDER)) {
+	fs.mkdirSync(STORAGE_FOLDER, { recursive: true });
+}
 const DATABASE = new Database(DATABASE_PATH);
+
+function normalizeBindValue(v: any): any {
+	if (v === undefined) return null;
+	if (v === null) return null;
+	if (typeof v === 'boolean') return v ? 1 : 0;
+	if (typeof v === 'number' || typeof v === 'string' || typeof v === 'bigint') return v;
+	if (Buffer.isBuffer(v)) return v;
+	if (v instanceof Date) return v.toISOString();
+	// For objects/arrays, store JSON
+	try {
+		return JSON.stringify(v);
+	} catch (e) {
+		return String(v);
+	}
+}
 
 export const setup = async () => {
 	await fsp.mkdir(STORAGE_FOLDER, {
@@ -67,63 +85,37 @@ export const readLinesJson = async (
 };
 
 export const createTableDB = async (tableSchema: TableSchema): Promise<void> => {
-	return new Promise((resolve, reject) => {
-		DATABASE.serialize(() => {
-			DATABASE.run(
-				`CREATE TABLE IF NOT EXISTS ${tableSchema.generateCreateTableParameters()}`,
-				(err) => {
-					if (err) {
-						console.error('[DATABASE] ERROR creating the table:', err.message);
-						reject(err);
-						return;
-					}
-					resolve();
-				}
-			);
-		});
-	});
+	try {
+		DATABASE.exec(`CREATE TABLE IF NOT EXISTS ${tableSchema.generateCreateTableParameters()}`);
+	} catch (err: any) {
+		console.error('[DATABASE] ERROR creating the table:', err?.message ?? err);
+		throw err;
+	}
 };
 
 export const flushDB = async (table: string): Promise<void> => {
-	return new Promise((resolve, reject) => {
-		DATABASE.serialize(() => {
-			DATABASE.run(`DELETE FROM ${table}`, (err) => {
-				if (err) {
-					console.error('[DATABASE] ERROR flushing the table:', err.message);
-					reject(err);
-					return;
-				}
-				resolve();
-			});
-		});
-	});
+	try {
+		DATABASE.exec(`DELETE FROM ${table}`);
+	} catch (err: any) {
+		console.error('[DATABASE] ERROR flushing the table:', err?.message ?? err);
+		throw err;
+	}
 };
 
 export const insertDB = async (table: string, values: Map<string, any>): Promise<void> => {
-	return new Promise((resolve, reject) => {
-		DATABASE.serialize(() => {
-			const columns = Array.from(values.keys()).join(', ');
-			const placeholders = Array.from(values.keys())
-				.map(() => '?')
-				.join(', ');
-			const stmt = DATABASE.prepare(
-				`INSERT INTO ${table} (${columns}) VALUES (${placeholders})`
-			);
-			stmt.run(Array.from(values.values()), function (err) {
-				//console.info(
-				//	`[DATABASE] Executing insert: INSERT INTO ${table} (${columns}) VALUES (${placeholders})`
-				//);
-				console.info(`[DATABASE] With values: ${Array.from(values.values()).toString()}`);
-				if (err) {
-					console.error('[DATABASE] ERROR inserting into the database:', err.message);
-					reject(err);
-					return;
-				}
-				stmt.finalize();
-				resolve();
-			});
-		});
-	});
+	try {
+		const columns = Array.from(values.keys()).join(', ');
+		const placeholders = Array.from(values.keys())
+			.map(() => '?')
+			.join(', ');
+		const stmt = DATABASE.prepare(`INSERT INTO ${table} (${columns}) VALUES (${placeholders})`);
+		const rawValues = Array.from(values.values());
+		const bindValues = rawValues.map((v) => normalizeBindValue(v));
+		stmt.run(bindValues);
+	} catch (err: any) {
+		console.error('[DATABASE] ERROR inserting into the database:', err?.message ?? err);
+		throw err;
+	}
 };
 
 export const updateDB = async (
@@ -131,43 +123,29 @@ export const updateDB = async (
 	values: Map<string, any>,
 	where: string
 ): Promise<void> => {
-	return new Promise((resolve, reject) => {
-		DATABASE.serialize(() => {
-			const placeholders = Array.from(values.entries())
-				.map(([key]) => `${key} = ?`)
-				.join(', ');
-			const stmt = DATABASE.prepare(`UPDATE ${table} SET ${placeholders} WHERE ${where}`);
-			stmt.run(Array.from(values.values()), function (err) {
-				//console.info(
-				//	`[DATABASE] Executing update: UPDATE ${table} SET ${placeholders} WHERE ${where}`
-				//);
-				//console.info(`[DATABASE] With values: ${Array.from(values.values()).toString()}`);
-				if (err) {
-					console.error('[DATABASE] ERROR updating the database:', err.message);
-					reject(err);
-					return;
-				}
-				stmt.finalize();
-				resolve();
-			});
-		});
-	});
+	try {
+		const placeholders = Array.from(values.entries())
+			.map(([key]) => `${key} = ?`)
+			.join(', ');
+		const stmt = DATABASE.prepare(`UPDATE ${table} SET ${placeholders} WHERE ${where}`);
+		const rawValues = Array.from(values.values());
+		const bindValues = rawValues.map((v) => normalizeBindValue(v));
+		stmt.run(bindValues);
+	} catch (err: any) {
+		console.error('[DATABASE] ERROR updating the database:', err?.message ?? err);
+		throw err;
+	}
 };
 
 export const queryDB = async (query: string) => {
-	return new Promise((resolve, reject) => {
-		DATABASE.serialize(() => {
-			DATABASE.all(query, (err, rows) => {
-				//console.info(`[DATABASE] Executing query: ${query}`);
-				if (err) {
-					console.error('[DATABASE] ERROR reading the database:', err.message);
-					reject(err);
-				} else {
-					resolve(rows);
-				}
-			});
-		});
-	});
+	try {
+		const stmt = DATABASE.prepare(query);
+		const rows = stmt.all();
+		return rows;
+	} catch (err: any) {
+		console.error('[DATABASE] ERROR reading the database:', err?.message ?? err);
+		throw err;
+	}
 };
 
 /**
