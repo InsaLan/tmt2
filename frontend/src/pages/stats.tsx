@@ -6,10 +6,15 @@ import { useParams } from '@solidjs/router';
 import { createEffect } from 'solid-js';
 import { createFetcher } from '../utils/fetcher';
 import { IPlayerStats, IMatchStats, TStatus, combinedStatus } from '../../../common';
-import { assemblePlayers, calculatePlayerRatios } from '../utils/playerStatsUtils';
+import {
+	assemblePlayers,
+	calculatePlayerRatios,
+	getADRColor,
+	getHSPctColor,
+	getKDColor,
+} from '../utils/playerStatsUtils';
 import { StatsTable } from '../components/StatsTable';
-import { SvgCopy } from '../assets/Icons';
-import { copyToClipboard } from '../utils/copyToClipboard';
+import { CopyableText } from '../components/CopyableText';
 
 export const MatchesStatsPage = () => {
 	const fetcher = createFetcher();
@@ -20,7 +25,11 @@ export const MatchesStatsPage = () => {
 		fetcher<IMatchStats[]>('GET', `/api/stats/matches`)
 			.then((data) => {
 				if (data) {
-					setMatches(data);
+					const parsed = data.map((m) => ({
+						...m,
+						timestamp: new Date(m.timestamp),
+					}));
+					setMatches(parsed);
 					setStatus('OK');
 				} else {
 					setStatus('ERROR');
@@ -40,16 +49,17 @@ export const MatchesStatsPage = () => {
 			<StatsNavBar />
 			<Card>
 				<StatsTable
-					headers={[t('ID'), t('Team A'), t('Team B'), t('Score'), t('Date')]}
+					headers={[t('Team A'), t('Team B'), t('Score'), t('Date'), t('ID')]}
 					data={matches()}
 					columns={[
-						'matchId',
 						'teamA',
 						'teamB',
 						'teamAScore| / |teamBScore',
 						'timestamp',
+						'matchId',
 					]}
-					defaultSortColumn="matchId"
+					defaultSortColumn="timestamp"
+					defaultSortAsc={false}
 					status={status()}
 					detailsPrefix="/stats/match/"
 					detailsProp="matchId"
@@ -80,7 +90,11 @@ export const MatchStatsPage = () => {
 		fetcher<IMatchStats>('GET', `/api/stats/match?id=${matchId}`)
 			.then((data) => {
 				if (data) {
-					setMatch(data);
+					const parsed = {
+						...data,
+						timestamp: new Date(data.timestamp),
+					};
+					setMatch(parsed);
 					updateStatus(0, 'OK');
 				} else {
 					updateStatus(0, 'ERROR');
@@ -156,24 +170,33 @@ export const MatchStatsPage = () => {
 			{combinedStatus(status()) === 'OK' && (
 				<>
 					<Card>
-						<div class="prose text-center mx-auto">
+						{/* <div class="prose text-center mx-auto pb-4">
 							<h2>{t('Match') + ' ' + match()?.matchId}</h2>
-						</div>
-						<div class="prose text-center mx-auto pt-4 flex justify-center items-center">
+						</div> */}
+						<div class="prose text-center mx-auto flex justify-center items-center">
 							<div class="flex-1 text-right pr-4">
-								<h3 class="m-0">{match()?.teamA}</h3>
+								<h2 class="m-0">{match()?.teamA}</h2>
 								{teamA().join(', ')}
 								<br />
 								<span class="text-xl">{match()?.teamAScore}</span>
 							</div>
 							<div class="border-r border-gray-300 h-20"></div>
 							<div class="flex-1 text-left pl-4">
-								<h3 class="m-0">{match()?.teamB}</h3>
+								<h2 class="m-0">{match()?.teamB}</h2>
 								{teamB().join(', ')}
 								<br />
 								<span class="text-xl">{match()?.teamBScore}</span>
 							</div>
 						</div>
+						<span class="flex items-center justify-center pt-2">
+							{t('Date') + ': ' + match()?.timestamp.toLocaleString()}
+						</span>
+						<span class="flex items-center justify-center">
+							<CopyableText
+								text={t('Match ID') + ': ' + match()?.matchId}
+								copyText={match()?.matchId ?? ''}
+							/>
+						</span>
 					</Card>
 					<div class="h-8" />
 				</>
@@ -218,6 +241,17 @@ export const MatchStatsPage = () => {
 							'hsPct',
 							'adr',
 						]}
+						float={[false, false, false, false, false, true, true, true]}
+						colorFunctions={[
+							undefined,
+							undefined,
+							undefined,
+							undefined,
+							undefined,
+							getKDColor,
+							getHSPctColor,
+							getADRColor,
+						]}
 						defaultSortColumn="name"
 						status={combinedStatus(status())}
 						groupBy="map"
@@ -235,6 +269,16 @@ export const MatchStatsPage = () => {
 						]}
 						data={assembledPlayers()}
 						columns={['name', 'kills', 'deaths', 'assists', 'kd', 'hsPct', 'adr']}
+						float={[false, false, false, false, true, true, true]}
+						colorFunctions={[
+							undefined,
+							undefined,
+							undefined,
+							undefined,
+							getKDColor,
+							getHSPctColor,
+							getADRColor,
+						]}
 						defaultSortColumn="name"
 						status={combinedStatus(status())}
 					/>
@@ -284,6 +328,16 @@ export const PlayersStatsPage = () => {
 					]}
 					data={players()}
 					columns={['name', 'kills', 'deaths', 'assists', 'kd', 'hsPct', 'adr']}
+					float={[false, false, false, false, true, true, true]}
+					colorFunctions={[
+						undefined,
+						undefined,
+						undefined,
+						undefined,
+						getKDColor,
+						getHSPctColor,
+						getADRColor,
+					]}
 					defaultSortColumn="name"
 					status={status()}
 					detailsPrefix="/stats/player/"
@@ -353,21 +407,11 @@ export const PlayerStatsPage = () => {
 					<Card>
 						<div class="prose text-center mx-auto">
 							<h2 class="my-0">{t('Player') + ' ' + player()?.name}</h2>
-							<span class="text-gray-500 text-sm flex items-center justify-center gap-1">
-								{t('steamID') + ': ' + player()?.steamId}
-								<button
-									class="align-middle"
-									onClick={() => {
-										if (
-											player() !== undefined &&
-											player()?.steamId !== undefined
-										) {
-											copyToClipboard(player()?.steamId ?? '');
-										}
-									}}
-								>
-									<SvgCopy class="size-4" />
-								</button>
+							<span class="flex items-center justify-center">
+								<CopyableText
+									text={t('steamID') + ': ' + player()?.steamId}
+									copyText={player()?.steamId ?? ''}
+								/>
 							</span>
 						</div>
 						<div class="prose text-center mx-auto pt-4 flex justify-center items-center">
@@ -389,17 +433,17 @@ export const PlayerStatsPage = () => {
 								<div class="border-r border-gray-300 h-16"></div>
 								<div class="px-4">
 									<h3 class="m-0">{t('K/D')}</h3>
-									{player()?.kd}
+									{player()?.kd?.toFixed(2)}
 								</div>
 								<div class="border-r border-gray-300 h-16"></div>
 								<div class="px-4">
 									<h3 class="m-0">{t('Headshot %')}</h3>
-									{player()?.hsPct}
+									{player()?.hsPct?.toFixed(2)}
 								</div>
 								<div class="border-r border-gray-300 h-16"></div>
 								<div class="px-4">
 									<h3 class="m-0">{t('ADR')}</h3>
-									{player()?.adr}
+									{player()?.adr?.toFixed(2)}
 								</div>
 							</div>
 						</div>
@@ -421,6 +465,17 @@ export const PlayerStatsPage = () => {
 					]}
 					data={playerData()}
 					columns={['matchId', 'map', 'kills', 'deaths', 'assists', 'kd', 'hsPct', 'adr']}
+					float={[false, false, false, false, false, true, true, true]}
+					colorFunctions={[
+						undefined,
+						undefined,
+						undefined,
+						undefined,
+						undefined,
+						getKDColor,
+						getHSPctColor,
+						getADRColor,
+					]}
 					defaultSortColumn="matchId"
 					status={combinedStatus(status())}
 					groupBy="matchId"

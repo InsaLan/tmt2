@@ -7,7 +7,9 @@ export const StatsTable: Component<{
 	headers: string[];
 	data: any[];
 	columns: string[];
-	sortable?: boolean[];
+	sortable?: boolean[]; // Which columns are sortable
+	float?: boolean[]; // Which columns should be displayed with two decimal places
+	colorFunctions?: (undefined | ((value: any) => string))[];
 	defaultSortColumn: string;
 	defaultSortAsc?: boolean;
 	status: TStatus;
@@ -70,10 +72,17 @@ export const StatsTable: Component<{
 
 	const cell = (d: any, column: string) => {
 		let result = '';
+		const columnIndex = props.columns.indexOf(column);
 		for (const key of column.split('|')) {
 			if (key in d) {
 				if (d[key] instanceof Date) {
-					result += d[key].toLocaleString('fr-FR');
+					result += d[key].toLocaleString();
+				} else if (props.float && typeof d[key] === 'number') {
+					if (props.float[columnIndex]) {
+						result += d[key].toFixed(2);
+					} else {
+						result += d[key].toFixed(0);
+					}
 				} else {
 					result += d[key];
 				}
@@ -81,7 +90,17 @@ export const StatsTable: Component<{
 				result += key;
 			}
 		}
-		return <td>{result}</td>;
+		if (props.colorFunctions && props.colorFunctions[columnIndex]) {
+			return (
+				<td
+					class="break-words"
+					style={{ color: props.colorFunctions[columnIndex](result) }}
+				>
+					{result}
+				</td>
+			);
+		}
+		return <td class="break-words">{result}</td>;
 	};
 
 	const detailsButton = (d: any) => (

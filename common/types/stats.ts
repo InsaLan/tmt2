@@ -18,8 +18,8 @@ export interface IPlayerStats {
 export interface IMatchStats {
 	matchId: string;
 	teamA: string;
-	teamAScore: string;
+	teamAScore: number;
 	teamB: string;
-	teamBScore: string;
+	teamBScore: number;
 	timestamp: Date;
 }

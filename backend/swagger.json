@@ -85,13 +85,15 @@
 						"type": "string"
 					},
 					"teamAScore": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					},
 					"teamB": {
 						"type": "string"
 					},
 					"teamBScore": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					},
 					"timestamp": {
 						"type": "string",

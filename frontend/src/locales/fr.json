@@ -201,5 +201,6 @@
 	"Loading...": "Chargement...",
 	"There was an error while fetching this data.": "Une erreur a eu lieu lors de la récupération des données.",
 	"This data does not exist.": "Ces données n'existent pas.",
-	"Date": "Date"
+	"Date": "Date",
+	"Match ID": "ID Match"
 }
