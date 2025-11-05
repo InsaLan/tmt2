@@ -17,6 +17,11 @@ export interface RconOptions {
 	 */
 	timeout?: number;
 	/**
+	 * Maximum time to wait for the TCP connect to succeed
+	 * @default 10000 ms
+	 */
+	connectTimeout?: number;
+	/**
 	 * Maximum number of parallel requests. Most minecraft servers can
 	 * only reliably process one packet at a time.
 	 * @default 1
@@ -27,6 +32,7 @@ export interface RconOptions {
 const defaultOptions = {
 	port: 25575,
 	timeout: 2000,
+	connectTimeout: 10000,
 	maxPending: 1,
 };
 
@@ -84,11 +90,32 @@ export class Rcon {
 
 		try {
 			await new Promise<void>((resolve, reject) => {
-				socket.once('error', reject);
-				socket.on('connect', () => {
-					socket.off('error', reject);
+				const onError = (err: any) => {
+					cleanup();
+					reject(err);
+				};
+
+				const onConnect = () => {
+					cleanup();
 					resolve();
-				});
+				};
+
+				const onTimeout = () => {
+					cleanup();
+					reject(new Error('Connect timeout'));
+				};
+
+				const cleanup = () => {
+					socket.off('error', onError);
+					socket.off('connect', onConnect);
+					socket.off('timeout', onTimeout);
+					socket.setTimeout(0);
+				};
+
+				socket.once('error', onError);
+				socket.once('connect', onConnect);
+				socket.once('timeout', onTimeout);
+				socket.setTimeout(this.config.connectTimeout);
 			});
 		} catch (error) {
 			this.socket = null;
