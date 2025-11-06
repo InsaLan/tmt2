@@ -38,12 +38,8 @@ export const StatsTable: Component<{
 		if (sortColumn() === props.groupBy) {
 			setSortedUniqueGroups(
 				[...uniqueGroups()].sort((a, b) => {
-					if (a < b) {
-						return sortAsc() ? -1 : 1;
-					}
-					if (a > b) {
-						return sortAsc() ? 1 : -1;
-					}
+					if (a < b) return sortAsc() ? -1 : 1;
+					if (a > b) return sortAsc() ? 1 : -1;
 					return 0;
 				})
 			);
@@ -56,12 +52,8 @@ export const StatsTable: Component<{
 							.split('|')
 							.find((col) => props.columns.includes(col)) ||
 						sortColumn().split('|')[0];
-					if (a[column] < b[column]) {
-						return sortAsc() ? -1 : 1;
-					}
-					if (a[column] > b[column]) {
-						return sortAsc() ? 1 : -1;
-					}
+					if (a[column] < b[column]) return sortAsc() ? -1 : 1;
+					if (a[column] > b[column]) return sortAsc() ? 1 : -1;
 					return 0;
 				})
 			);
@@ -69,39 +61,6 @@ export const StatsTable: Component<{
 		}
 		setSorted(true);
 	});
-
-	const cell = (d: any, column: string) => {
-		let result = '';
-		const columnIndex = props.columns.indexOf(column);
-		for (const key of column.split('|')) {
-			if (key in d) {
-				if (d[key] instanceof Date) {
-					result += d[key].toLocaleString();
-				} else if (props.float && typeof d[key] === 'number') {
-					if (props.float[columnIndex]) {
-						result += d[key].toFixed(2);
-					} else {
-						result += d[key].toFixed(0);
-					}
-				} else {
-					result += d[key];
-				}
-			} else {
-				result += key;
-			}
-		}
-		if (props.colorFunctions && props.colorFunctions[columnIndex]) {
-			return (
-				<td
-					class="break-words"
-					style={{ color: props.colorFunctions[columnIndex](result) }}
-				>
-					{result}
-				</td>
-			);
-		}
-		return <td class="break-words">{result}</td>;
-	};
 
 	const detailsButton = (d: any) => (
 		<td class="w-24 p-2">
@@ -114,6 +73,55 @@ export const StatsTable: Component<{
 		</td>
 	);
 
+	const cell = (d: any, column: string) => {
+		let result = '';
+		const columnIndex = props.columns.indexOf(column);
+		for (const key of column.split('|')) {
+			if (key in d) {
+				if (d[key] instanceof Date) {
+					result += d[key].toLocaleString();
+				} else if (props.float && typeof d[key] === 'number') {
+					if (props.float[columnIndex]) result += d[key].toFixed(2);
+					else result += d[key].toFixed(0);
+				} else {
+					result += d[key];
+				}
+			} else {
+				result += key;
+			}
+		}
+
+		const color = props.colorFunctions?.[columnIndex]?.(result as any);
+
+		// If this column is flagged as float and the result is a number-like string,
+		// render it as two equal-width parts: left = integer (right-aligned), right = decimal (left-aligned)
+		if (props.float && props.float[columnIndex] && !isNaN(Number(result))) {
+			const parts = result.split('.');
+			const intPart = parts[0] ?? '';
+			const fracPart = parts[1] ?? '';
+			return (
+				<td class="break-words p-0 pr-2" style={color ? { color } : undefined}>
+					<div class="grid grid-cols-2 items-center">
+						<div class="w-full text-right font-mono">{intPart}</div>
+						<div class="w-full text-left font-mono">
+							{fracPart ? `.${fracPart}` : ''}
+						</div>
+					</div>
+				</td>
+			);
+		}
+
+		if (color) {
+			return (
+				<td class="break-words text-center" style={{ color }}>
+					{result}
+				</td>
+			);
+		}
+
+		return <td class="break-words text-center">{result}</td>;
+	};
+
 	return (
 		<>
 			<table class="table table-fixed">
@@ -122,6 +130,7 @@ export const StatsTable: Component<{
 						<For each={props.headers}>
 							{(header, i) => (
 								<th
+									class="text-center"
 									onClick={
 										(props.sortable?.[i()] ?? true)
 											? () => {
@@ -160,11 +169,9 @@ export const StatsTable: Component<{
 										.filter((d) => props.groupBy && d[props.groupBy] === group)
 										.map((d, index, a) => {
 											let cl = '';
-											if (index === a.length - 1) {
+											if (index === a.length - 1)
 												cl = 'border-b border-gray-700 last:border-b-0';
-											} else {
-												cl = 'border-b border-gray-800 last:border-b-0';
-											}
+											else cl = 'border-b border-gray-800 last:border-b-0';
 											return (
 												<tr class={cl}>
 													<For each={props.columns}>
@@ -172,9 +179,8 @@ export const StatsTable: Component<{
 															if (
 																column != props.groupBy ||
 																index === 0
-															) {
+															)
 																return cell(d, column);
-															}
 															return <td></td>;
 														}}
 													</For>
@@ -197,6 +203,7 @@ export const StatsTable: Component<{
 					)}
 				</tbody>
 			</table>
+
 			{props.status === 'NOT_FOUND' && (
 				<div class="p-4">
 					<div class="flex justify-center items-center h-full p-4">
@@ -204,6 +211,7 @@ export const StatsTable: Component<{
 					</div>
 				</div>
 			)}
+
 			{props.status === 'ERROR' && (
 				<div class="p-4">
 					<div class="flex justify-center items-center h-full p-4">
@@ -213,6 +221,7 @@ export const StatsTable: Component<{
 					</div>
 				</div>
 			)}
+
 			{(props.status === 'LOADING' || !sorted()) && (
 				<div class="p-4">
 					<div class="flex justify-center items-center h-full p-4">
