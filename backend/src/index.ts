@@ -124,7 +124,7 @@ const main = async () => {
 	Election.registerCommandHandlers();
 
 	httpServer.listen(PORT, async () => {
-		console.info(`App listening on port ${PORT}`);
+		console.info(`Backend listening on port ${PORT}`);
 		await MatchService.setup(); // can only be done when http server is up and running (so that incoming logs can be handled)
 	});
 };

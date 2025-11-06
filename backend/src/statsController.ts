@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Route, Security } from '@tsoa/runtime';
+import { Controller, Delete, Get, Query, Route, Security } from '@tsoa/runtime';
 
 import { IPlayerStats, IMatchStats } from '../../common';
 
@@ -61,5 +61,10 @@ export class StatsController extends Controller {
 	@Get('/team')
 	async getTeamPlayers(@Query('id') id: string): Promise<string[]> {
 		return StatsLogger.getTeamPlayers(id);
+	}
+
+	@Delete('/')
+	async deleteStats() {
+		StatsLogger.deleteAllStats();
 	}
 }

@@ -1,7 +1,10 @@
 /* tslint:disable */
 /* eslint-disable */
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { TsoaRoute, fetchMiddlewares, ExpressTemplateService } from '@tsoa/runtime';
+import type { TsoaRoute } from '@tsoa/runtime';
+import { fetchMiddlewares, ExpressTemplateService } from '@tsoa/runtime';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { StorageController } from './storageController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { StatsController } from './statsController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -30,6 +33,14 @@ const expressAuthenticationRecasted = expressAuthentication as (
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 const models: TsoaRoute.Models = {
+	'NodeJS.ReadableStream': {
+		dataType: 'refObject',
+		properties: {
+			readable: { dataType: 'boolean', required: true },
+		},
+		additionalProperties: false,
+	},
+	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 	IPlayerStats: {
 		dataType: 'refObject',
 		properties: {
@@ -1344,6 +1355,123 @@ export function RegisterRoutes(app: Router) {
 	//      Please look into the "controllerPathGlobs" config option described in the readme: https://github.com/lukeautry/tsoa
 	// ###########################################################################################################
 
+	const argsStorageController_downloadDatabase: Record<string, TsoaRoute.ParameterSchema> = {};
+	app.get(
+		'/api/storage/database',
+		authenticateMiddleware([{ bearer_token: [] }]),
+		...fetchMiddlewares<RequestHandler>(StorageController),
+		...fetchMiddlewares<RequestHandler>(StorageController.prototype.downloadDatabase),
+
+		async function StorageController_downloadDatabase(
+			request: ExRequest,
+			response: ExResponse,
+			next: any
+		) {
+			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+			let validatedArgs: any[] = [];
+			try {
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsStorageController_downloadDatabase,
+					request,
+					response,
+				});
+
+				const controller = new StorageController();
+
+				await templateService.apiHandler({
+					methodName: 'downloadDatabase',
+					controller,
+					response,
+					next,
+					validatedArgs,
+					successStatus: undefined,
+				});
+			} catch (err) {
+				return next(err);
+			}
+		}
+	);
+	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsStorageController_replaceDatabase: Record<string, TsoaRoute.ParameterSchema> = {
+		request: { in: 'request', name: 'request', required: true, dataType: 'object' },
+	};
+	app.post(
+		'/api/storage/database',
+		authenticateMiddleware([{ bearer_token: [] }]),
+		...fetchMiddlewares<RequestHandler>(StorageController),
+		...fetchMiddlewares<RequestHandler>(StorageController.prototype.replaceDatabase),
+
+		async function StorageController_replaceDatabase(
+			request: ExRequest,
+			response: ExResponse,
+			next: any
+		) {
+			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+			let validatedArgs: any[] = [];
+			try {
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsStorageController_replaceDatabase,
+					request,
+					response,
+				});
+
+				const controller = new StorageController();
+
+				await templateService.apiHandler({
+					methodName: 'replaceDatabase',
+					controller,
+					response,
+					next,
+					validatedArgs,
+					successStatus: undefined,
+				});
+			} catch (err) {
+				return next(err);
+			}
+		}
+	);
+	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsStorageController_emptyDatabase: Record<string, TsoaRoute.ParameterSchema> = {};
+	app.delete(
+		'/api/storage/database',
+		authenticateMiddleware([{ bearer_token: [] }]),
+		...fetchMiddlewares<RequestHandler>(StorageController),
+		...fetchMiddlewares<RequestHandler>(StorageController.prototype.emptyDatabase),
+
+		async function StorageController_emptyDatabase(
+			request: ExRequest,
+			response: ExResponse,
+			next: any
+		) {
+			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+			let validatedArgs: any[] = [];
+			try {
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsStorageController_emptyDatabase,
+					request,
+					response,
+				});
+
+				const controller = new StorageController();
+
+				await templateService.apiHandler({
+					methodName: 'emptyDatabase',
+					controller,
+					response,
+					next,
+					validatedArgs,
+					successStatus: undefined,
+				});
+			} catch (err) {
+				return next(err);
+			}
+		}
+	);
+	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsStatsController_getPlayersStats: Record<string, TsoaRoute.ParameterSchema> = {};
 	app.get(
 		'/api/stats/players',
 		authenticateMiddleware([{ bearer_token_optional: [] }]),
@@ -1355,13 +1483,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsStatsController_getPlayersStats,
+					request,
+					response,
+				});
 
 				const controller = new StatsController();
 
@@ -1379,6 +1509,9 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsStatsController_getMatchPlayersStats: Record<string, TsoaRoute.ParameterSchema> = {
+		id: { in: 'query', name: 'id', required: true, dataType: 'string' },
+	};
 	app.get(
 		'/api/stats/players/match',
 		authenticateMiddleware([{ bearer_token_optional: [] }]),
@@ -1390,15 +1523,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				id: { in: 'query', name: 'id', required: true, dataType: 'string' },
-			};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsStatsController_getMatchPlayersStats,
+					request,
+					response,
+				});
 
 				const controller = new StatsController();
 
@@ -1416,6 +1549,7 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsStatsController_getMatchesStats: Record<string, TsoaRoute.ParameterSchema> = {};
 	app.get(
 		'/api/stats/matches',
 		authenticateMiddleware([{ bearer_token_optional: [] }]),
@@ -1427,13 +1561,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsStatsController_getMatchesStats,
+					request,
+					response,
+				});
 
 				const controller = new StatsController();
 
@@ -1451,6 +1587,9 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsStatsController_getMatchStats: Record<string, TsoaRoute.ParameterSchema> = {
+		id: { in: 'query', name: 'id', required: true, dataType: 'string' },
+	};
 	app.get(
 		'/api/stats/match',
 		authenticateMiddleware([{ bearer_token_optional: [] }]),
@@ -1462,15 +1601,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				id: { in: 'query', name: 'id', required: true, dataType: 'string' },
-			};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsStatsController_getMatchStats,
+					request,
+					response,
+				});
 
 				const controller = new StatsController();
 
@@ -1488,6 +1627,9 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsStatsController_getPlayerStats: Record<string, TsoaRoute.ParameterSchema> = {
+		id: { in: 'query', name: 'id', required: true, dataType: 'string' },
+	};
 	app.get(
 		'/api/stats/player',
 		authenticateMiddleware([{ bearer_token_optional: [] }]),
@@ -1499,15 +1641,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				id: { in: 'query', name: 'id', required: true, dataType: 'string' },
-			};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsStatsController_getPlayerStats,
+					request,
+					response,
+				});
 
 				const controller = new StatsController();
 
@@ -1525,6 +1667,9 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsStatsController_getPlayerMatchesStats: Record<string, TsoaRoute.ParameterSchema> = {
+		id: { in: 'query', name: 'id', required: true, dataType: 'string' },
+	};
 	app.get(
 		'/api/stats/matches/player',
 		authenticateMiddleware([{ bearer_token_optional: [] }]),
@@ -1536,15 +1681,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				id: { in: 'query', name: 'id', required: true, dataType: 'string' },
-			};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsStatsController_getPlayerMatchesStats,
+					request,
+					response,
+				});
 
 				const controller = new StatsController();
 
@@ -1562,6 +1707,9 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsStatsController_getTeamPlayers: Record<string, TsoaRoute.ParameterSchema> = {
+		id: { in: 'query', name: 'id', required: true, dataType: 'string' },
+	};
 	app.get(
 		'/api/stats/team',
 		authenticateMiddleware([{ bearer_token_optional: [] }]),
@@ -1573,15 +1721,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				id: { in: 'query', name: 'id', required: true, dataType: 'string' },
-			};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsStatsController_getTeamPlayers,
+					request,
+					response,
+				});
 
 				const controller = new StatsController();
 
@@ -1599,6 +1747,48 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsStatsController_deleteStats: Record<string, TsoaRoute.ParameterSchema> = {};
+	app.delete(
+		'/api/stats',
+		authenticateMiddleware([{ bearer_token_optional: [] }]),
+		...fetchMiddlewares<RequestHandler>(StatsController),
+		...fetchMiddlewares<RequestHandler>(StatsController.prototype.deleteStats),
+
+		async function StatsController_deleteStats(
+			request: ExRequest,
+			response: ExResponse,
+			next: any
+		) {
+			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+			let validatedArgs: any[] = [];
+			try {
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsStatsController_deleteStats,
+					request,
+					response,
+				});
+
+				const controller = new StatsController();
+
+				await templateService.apiHandler({
+					methodName: 'deleteStats',
+					controller,
+					response,
+					next,
+					validatedArgs,
+					successStatus: undefined,
+				});
+			} catch (err) {
+				return next(err);
+			}
+		}
+	);
+	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsMatchesController_createMatch: Record<string, TsoaRoute.ParameterSchema> = {
+		requestBody: { in: 'body', name: 'requestBody', required: true, ref: 'IMatchCreateDto' },
+		req: { in: 'request', name: 'req', required: true, dataType: 'object' },
+	};
 	app.post(
 		'/api/matches',
 		authenticateMiddleware([{ bearer_token_optional: [] }]),
@@ -1610,21 +1800,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				requestBody: {
-					in: 'body',
-					name: 'requestBody',
-					required: true,
-					ref: 'IMatchCreateDto',
-				},
-				req: { in: 'request', name: 'req', required: true, dataType: 'object' },
-			};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsMatchesController_createMatch,
+					request,
+					response,
+				});
 
 				const controller = new MatchesController();
 
@@ -1642,6 +1826,18 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsMatchesController_getAllMatches: Record<string, TsoaRoute.ParameterSchema> = {
+		req: { in: 'request', name: 'req', required: true, dataType: 'object' },
+		state: { in: 'query', name: 'state', dataType: 'array', array: { dataType: 'string' } },
+		passthrough: {
+			in: 'query',
+			name: 'passthrough',
+			dataType: 'array',
+			array: { dataType: 'string' },
+		},
+		isStopped: { in: 'query', name: 'isStopped', dataType: 'boolean' },
+		isLive: { in: 'query', name: 'isLive', dataType: 'boolean' },
+	};
 	app.get(
 		'/api/matches',
 		authenticateMiddleware([{ bearer_token: [] }]),
@@ -1653,29 +1849,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				req: { in: 'request', name: 'req', required: true, dataType: 'object' },
-				state: {
-					in: 'query',
-					name: 'state',
-					dataType: 'array',
-					array: { dataType: 'string' },
-				},
-				passthrough: {
-					in: 'query',
-					name: 'passthrough',
-					dataType: 'array',
-					array: { dataType: 'string' },
-				},
-				isStopped: { in: 'query', name: 'isStopped', dataType: 'boolean' },
-				isLive: { in: 'query', name: 'isLive', dataType: 'boolean' },
-			};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsMatchesController_getAllMatches,
+					request,
+					response,
+				});
 
 				const controller = new MatchesController();
 
@@ -1693,6 +1875,10 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsMatchesController_getMatch: Record<string, TsoaRoute.ParameterSchema> = {
+		id: { in: 'path', name: 'id', required: true, dataType: 'string' },
+		req: { in: 'request', name: 'req', required: true, dataType: 'object' },
+	};
 	app.get(
 		'/api/matches/:id',
 		authenticateMiddleware([{ bearer_token: [] }]),
@@ -1704,16 +1890,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				id: { in: 'path', name: 'id', required: true, dataType: 'string' },
-				req: { in: 'request', name: 'req', required: true, dataType: 'object' },
-			};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsMatchesController_getMatch,
+					request,
+					response,
+				});
 
 				const controller = new MatchesController();
 
@@ -1731,6 +1916,10 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsMatchesController_getLogs: Record<string, TsoaRoute.ParameterSchema> = {
+		id: { in: 'path', name: 'id', required: true, dataType: 'string' },
+		req: { in: 'request', name: 'req', required: true, dataType: 'object' },
+	};
 	app.get(
 		'/api/matches/:id/logs',
 		authenticateMiddleware([{ bearer_token: [] }]),
@@ -1742,16 +1931,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				id: { in: 'path', name: 'id', required: true, dataType: 'string' },
-				req: { in: 'request', name: 'req', required: true, dataType: 'object' },
-			};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsMatchesController_getLogs,
+					request,
+					response,
+				});
 
 				const controller = new MatchesController();
 
@@ -1769,6 +1957,10 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsMatchesController_getEvents: Record<string, TsoaRoute.ParameterSchema> = {
+		id: { in: 'path', name: 'id', required: true, dataType: 'string' },
+		req: { in: 'request', name: 'req', required: true, dataType: 'object' },
+	};
 	app.get(
 		'/api/matches/:id/events',
 		authenticateMiddleware([{ bearer_token: [] }]),
@@ -1780,16 +1972,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				id: { in: 'path', name: 'id', required: true, dataType: 'string' },
-				req: { in: 'request', name: 'req', required: true, dataType: 'object' },
-			};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsMatchesController_getEvents,
+					request,
+					response,
+				});
 
 				const controller = new MatchesController();
 
@@ -1807,6 +1998,11 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsMatchesController_getRoundBackups: Record<string, TsoaRoute.ParameterSchema> = {
+		id: { in: 'path', name: 'id', required: true, dataType: 'string' },
+		req: { in: 'request', name: 'req', required: true, dataType: 'object' },
+		count: { in: 'query', name: 'count', dataType: 'double' },
+	};
 	app.get(
 		'/api/matches/:id/server/round_backups',
 		authenticateMiddleware([{ bearer_token: [] }]),
@@ -1818,17 +2014,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				id: { in: 'path', name: 'id', required: true, dataType: 'string' },
-				req: { in: 'request', name: 'req', required: true, dataType: 'object' },
-				count: { in: 'query', name: 'count', dataType: 'double' },
-			};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsMatchesController_getRoundBackups,
+					request,
+					response,
+				});
 
 				const controller = new MatchesController();
 
@@ -1846,6 +2040,11 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsMatchesController_loadRoundBackup: Record<string, TsoaRoute.ParameterSchema> = {
+		id: { in: 'path', name: 'id', required: true, dataType: 'string' },
+		file: { in: 'path', name: 'file', required: true, dataType: 'string' },
+		req: { in: 'request', name: 'req', required: true, dataType: 'object' },
+	};
 	app.post(
 		'/api/matches/:id/server/round_backups/:file',
 		authenticateMiddleware([{ bearer_token: [] }]),
@@ -1857,17 +2056,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				id: { in: 'path', name: 'id', required: true, dataType: 'string' },
-				file: { in: 'path', name: 'file', required: true, dataType: 'string' },
-				req: { in: 'request', name: 'req', required: true, dataType: 'object' },
-			};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsMatchesController_loadRoundBackup,
+					request,
+					response,
+				});
 
 				const controller = new MatchesController();
 
@@ -1885,6 +2082,11 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsMatchesController_updateMatch: Record<string, TsoaRoute.ParameterSchema> = {
+		id: { in: 'path', name: 'id', required: true, dataType: 'string' },
+		requestBody: { in: 'body', name: 'requestBody', required: true, ref: 'IMatchUpdateDto' },
+		req: { in: 'request', name: 'req', required: true, dataType: 'object' },
+	};
 	app.patch(
 		'/api/matches/:id',
 		authenticateMiddleware([{ bearer_token: [] }]),
@@ -1896,22 +2098,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				id: { in: 'path', name: 'id', required: true, dataType: 'string' },
-				requestBody: {
-					in: 'body',
-					name: 'requestBody',
-					required: true,
-					ref: 'IMatchUpdateDto',
-				},
-				req: { in: 'request', name: 'req', required: true, dataType: 'object' },
-			};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsMatchesController_updateMatch,
+					request,
+					response,
+				});
 
 				const controller = new MatchesController();
 
@@ -1929,6 +2124,12 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsMatchesController_updateMatchMap: Record<string, TsoaRoute.ParameterSchema> = {
+		id: { in: 'path', name: 'id', required: true, dataType: 'string' },
+		mapNumber: { in: 'path', name: 'mapNumber', required: true, dataType: 'double' },
+		requestBody: { in: 'body', name: 'requestBody', required: true, ref: 'IMatchMapUpdateDto' },
+		req: { in: 'request', name: 'req', required: true, dataType: 'object' },
+	};
 	app.patch(
 		'/api/matches/:id/matchMap/:mapNumber',
 		authenticateMiddleware([{ bearer_token: [] }]),
@@ -1940,23 +2141,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				id: { in: 'path', name: 'id', required: true, dataType: 'string' },
-				mapNumber: { in: 'path', name: 'mapNumber', required: true, dataType: 'double' },
-				requestBody: {
-					in: 'body',
-					name: 'requestBody',
-					required: true,
-					ref: 'IMatchMapUpdateDto',
-				},
-				req: { in: 'request', name: 'req', required: true, dataType: 'object' },
-			};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsMatchesController_updateMatchMap,
+					request,
+					response,
+				});
 
 				const controller = new MatchesController();
 
@@ -1974,6 +2167,10 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsMatchesController_deleteMatch: Record<string, TsoaRoute.ParameterSchema> = {
+		id: { in: 'path', name: 'id', required: true, dataType: 'string' },
+		req: { in: 'request', name: 'req', required: true, dataType: 'object' },
+	};
 	app.delete(
 		'/api/matches/:id',
 		authenticateMiddleware([{ bearer_token: [] }]),
@@ -1985,16 +2182,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				id: { in: 'path', name: 'id', required: true, dataType: 'string' },
-				req: { in: 'request', name: 'req', required: true, dataType: 'object' },
-			};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsMatchesController_deleteMatch,
+					request,
+					response,
+				});
 
 				const controller = new MatchesController();
 
@@ -2012,6 +2208,10 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsMatchesController_reviveMatch: Record<string, TsoaRoute.ParameterSchema> = {
+		id: { in: 'path', name: 'id', required: true, dataType: 'string' },
+		req: { in: 'request', name: 'req', required: true, dataType: 'object' },
+	};
 	app.patch(
 		'/api/matches/:id/revive',
 		authenticateMiddleware([{ bearer_token: [] }]),
@@ -2023,16 +2223,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				id: { in: 'path', name: 'id', required: true, dataType: 'string' },
-				req: { in: 'request', name: 'req', required: true, dataType: 'object' },
-			};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsMatchesController_reviveMatch,
+					request,
+					response,
+				});
 
 				const controller = new MatchesController();
 
@@ -2050,6 +2249,17 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsMatchesController_rcon: Record<string, TsoaRoute.ParameterSchema> = {
+		id: { in: 'path', name: 'id', required: true, dataType: 'string' },
+		requestBody: {
+			in: 'body',
+			name: 'requestBody',
+			required: true,
+			dataType: 'array',
+			array: { dataType: 'string' },
+		},
+		req: { in: 'request', name: 'req', required: true, dataType: 'object' },
+	};
 	app.post(
 		'/api/matches/:id/server/rcon',
 		authenticateMiddleware([{ bearer_token: [] }]),
@@ -2057,23 +2267,15 @@ export function RegisterRoutes(app: Router) {
 		...fetchMiddlewares<RequestHandler>(MatchesController.prototype.rcon),
 
 		async function MatchesController_rcon(request: ExRequest, response: ExResponse, next: any) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				id: { in: 'path', name: 'id', required: true, dataType: 'string' },
-				requestBody: {
-					in: 'body',
-					name: 'requestBody',
-					required: true,
-					dataType: 'array',
-					array: { dataType: 'string' },
-				},
-				req: { in: 'request', name: 'req', required: true, dataType: 'object' },
-			};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsMatchesController_rcon,
+					request,
+					response,
+				});
 
 				const controller = new MatchesController();
 
@@ -2091,6 +2293,11 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsMatchesController_receiveLog: Record<string, TsoaRoute.ParameterSchema> = {
+		id: { in: 'path', name: 'id', required: true, dataType: 'string' },
+		secret: { in: 'path', name: 'secret', required: true, dataType: 'string' },
+		requestBody: { in: 'body', name: 'requestBody', required: true, dataType: 'any' },
+	};
 	app.post(
 		'/api/matches/:id/server/log/:secret',
 		...fetchMiddlewares<RequestHandler>(MatchesController),
@@ -2101,17 +2308,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				id: { in: 'path', name: 'id', required: true, dataType: 'string' },
-				secret: { in: 'path', name: 'secret', required: true, dataType: 'string' },
-				requestBody: { in: 'body', name: 'requestBody', required: true, dataType: 'any' },
-			};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsMatchesController_receiveLog,
+					request,
+					response,
+				});
 
 				const controller = new MatchesController();
 
@@ -2129,6 +2334,7 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsGameServersController_getGameServers: Record<string, TsoaRoute.ParameterSchema> = {};
 	app.get(
 		'/api/gameservers',
 		authenticateMiddleware([{ bearer_token: [] }]),
@@ -2140,13 +2346,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsGameServersController_getGameServers,
+					request,
+					response,
+				});
 
 				const controller = new GameServersController();
 
@@ -2164,6 +2372,14 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsGameServersController_createGameServer: Record<string, TsoaRoute.ParameterSchema> = {
+		requestBody: {
+			in: 'body',
+			name: 'requestBody',
+			required: true,
+			ref: 'IManagedGameServerCreateDto',
+		},
+	};
 	app.post(
 		'/api/gameservers',
 		authenticateMiddleware([{ bearer_token: [] }]),
@@ -2175,20 +2391,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				requestBody: {
-					in: 'body',
-					name: 'requestBody',
-					required: true,
-					ref: 'IManagedGameServerCreateDto',
-				},
-			};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsGameServersController_createGameServer,
+					request,
+					response,
+				});
 
 				const controller = new GameServersController();
 
@@ -2206,6 +2417,16 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsGameServersController_updateGameServer: Record<string, TsoaRoute.ParameterSchema> = {
+		requestBody: {
+			in: 'body',
+			name: 'requestBody',
+			required: true,
+			ref: 'IManagedGameServerUpdateDto',
+		},
+		ip: { in: 'path', name: 'ip', required: true, dataType: 'string' },
+		port: { in: 'path', name: 'port', required: true, dataType: 'double' },
+	};
 	app.patch(
 		'/api/gameservers/:ip/:port',
 		authenticateMiddleware([{ bearer_token: [] }]),
@@ -2217,22 +2438,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				requestBody: {
-					in: 'body',
-					name: 'requestBody',
-					required: true,
-					ref: 'IManagedGameServerUpdateDto',
-				},
-				ip: { in: 'path', name: 'ip', required: true, dataType: 'string' },
-				port: { in: 'path', name: 'port', required: true, dataType: 'double' },
-			};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsGameServersController_updateGameServer,
+					request,
+					response,
+				});
 
 				const controller = new GameServersController();
 
@@ -2250,6 +2464,10 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsGameServersController_deleteGameServer: Record<string, TsoaRoute.ParameterSchema> = {
+		ip: { in: 'path', name: 'ip', required: true, dataType: 'string' },
+		port: { in: 'path', name: 'port', required: true, dataType: 'double' },
+	};
 	app.delete(
 		'/api/gameservers/:ip/:port',
 		authenticateMiddleware([{ bearer_token: [] }]),
@@ -2261,16 +2479,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				ip: { in: 'path', name: 'ip', required: true, dataType: 'string' },
-				port: { in: 'path', name: 'port', required: true, dataType: 'double' },
-			};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsGameServersController_deleteGameServer,
+					request,
+					response,
+				});
 
 				const controller = new GameServersController();
 
@@ -2288,6 +2505,17 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsGameServersController_rcon: Record<string, TsoaRoute.ParameterSchema> = {
+		ip: { in: 'path', name: 'ip', required: true, dataType: 'string' },
+		port: { in: 'path', name: 'port', required: true, dataType: 'double' },
+		requestBody: {
+			in: 'body',
+			name: 'requestBody',
+			required: true,
+			dataType: 'array',
+			array: { dataType: 'string' },
+		},
+	};
 	app.post(
 		'/api/gameservers/:ip/:port',
 		authenticateMiddleware([{ bearer_token: [] }]),
@@ -2299,23 +2527,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				ip: { in: 'path', name: 'ip', required: true, dataType: 'string' },
-				port: { in: 'path', name: 'port', required: true, dataType: 'double' },
-				requestBody: {
-					in: 'body',
-					name: 'requestBody',
-					required: true,
-					dataType: 'array',
-					array: { dataType: 'string' },
-				},
-			};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsGameServersController_rcon,
+					request,
+					response,
+				});
 
 				const controller = new GameServersController();
 
@@ -2333,6 +2553,7 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsDebugController_getWebSocketClients: Record<string, TsoaRoute.ParameterSchema> = {};
 	app.get(
 		'/api/debug/webSockets',
 		authenticateMiddleware([{ bearer_token: [] }]),
@@ -2344,13 +2565,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsDebugController_getWebSocketClients,
+					request,
+					response,
+				});
 
 				const controller = new DebugController();
 
@@ -2368,6 +2591,7 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsDebugController_getInfos: Record<string, TsoaRoute.ParameterSchema> = {};
 	app.get(
 		'/api/debug',
 		authenticateMiddleware([{ bearer_token: [] }]),
@@ -2379,13 +2603,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsDebugController_getInfos,
+					request,
+					response,
+				});
 
 				const controller = new DebugController();
 
@@ -2403,6 +2629,7 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsConfigController_getConfig: Record<string, TsoaRoute.ParameterSchema> = {};
 	app.get(
 		'/api/config',
 		...fetchMiddlewares<RequestHandler>(ConfigController),
@@ -2413,13 +2640,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsConfigController_getConfig,
+					request,
+					response,
+				});
 
 				const controller = new ConfigController();
 
@@ -2437,6 +2666,9 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsConfigController_updateConfig: Record<string, TsoaRoute.ParameterSchema> = {
+		requestBody: { in: 'body', name: 'requestBody', required: true, ref: 'IConfigUpdateDto' },
+	};
 	app.patch(
 		'/api/config',
 		authenticateMiddleware([{ bearer_token: [] }]),
@@ -2448,20 +2680,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				requestBody: {
-					in: 'body',
-					name: 'requestBody',
-					required: true,
-					ref: 'IConfigUpdateDto',
-				},
-			};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsConfigController_updateConfig,
+					request,
+					response,
+				});
 
 				const controller = new ConfigController();
 
@@ -2479,6 +2706,9 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsAuthController_getAuthType: Record<string, TsoaRoute.ParameterSchema> = {
+		req: { in: 'request', name: 'req', required: true, dataType: 'object' },
+	};
 	app.get(
 		'/api/auth',
 		...fetchMiddlewares<RequestHandler>(AuthController),
@@ -2489,15 +2719,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				req: { in: 'request', name: 'req', required: true, dataType: 'object' },
-			};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsAuthController_getAuthType,
+					request,
+					response,
+				});
 
 				const controller = new AuthController();
 
@@ -2515,6 +2745,9 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsPresetsController_getPresets: Record<string, TsoaRoute.ParameterSchema> = {
+		req: { in: 'request', name: 'req', required: true, dataType: 'object' },
+	};
 	app.get(
 		'/api/presets',
 		authenticateMiddleware([{ bearer_token_optional: [] }]),
@@ -2526,15 +2759,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				req: { in: 'request', name: 'req', required: true, dataType: 'object' },
-			};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsPresetsController_getPresets,
+					request,
+					response,
+				});
 
 				const controller = new PresetsController();
 
@@ -2552,6 +2785,10 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsPresetsController_createPreset: Record<string, TsoaRoute.ParameterSchema> = {
+		requestBody: { in: 'body', name: 'requestBody', required: true, ref: 'IPresetCreateDto' },
+		req: { in: 'request', name: 'req', required: true, dataType: 'object' },
+	};
 	app.post(
 		'/api/presets',
 		authenticateMiddleware([{ bearer_token: [] }]),
@@ -2563,21 +2800,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				requestBody: {
-					in: 'body',
-					name: 'requestBody',
-					required: true,
-					ref: 'IPresetCreateDto',
-				},
-				req: { in: 'request', name: 'req', required: true, dataType: 'object' },
-			};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsPresetsController_createPreset,
+					request,
+					response,
+				});
 
 				const controller = new PresetsController();
 
@@ -2595,6 +2826,10 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsPresetsController_updatePreset: Record<string, TsoaRoute.ParameterSchema> = {
+		requestBody: { in: 'body', name: 'requestBody', required: true, ref: 'IPreset' },
+		req: { in: 'request', name: 'req', required: true, dataType: 'object' },
+	};
 	app.put(
 		'/api/presets',
 		authenticateMiddleware([{ bearer_token: [] }]),
@@ -2606,16 +2841,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				requestBody: { in: 'body', name: 'requestBody', required: true, ref: 'IPreset' },
-				req: { in: 'request', name: 'req', required: true, dataType: 'object' },
-			};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsPresetsController_updatePreset,
+					request,
+					response,
+				});
 
 				const controller = new PresetsController();
 
@@ -2633,6 +2867,10 @@ export function RegisterRoutes(app: Router) {
 		}
 	);
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsPresetsController_deletePreset: Record<string, TsoaRoute.ParameterSchema> = {
+		id: { in: 'path', name: 'id', required: true, dataType: 'string' },
+		req: { in: 'request', name: 'req', required: true, dataType: 'object' },
+	};
 	app.delete(
 		'/api/presets/:id',
 		authenticateMiddleware([{ bearer_token: [] }]),
@@ -2644,16 +2882,15 @@ export function RegisterRoutes(app: Router) {
 			response: ExResponse,
 			next: any
 		) {
-			const args: Record<string, TsoaRoute.ParameterSchema> = {
-				id: { in: 'path', name: 'id', required: true, dataType: 'string' },
-				req: { in: 'request', name: 'req', required: true, dataType: 'object' },
-			};
-
 			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 			let validatedArgs: any[] = [];
 			try {
-				validatedArgs = templateService.getValidatedArgs({ args, request, response });
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsPresetsController_deletePreset,
+					request,
+					response,
+				});
 
 				const controller = new PresetsController();
 
