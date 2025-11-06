@@ -433,5 +433,11 @@ export const deleteAllStats = async () => {
 	await flushDB(MATCHES_TABLE);
 	await flushDB(PLAYER_MAP_STATS_TABLE);
 	await flushDB(TEAMS_TABLE);
+	invalidateStatsCache();
 	console.info('[DATABASE] All stats have been deleted.');
+};
+
+export const invalidateStatsCache = async () => {
+	cache.flushAll();
+	console.info('[CACHE] Cache has been invalidated.');
 };

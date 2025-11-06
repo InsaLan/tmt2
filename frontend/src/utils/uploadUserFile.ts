@@ -12,13 +12,7 @@ export const uploadUserFile = async (url: string): Promise<Response> => {
 			formData.append('database', file);
 
 			const fetcher = createFetcher();
-			fetcher(
-				'POST',
-				url,
-				formData,
-				undefined,
-				false
-			);
+			fetcher('POST', url, formData, undefined, false);
 		}
 	};
 	input.click();

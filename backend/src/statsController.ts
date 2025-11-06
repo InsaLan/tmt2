@@ -69,7 +69,7 @@ export class StatsController extends Controller {
 		if (MatchService.getAllLive().length > 0) {
 			throw { status: 409, message: `Can't modify database while matches are running.` };
 		}
-		
+
 		StatsLogger.deleteAllStats();
 	}
 }
