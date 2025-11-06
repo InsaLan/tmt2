@@ -437,7 +437,7 @@ export const deleteAllStats = async () => {
 	console.info('[DATABASE] All stats have been deleted.');
 };
 
-export const invalidateStatsCache = async () => {
+export const invalidateStatsCache = () => {
 	cache.flushAll();
 	console.info('[CACHE] Cache has been invalidated.');
 };

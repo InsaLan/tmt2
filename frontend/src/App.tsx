@@ -29,7 +29,6 @@ const NavBar: Component = () => {
 					src={currentMode() === 'dark' ? logo : logo_black}
 					alt="Logo"
 				/>
-				<div class="hidden align-middle text-xs lg:hidden">TMT</div>
 				<div class="align-middle text-l lg:inline-block font-bold">TMT2</div>
 			</div>
 			<div class="grow"></div>
