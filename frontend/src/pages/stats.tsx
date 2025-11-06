@@ -61,8 +61,14 @@ export const MatchesStatsPage = () => {
 					defaultSortColumn="timestamp"
 					defaultSortAsc={false}
 					status={status()}
-					detailsPrefix="/stats/match/"
-					detailsProp="matchId"
+					details={[
+						undefined,
+						undefined,
+						undefined,
+						undefined,
+						undefined,
+						['/stats/match/', 'matchId'],
+					]}
 				/>
 			</Card>
 		</>
@@ -255,6 +261,16 @@ export const MatchStatsPage = () => {
 						defaultSortColumn="name"
 						status={combinedStatus(status())}
 						groupBy="map"
+						details={[
+							undefined,
+							['/stats/player/', 'steamId'],
+							undefined,
+							undefined,
+							undefined,
+							undefined,
+							undefined,
+							undefined,
+						]}
 					/>
 				) : (
 					<StatsTable
@@ -281,6 +297,15 @@ export const MatchStatsPage = () => {
 						]}
 						defaultSortColumn="name"
 						status={combinedStatus(status())}
+						details={[
+							['/stats/player/', 'steamId'],
+							undefined,
+							undefined,
+							undefined,
+							undefined,
+							undefined,
+							undefined,
+						]}
 					/>
 				)}
 			</Card>
@@ -340,8 +365,16 @@ export const PlayersStatsPage = () => {
 					]}
 					defaultSortColumn="name"
 					status={status()}
-					detailsPrefix="/stats/player/"
-					detailsProp="steamId"
+					details={[
+						undefined,
+						undefined,
+						undefined,
+						undefined,
+						undefined,
+						undefined,
+						undefined,
+						['/stats/player/', 'steamId'],
+					]}
 				/>
 			</Card>
 		</>
@@ -479,6 +512,16 @@ export const PlayerStatsPage = () => {
 					defaultSortColumn="matchId"
 					status={combinedStatus(status())}
 					groupBy="matchId"
+					details={[
+						['/stats/match/', 'matchId'],
+						undefined,
+						undefined,
+						undefined,
+						undefined,
+						undefined,
+						undefined,
+						undefined,
+					]}
 				/>
 			</Card>
 		</>
