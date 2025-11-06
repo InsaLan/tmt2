@@ -1,7 +1,7 @@
-import { SvgCheck, SvgClear, SvgDelete, SvgDownloadArchive, SvgUploadCloud } from '../assets/Icons';
+import { SvgDelete, SvgDownloadArchive, SvgUploadCloud } from '../assets/Icons';
 import { Card } from '../components/Card';
-import { Modal } from '../components/Modal';
 import { createFetcher, downloadFile } from '../utils/fetcher';
+import { uploadUserFile } from '../utils/uploadUserFile';
 import { t } from '../utils/locale';
 import { mustConfirm } from '../utils/mustConfirm';
 
@@ -11,12 +11,12 @@ const downloadDB = async () => {
 		'/api/storage/database',
 		'TMT2-' +
 			now.getFullYear() +
-			now.getMonth() +
-			now.getDate() +
+			String(now.getMonth() + 1).padStart(2, '0') +
+			String(now.getDate()).padStart(2, '0') +
 			'-' +
-			now.getHours() +
-			now.getMinutes() +
-			now.getSeconds() +
+			String(now.getHours()).padStart(2, '0') +
+			String(now.getMinutes()).padStart(2, '0') +
+			String(now.getSeconds()).padStart(2, '0') +
 			'.sqlite'
 	);
 };
@@ -42,12 +42,10 @@ export const DataManagementPage = () => {
 					</button>
 					<button
 						class="btn text-error"
-						onClick={
-							mustConfirm(() => {
-								downloadDB();
-								//TODO
-							}, t('This action is destructive. A backup of the DB will be downloaded, just in case.'))
-						}
+						onClick={mustConfirm(() => {
+							downloadDB();
+							uploadUserFile('/api/storage/database');
+						}, t('This action will overwrite the current DB. A backup will be downloaded, just in case.'))}
 					>
 						<SvgUploadCloud />
 						{t('Import DB')}
@@ -59,24 +57,20 @@ export const DataManagementPage = () => {
 				<div class="items-center justify-center flex gap-4">
 					<button
 						class="btn text-error"
-						onClick={
-							mustConfirm(() => {
-								downloadDB();
-								fetcher('DELETE', '/api/storage/stats');
-							}, t('This action is destructive. A backup of the DB will be downloaded, just in case.'))
-						}
+						onClick={mustConfirm(() => {
+							downloadDB();
+							fetcher('DELETE', '/api/stats');
+						}, t('This action is destructive. A backup of the DB will be downloaded, just in case.'))}
 					>
 						<SvgDelete />
 						{t('Delete stats')}
 					</button>
 					<button
 						class="btn text-error"
-						onClick={
-							mustConfirm(() => {
-								downloadDB();
-								fetcher('DELETE', '/api/storage/database');
-							}, t('This action is destructive. A backup of the DB will be downloaded, just in case.'))
-						}
+						onClick={mustConfirm(() => {
+							downloadDB();
+							fetcher('DELETE', '/api/storage/database');
+						}, t('This action is destructive. A backup of the DB will be downloaded, just in case.'))}
 					>
 						<SvgDelete />
 						{t('Empty DB')}

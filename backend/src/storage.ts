@@ -184,3 +184,37 @@ export const downloadDB = async (): Promise<NodeJS.ReadableStream> => {
 	const stream = fs.createReadStream(DATABASE_PATH);
 	return stream;
 };
+
+export const replaceDB = async (buffer: any) => {
+	console.log('')
+	const tempPath = path.join(STORAGE_FOLDER, 'temp.sqlite');
+	fs.writeFileSync(tempPath, buffer);
+	const tempDb = new Database(tempPath);
+	// Verify it's a valid SQLite database
+	try {
+		await new Promise((resolve, reject) => {
+			tempDb.get("SELECT name FROM sqlite_master LIMIT 1", (err) => {
+				tempDb.close();
+				if (err) {
+					fs.unlinkSync(tempPath);
+					reject(new Error('Invalid SQLite database file'));
+				}
+				resolve(null);
+			});
+		});
+	} catch (error) {
+		throw { status: 415, message: `Invalid file format. Should be an SQLite database.` };
+	}
+	fs.renameSync(tempPath, DATABASE_PATH);
+	console.info('[STORAGE] Database replaced successfully.')
+}
+
+export const emptyDB = async () => {
+	const tables = ((await queryDB(
+		`SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%';`
+	)) as Array<{name: string}>).map(table => table.name);
+	for (const table of tables) {
+		flushDB(table);
+	}
+	console.info('[STORAGE] Database emptied successfully.')
+}

@@ -2333,23 +2333,7 @@
 				"parameters": []
 			},
 			"delete": {
-				"operationId": "DeleteDatabase",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"security": [
-					{
-						"bearer_token": []
-					}
-				],
-				"parameters": []
-			}
-		},
-		"/api/storage/stats": {
-			"delete": {
-				"operationId": "DeleteStats",
+				"operationId": "EmptyDatabase",
 				"responses": {
 					"204": {
 						"description": "No content"
@@ -2589,6 +2573,22 @@
 						}
 					}
 				]
+			}
+		},
+		"/api/stats": {
+			"delete": {
+				"operationId": "DeleteStats",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"security": [
+					{
+						"bearer_token_optional": []
+					}
+				],
+				"parameters": []
 			}
 		},
 		"/api/matches": {

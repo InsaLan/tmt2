@@ -1,5 +1,5 @@
 import { SqlAttribute, TableSchema } from './tableSchema';
-import { createTableDB, insertDB, queryDB, updateDB } from './storage';
+import { createTableDB, flushDB, insertDB, queryDB, updateDB } from './storage';
 import { IMatch, IMatchMap } from '../../common';
 import { IPlayerStats, IMatchStats } from '../../common';
 import NodeCache from 'node-cache';
@@ -10,6 +10,7 @@ export const PLAYERS_TABLE = 'players';
 export const MATCH_MAPS_TABLE = 'matchMaps';
 export const MATCHES_TABLE = 'matches';
 export const PLAYER_MAP_STATS_TABLE = 'playerMapStats';
+export const TEAMS_TABLE = 'teams';
 
 export const setup = async () => {
 	// Create players global stats table
@@ -72,7 +73,7 @@ export const setup = async () => {
 			constraints: `REFERENCES ${PLAYERS_TABLE} (steamId)`,
 		},
 	] as SqlAttribute[];
-	const teamsTableSchema = new TableSchema('teams', teamsAttributes, ['teamName', 'steamId']);
+	const teamsTableSchema = new TableSchema(TEAMS_TABLE, teamsAttributes, ['teamName', 'steamId']);
 	await createTableDB(teamsTableSchema);
 
 	// Create player match stats table
@@ -424,4 +425,13 @@ export const getTeamPlayers = async (teamName: string): Promise<string[]> => {
 	).map((row: { name: string }) => row.name) as string[];
 	cache.set('team/' + teamName, teamPlayers);
 	return teamPlayers;
+};
+
+export const deleteAllStats = async () => {
+	await flushDB(PLAYERS_TABLE);
+	await flushDB(MATCH_MAPS_TABLE);
+	await flushDB(MATCHES_TABLE);
+	await flushDB(PLAYER_MAP_STATS_TABLE);
+	await flushDB(TEAMS_TABLE);
+	console.info('[DATABASE] All stats have been deleted.');
 };

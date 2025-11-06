@@ -1,6 +1,7 @@
-import { Controller, Delete, Get, Post, Route, Security } from '@tsoa/runtime';
+import { Controller, Delete, Get, Post, Route, Security, Request } from '@tsoa/runtime';
 
 import * as Storage from './storage';
+import multer from 'multer';
 
 @Route('/api/storage')
 @Security('bearer_token')
@@ -25,11 +26,31 @@ export class StorageController extends Controller {
 	}
 
 	@Post('/database')
-	async replaceDatabase() {}
+	async replaceDatabase(@Request() request: any): Promise<void> {
+		try {
+			const upload = multer().single('database');
+			
+			await new Promise((resolve, reject) => {
+				upload(request, request.res, (err: any) => {
+					if (err) reject(err);
+					resolve(null);
+				});
+			});
+
+			if (!request.file) {
+				this.setStatus(400);
+				return;
+			}
+
+			return Storage.replaceDB(request.file.buffer);
+		} catch (error) {
+			console.error(error);
+			this.setStatus(500);
+		}
+	}
 
 	@Delete('/database')
-	async deleteDatabase() {}
-
-	@Delete('/stats')
-	async deleteStats() {}
+	async emptyDatabase() {
+		Storage.emptyDB();
+	}
 }

@@ -50,18 +50,19 @@ export const createFetcher = (token?: string) => {
 		method: HttpMethods,
 		path: string,
 		body?: any,
-		init?: RequestInit
+		init?: RequestInit,
+		jsonify: boolean = true
 	): Promise<T | undefined> => {
 		const tkn = getToken() ?? token;
 		const response = await fetch(`${API_HOST}${path}`, {
 			...init,
 			method: method,
 			headers: {
-				'Content-Type': 'application/json; charset=UTF-8',
+				...(jsonify ? { 'Content-Type': 'application/json; charset=UTF-8' } : {}),
 				...(tkn ? { Authorization: tkn } : {}),
 				...init?.headers,
 			},
-			body: body ? JSON.stringify(body) : undefined,
+			body: body ? (jsonify ? JSON.stringify(body) : body) : undefined,
 		});
 
 		const status = response.status;
@@ -107,6 +108,7 @@ export const downloadFile = async (url: string, filename: string) => {
 	try {
 		const tkn = getToken();
 		const response = await fetch(`${API_HOST}${url}`, {
+			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json; charset=UTF-8',
 				...(tkn ? { Authorization: tkn } : {}),
@@ -123,6 +125,7 @@ export const downloadFile = async (url: string, filename: string) => {
 		a.click();
 		window.URL.revokeObjectURL(objectUrl);
 		document.body.removeChild(a);
+		return response;
 	} catch (error) {
 		console.error('Error downloading file:', error);
 	}
