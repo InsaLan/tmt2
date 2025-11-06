@@ -220,6 +220,13 @@ export const StatsTable: Component<{
 					</div>
 				</div>
 			)}
+			{props.status === 'OK' && sortedData().length === 0 && (
+				<div class="p-4">
+					<div class="flex justify-center items-center h-full p-4">
+						<span class="text-gray-500">{t('No data')}</span>
+					</div>
+				</div>
+			)}
 		</>
 	);
 };

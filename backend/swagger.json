@@ -7,16 +7,6 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
-			"NodeJS.ReadableStream": {
-				"properties": {
-					"readable": {
-						"type": "boolean"
-					}
-				},
-				"required": ["readable"],
-				"type": "object",
-				"additionalProperties": false
-			},
 			"IPlayerStats": {
 				"properties": {
 					"steamId": {
@@ -2266,6 +2256,16 @@
 				"required": ["name", "data"],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"NodeJS.ReadableStream": {
+				"properties": {
+					"readable": {
+						"type": "boolean"
+					}
+				},
+				"required": ["readable"],
+				"type": "object",
+				"additionalProperties": false
 			}
 		},
 		"securitySchemes": {
@@ -2290,63 +2290,6 @@
 		}
 	},
 	"paths": {
-		"/api/storage/database": {
-			"get": {
-				"operationId": "DownloadDatabase",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"anyOf": [
-										{
-											"$ref": "#/components/schemas/NodeJS.ReadableStream"
-										},
-										{}
-									]
-								}
-							}
-						}
-					}
-				},
-				"description": "Download the DB containing all the stats.",
-				"security": [
-					{
-						"bearer_token": []
-					}
-				],
-				"parameters": []
-			},
-			"post": {
-				"operationId": "ReplaceDatabase",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"security": [
-					{
-						"bearer_token": []
-					}
-				],
-				"parameters": []
-			},
-			"delete": {
-				"operationId": "EmptyDatabase",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"security": [
-					{
-						"bearer_token": []
-					}
-				],
-				"parameters": []
-			}
-		},
 		"/api/stats/players": {
 			"get": {
 				"operationId": "GetPlayersStats",
@@ -3570,6 +3513,63 @@
 						}
 					}
 				]
+			}
+		},
+		"/api/storage/database": {
+			"get": {
+				"operationId": "DownloadDatabase",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/NodeJS.ReadableStream"
+										},
+										{}
+									]
+								}
+							}
+						}
+					}
+				},
+				"description": "Download the DB containing all the stats.",
+				"security": [
+					{
+						"bearer_token": []
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "ReplaceDatabase",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"security": [
+					{
+						"bearer_token": []
+					}
+				],
+				"parameters": []
+			},
+			"delete": {
+				"operationId": "EmptyDatabase",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"security": [
+					{
+						"bearer_token": []
+					}
+				],
+				"parameters": []
 			}
 		}
 	},

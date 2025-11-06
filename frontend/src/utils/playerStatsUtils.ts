@@ -36,7 +36,7 @@ export const calculatePlayerRatios = (player: IPlayerStats) => {
 };
 
 // Get an oklch color for a value in a range
-export const getStatColor = (value: number | string, lowest: number, highest: number) => {
+const getStatColor = (value: number | string, lowest: number, highest: number) => {
 	if (typeof value === 'string') {
 		value = Number(value);
 	}
