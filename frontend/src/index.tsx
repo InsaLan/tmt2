@@ -3,7 +3,6 @@ import { Navigate, Route, Router } from '@solidjs/router';
 import { render } from 'solid-js/web';
 import { App } from './App';
 import { PlayersStatsPage, PlayerStatsPage, MatchesStatsPage, MatchStatsPage } from './pages/stats';
-import { DataManagementPage } from './pages/dataManagement';
 import { CreatePage } from './pages/create';
 import { DebugPage } from './pages/debug';
 import { GameServerPage } from './pages/gameServer';
@@ -14,40 +13,31 @@ import { MatchPage } from './pages/match';
 import { MatchEditPage } from './pages/matchEdit';
 import { MatchesPage } from './pages/matches';
 import { NotFoundPage } from './pages/notFound';
-import { loginType } from './utils/fetcher';
 
 import './index.css';
-import { JSX } from 'solid-js';
+import { DataManagementPage } from './pages/dataManagement';
 
-// This is just for user experience, as all the backend routes are secured anyway (but some pages don't fetch data immediately)
-const Authenticate = (props: { children: JSX.Element; type?: 'GLOBAL' | 'MATCH' }) => {
-	return loginType()?.type === 'GLOBAL' ? props.children : loginType()?.type === 'MATCH' && props.type === 'MATCH' ? props.children : <Navigate href="/login" />;
-};
-
-const renderRoutes = () => (
-	<Router root={App}>
-		{[
-			{ path: "/", component: () => <Navigate href="/stats" /> },
-			{ path: "/stats", component: () => <Navigate href="/stats/players" /> },
-			{ path: "/stats/players", component: () => <PlayersStatsPage /> },
-			{ path: "/stats/player/:id", component: () => <PlayerStatsPage /> },
-			{ path: "/stats/matches", component: () => <MatchesStatsPage /> },
-			{ path: "/stats/match/:id", component: () => <MatchStatsPage />},
-			{ path: "/data", component: () => <Authenticate><DataManagementPage /></Authenticate> },
-			{ path: "/matches", component: () => <Authenticate type='MATCH'><MatchesPage /></Authenticate> },
-			{ path: "/matches/:id", component: () => <Authenticate type='MATCH'><MatchPage /></Authenticate> },
-			{ path: "/matches/:id/edit", component: () => <Authenticate type='MATCH'><MatchEditPage /></Authenticate> },
-			{ path: "/gameservers/:ipPort", component: () => <Authenticate><GameServerPage /></Authenticate> },
-			{ path: "/gameservers", component: () => <Authenticate><GameServersPage /></Authenticate> },
-			{ path: "/login", component: LoginPage },
-			{ path: "/logout", component: LogoutPage },
-			{ path: "/create", component: () => <CreatePage /> },
-			{ path: "/debug", component: () => <Authenticate><DebugPage /></Authenticate> },
-			{ path: "/*", component: NotFoundPage },
-		].map(route => (
-			<Route path={route.path} component={route.component} />
-		))}
-	</Router>
+render(
+	() => (
+		<Router root={App}>
+			<Route path="/" component={() => <Navigate href="/stats" />} />
+			<Route path="/stats" component={() => <Navigate href="/stats/players" />} />
+			<Route path="/stats/players" component={PlayersStatsPage} />
+			<Route path="/stats/player/:id" component={PlayerStatsPage} />
+			<Route path="/stats/matches" component={MatchesStatsPage} />
+			<Route path="/stats/match/:id" component={MatchStatsPage} />
+			<Route path="/data" component={DataManagementPage} />
+			<Route path="/matches" component={MatchesPage} />
+			<Route path="/matches/:id" component={MatchPage} />
+			<Route path="/matches/:id/edit" component={MatchEditPage} />
+			<Route path="/gameservers/:ipPort" component={GameServerPage} />
+			<Route path="/gameservers" component={GameServersPage} />
+			<Route path="/login" component={LoginPage} />
+			<Route path="/logout" component={LogoutPage} />
+			<Route path="/create" component={CreatePage} />
+			<Route path="/debug" component={DebugPage} />
+			<Route path="/*" component={NotFoundPage} />
+		</Router>
+	),
+	document.getElementById('root') as HTMLElement
 );
-
-render(renderRoutes, document.getElementById('root') as HTMLElement);
