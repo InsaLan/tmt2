@@ -11,7 +11,7 @@ const checkLiveMatches = async (): Promise<boolean> => {
 	const fetcher = createFetcher();
 	const liveMatches = await fetcher<IMatchResponse[]>('GET', '/api/matches?isLive=true');
 	return liveMatches !== undefined && liveMatches.length > 0;
-}
+};
 
 const downloadDB = async () => {
 	const now = new Date();
@@ -104,7 +104,7 @@ export const DataManagementPage = () => {
 					</button>
 				</div>
 			</Card>
-			<Modal ref={errorModalRef}> 
+			<Modal ref={errorModalRef}>
 				{/* TODO: replace with a notification once that's implemented */}
 				<div class="prose">
 					<h2 class="text-error">{t('Error')}</h2>

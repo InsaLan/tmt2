@@ -5,7 +5,7 @@ import { Modal } from './Modal';
 
 // Do not use directly. Use the `mustConfirm` util instead.
 export const ConfirmationModal: Component<{
-    msg?: string;
+	msg?: string;
 	onConfirm: () => void;
 	onCancel?: () => void;
 }> = (props) => {
@@ -16,11 +16,11 @@ export const ConfirmationModal: Component<{
 		modalRef?.showModal();
 
 		const handleClose = () => {
-            if (ok) {
-                props.onConfirm();
-            } else {
-			    props.onCancel?.();
-            }
+			if (ok) {
+				props.onConfirm();
+			} else {
+				props.onCancel?.();
+			}
 		};
 		modalRef?.addEventListener('close', handleClose);
 
@@ -34,15 +34,13 @@ export const ConfirmationModal: Component<{
 			<div class="prose">
 				<h2>{t('Are you sure ?')}</h2>
 				<Show when={props.msg}>
-    				<p>
-    					{props.msg}
-    				</p>
+					<p>{props.msg}</p>
 				</Show>
 				<div class="flex justify-end gap-4">
 					<button
 						class="btn btn-neutral text-error"
 						onClick={() => {
-						    ok = true;
+							ok = true;
 							modalRef?.close();
 						}}
 					>
