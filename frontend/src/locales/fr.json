@@ -215,5 +215,6 @@
 	"Cannot perform this operation while there are live matches. Please end all matches and try again.": "Impossible d'effectuer cette opération tant qu'il y a des matchs en cours. Veuillez terminer tous les matchs et réessayer.",
 	"Confirm": "Confirmer",
 	"Cancel": "Annuler",
-	"No data": "Aucune donnée"
+	"No data": "Aucune donnée",
+	"Search...": "Rechercher..."
 }

@@ -1,7 +1,8 @@
 import { A } from '@solidjs/router';
-import { Component, createEffect, createSignal, For } from 'solid-js';
+import { Component, createEffect, createSignal, For, Show } from 'solid-js';
 import { t } from '../utils/locale';
 import { TStatus } from '../../../common';
+import { SvgArrowOutward } from '../assets/Icons';
 
 export const StatsTable: Component<{
 	headers: string[];
@@ -14,14 +15,15 @@ export const StatsTable: Component<{
 	defaultSortAsc?: boolean;
 	status: TStatus;
 	groupBy?: string;
-	detailsPrefix?: string;
-	detailsProp?: string;
+	details?: (undefined | [string, string])[]; // Array of [url prefix, prop] tuples for detail links
 }> = (props) => {
 	const [uniqueGroups, setUniqueGroups] = createSignal<string[]>([]);
 	const [sortedUniqueGroups, setSortedUniqueGroups] = createSignal<string[]>([]);
 	const [sortColumn, setSortColumn] = createSignal(props.defaultSortColumn);
 	const [sortAsc, setSortAsc] = createSignal(props.defaultSortAsc ?? true);
 	const [sortedData, setSortedData] = createSignal<any[]>([]);
+	const [filteredData, setFilteredData] = createSignal<any[]>([]);
+	const [searchQuery, setSearchQuery] = createSignal('');
 	const [sorted, setSorted] = createSignal(false);
 
 	createEffect(() => {
@@ -62,15 +64,41 @@ export const StatsTable: Component<{
 		setSorted(true);
 	});
 
-	const detailsButton = (d: any) => (
-		<td class="w-24 p-2">
+	createEffect(() => {
+		const data = sortedData();
+		if (searchQuery() === '') {
+			setFilteredData(data);
+			return;
+		}
+
+		const lowerCaseQuery = searchQuery().toLowerCase();
+		const filtered = data.filter((item) => {
+			return Object.values(item).some((value) =>
+				String(value).toLowerCase().includes(lowerCaseQuery)
+			);
+		});
+		setFilteredData(filtered);
+	});
+
+	const detailsButton = (d: any, column: number, inline: boolean) => (
+		<Show
+			when={inline}
+			fallback={
+				<A
+					href={props.details![column]![0] + d[props.details![column]![1]]}
+					class="btn btn-outline btn-sm w-full hover:no-underline"
+				>
+					{t('Details')}
+				</A>
+			}
+		>
 			<A
-				href={props.detailsPrefix + d[props.detailsProp ? props.detailsProp : '']}
-				class="btn btn-outline btn-sm w-full hover:no-underline"
+				class="align-middle btn btn-ghost btn-circle btn-xs"
+				href={props.details![column]![0] + d[props.details![column]![1]]}
 			>
-				{t('Details')}
+				<SvgArrowOutward class="size-5" />
 			</A>
-		</td>
+		</Show>
 	);
 
 	const cell = (d: any, column: string) => {
@@ -93,6 +121,11 @@ export const StatsTable: Component<{
 
 		const color = props.colorFunctions?.[columnIndex]?.(result as any);
 
+		const details =
+			props.details && props.details[columnIndex]
+				? detailsButton(d, columnIndex, true)
+				: null;
+
 		// If this column is flagged as float and the result is a number-like string,
 		// render it as two equal-width parts: left = integer (right-aligned), right = decimal (left-aligned)
 		if (props.float && props.float[columnIndex] && !isNaN(Number(result))) {
@@ -100,30 +133,37 @@ export const StatsTable: Component<{
 			const intPart = parts[0] ?? '';
 			const fracPart = parts[1] ?? '';
 			return (
-				<td class="break-words p-0 pr-2" style={color ? { color } : undefined}>
-					<div class="grid grid-cols-2 items-center">
-						<div class="w-full text-right font-mono">{intPart}</div>
-						<div class="w-full text-left font-mono">
-							{fracPart ? `.${fracPart}` : ''}
-						</div>
+				<td class="break-all min-h-12" style={color ? { color } : undefined}>
+					<div class="grid grid-cols-2 h-full items-center">
+						<div class="w-full text-right">{intPart}</div>
+						<div class="w-full text-left">{fracPart ? `.${fracPart}` : ''}</div>
 					</div>
+					{details && <div class="flex justify-end">{details}</div>}
 				</td>
 			);
 		}
 
-		if (color) {
-			return (
-				<td class="break-words text-center" style={{ color }}>
-					{result}
-				</td>
-			);
-		}
-
-		return <td class="break-words text-center">{result}</td>;
+		return (
+			<td class="break-all text-center min-h-12" style={color ? { color } : undefined}>
+				<div class={`flex items-center ${details ? 'justify-between' : 'justify-center'}`}>
+					<span>{result}</span>
+					{details}
+				</div>
+			</td>
+		);
 	};
 
 	return (
 		<>
+			<div class="flex justify-end mb-1">
+				<input
+					type="text"
+					placeholder={t('Search...')}
+					class="input input-sm w-full md:w-64"
+					value={searchQuery()}
+					onInput={(e) => setSearchQuery(e.currentTarget.value)}
+				/>
+			</div>
 			<table class="table table-fixed">
 				<thead>
 					<tr class="border-b border-gray-700">
@@ -165,7 +205,7 @@ export const StatsTable: Component<{
 						<For each={sortedUniqueGroups()}>
 							{(group) => (
 								<>
-									{sortedData()
+									{filteredData()
 										.filter((d) => props.groupBy && d[props.groupBy] === group)
 										.map((d, index, a) => {
 											let cl = '';
@@ -184,7 +224,16 @@ export const StatsTable: Component<{
 															return <td></td>;
 														}}
 													</For>
-													{props.detailsPrefix && detailsButton(d)}
+													<Show
+														when={
+															props.details &&
+															props.details.length >
+																props.columns.length
+														}
+													>
+														hello
+													</Show>
+													{/* {props.detailsPrefix && detailsButton(d)} */}
 												</tr>
 											);
 										})}
@@ -192,11 +241,21 @@ export const StatsTable: Component<{
 							)}
 						</For>
 					) : (
-						<For each={sortedData()}>
+						<For each={filteredData()}>
 							{(d) => (
 								<tr class="border-b border-gray-800 last:border-b-0">
 									<For each={props.columns}>{(column) => cell(d, column)}</For>
-									{props.detailsPrefix && detailsButton(d)}
+									<Show
+										when={
+											props.details &&
+											props.details.length === props.columns.length + 1
+										}
+									>
+										<td class="w-24 p-2">
+											{detailsButton(d, props.columns.length, false)}
+										</td>
+									</Show>
+									{/* {props.detailsPrefix && detailsButton(d)} */}
 								</tr>
 							)}
 						</For>
@@ -229,6 +288,7 @@ export const StatsTable: Component<{
 					</div>
 				</div>
 			)}
+
 			{props.status === 'OK' && sortedData().length === 0 && (
 				<div class="p-4">
 					<div class="flex justify-center items-center h-full p-4">
