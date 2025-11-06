@@ -164,7 +164,6 @@ export const downloadDB = async (): Promise<NodeJS.ReadableStream> => {
 };
 
 export const replaceDB = async (buffer: any) => {
-	console.log('');
 	const tempPath = path.join(STORAGE_FOLDER, 'temp.sqlite');
 	fs.writeFileSync(tempPath, buffer);
 	const tempDb = new Database(tempPath);

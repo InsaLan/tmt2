@@ -231,9 +231,12 @@ export const StatsTable: Component<{
 																props.columns.length
 														}
 													>
-														hello
+														{detailsButton(
+															d,
+															props.columns.length,
+															false
+														)}
 													</Show>
-													{/* {props.detailsPrefix && detailsButton(d)} */}
 												</tr>
 											);
 										})}
@@ -255,7 +258,6 @@ export const StatsTable: Component<{
 											{detailsButton(d, props.columns.length, false)}
 										</td>
 									</Show>
-									{/* {props.detailsPrefix && detailsButton(d)} */}
 								</tr>
 							)}
 						</For>
