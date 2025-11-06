@@ -1,6 +1,7 @@
 import { Controller, Delete, Get, Post, Route, Security, Request } from '@tsoa/runtime';
 
 import * as Storage from './storage';
+import * as MatchService from './matchService';
 import multer from 'multer';
 
 @Route('/api/storage')
@@ -27,6 +28,10 @@ export class StorageController extends Controller {
 
 	@Post('/database')
 	async replaceDatabase(@Request() request: any): Promise<void> {
+		if (MatchService.getAllLive().length > 0) {
+			throw { status: 409, message: `Can't modify database while matches are running.` };
+		}
+		
 		try {
 			const upload = multer().single('database');
 			
@@ -51,6 +56,10 @@ export class StorageController extends Controller {
 
 	@Delete('/database')
 	async emptyDatabase() {
+		if (MatchService.getAllLive().length > 0) {
+			throw { status: 409, message: `Can't modify database while matches are running.` };
+		}
+		
 		Storage.emptyDB();
 	}
 }

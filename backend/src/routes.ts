@@ -4,8 +4,6 @@
 import type { TsoaRoute } from '@tsoa/runtime';
 import { fetchMiddlewares, ExpressTemplateService } from '@tsoa/runtime';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { StorageController } from './storageController';
-// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { StatsController } from './statsController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { MatchesController } from './matchesController';
@@ -19,6 +17,8 @@ import { ConfigController } from './configController';
 import { AuthController } from './authController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { PresetsController } from './presetsController';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { StorageController } from './storageController';
 import { expressAuthentication } from './auth';
 // @ts-ignore - no great way to install types from subpackage
 import type { Request as ExRequest, Response as ExResponse, RequestHandler, Router } from 'express';
@@ -33,14 +33,6 @@ const expressAuthenticationRecasted = expressAuthentication as (
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 const models: TsoaRoute.Models = {
-	'NodeJS.ReadableStream': {
-		dataType: 'refObject',
-		properties: {
-			readable: { dataType: 'boolean', required: true },
-		},
-		additionalProperties: false,
-	},
-	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 	IPlayerStats: {
 		dataType: 'refObject',
 		properties: {
@@ -1341,6 +1333,14 @@ const models: TsoaRoute.Models = {
 		additionalProperties: false,
 	},
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	'NodeJS.ReadableStream': {
+		dataType: 'refObject',
+		properties: {
+			readable: { dataType: 'boolean', required: true },
+		},
+		additionalProperties: false,
+	},
+	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 };
 const templateService = new ExpressTemplateService(models, {
 	noImplicitAdditionalProperties: 'silently-remove-extras',
@@ -1355,122 +1355,6 @@ export function RegisterRoutes(app: Router) {
 	//      Please look into the "controllerPathGlobs" config option described in the readme: https://github.com/lukeautry/tsoa
 	// ###########################################################################################################
 
-	const argsStorageController_downloadDatabase: Record<string, TsoaRoute.ParameterSchema> = {};
-	app.get(
-		'/api/storage/database',
-		authenticateMiddleware([{ bearer_token: [] }]),
-		...fetchMiddlewares<RequestHandler>(StorageController),
-		...fetchMiddlewares<RequestHandler>(StorageController.prototype.downloadDatabase),
-
-		async function StorageController_downloadDatabase(
-			request: ExRequest,
-			response: ExResponse,
-			next: any
-		) {
-			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-			let validatedArgs: any[] = [];
-			try {
-				validatedArgs = templateService.getValidatedArgs({
-					args: argsStorageController_downloadDatabase,
-					request,
-					response,
-				});
-
-				const controller = new StorageController();
-
-				await templateService.apiHandler({
-					methodName: 'downloadDatabase',
-					controller,
-					response,
-					next,
-					validatedArgs,
-					successStatus: undefined,
-				});
-			} catch (err) {
-				return next(err);
-			}
-		}
-	);
-	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-	const argsStorageController_replaceDatabase: Record<string, TsoaRoute.ParameterSchema> = {
-		request: { in: 'request', name: 'request', required: true, dataType: 'object' },
-	};
-	app.post(
-		'/api/storage/database',
-		authenticateMiddleware([{ bearer_token: [] }]),
-		...fetchMiddlewares<RequestHandler>(StorageController),
-		...fetchMiddlewares<RequestHandler>(StorageController.prototype.replaceDatabase),
-
-		async function StorageController_replaceDatabase(
-			request: ExRequest,
-			response: ExResponse,
-			next: any
-		) {
-			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-			let validatedArgs: any[] = [];
-			try {
-				validatedArgs = templateService.getValidatedArgs({
-					args: argsStorageController_replaceDatabase,
-					request,
-					response,
-				});
-
-				const controller = new StorageController();
-
-				await templateService.apiHandler({
-					methodName: 'replaceDatabase',
-					controller,
-					response,
-					next,
-					validatedArgs,
-					successStatus: undefined,
-				});
-			} catch (err) {
-				return next(err);
-			}
-		}
-	);
-	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-	const argsStorageController_emptyDatabase: Record<string, TsoaRoute.ParameterSchema> = {};
-	app.delete(
-		'/api/storage/database',
-		authenticateMiddleware([{ bearer_token: [] }]),
-		...fetchMiddlewares<RequestHandler>(StorageController),
-		...fetchMiddlewares<RequestHandler>(StorageController.prototype.emptyDatabase),
-
-		async function StorageController_emptyDatabase(
-			request: ExRequest,
-			response: ExResponse,
-			next: any
-		) {
-			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-			let validatedArgs: any[] = [];
-			try {
-				validatedArgs = templateService.getValidatedArgs({
-					args: argsStorageController_emptyDatabase,
-					request,
-					response,
-				});
-
-				const controller = new StorageController();
-
-				await templateService.apiHandler({
-					methodName: 'emptyDatabase',
-					controller,
-					response,
-					next,
-					validatedArgs,
-					successStatus: undefined,
-				});
-			} catch (err) {
-				return next(err);
-			}
-		}
-	);
-	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 	const argsStatsController_getPlayersStats: Record<string, TsoaRoute.ParameterSchema> = {};
 	app.get(
 		'/api/stats/players',
@@ -2896,6 +2780,122 @@ export function RegisterRoutes(app: Router) {
 
 				await templateService.apiHandler({
 					methodName: 'deletePreset',
+					controller,
+					response,
+					next,
+					validatedArgs,
+					successStatus: undefined,
+				});
+			} catch (err) {
+				return next(err);
+			}
+		}
+	);
+	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsStorageController_downloadDatabase: Record<string, TsoaRoute.ParameterSchema> = {};
+	app.get(
+		'/api/storage/database',
+		authenticateMiddleware([{ bearer_token: [] }]),
+		...fetchMiddlewares<RequestHandler>(StorageController),
+		...fetchMiddlewares<RequestHandler>(StorageController.prototype.downloadDatabase),
+
+		async function StorageController_downloadDatabase(
+			request: ExRequest,
+			response: ExResponse,
+			next: any
+		) {
+			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+			let validatedArgs: any[] = [];
+			try {
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsStorageController_downloadDatabase,
+					request,
+					response,
+				});
+
+				const controller = new StorageController();
+
+				await templateService.apiHandler({
+					methodName: 'downloadDatabase',
+					controller,
+					response,
+					next,
+					validatedArgs,
+					successStatus: undefined,
+				});
+			} catch (err) {
+				return next(err);
+			}
+		}
+	);
+	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsStorageController_replaceDatabase: Record<string, TsoaRoute.ParameterSchema> = {
+		request: { in: 'request', name: 'request', required: true, dataType: 'object' },
+	};
+	app.post(
+		'/api/storage/database',
+		authenticateMiddleware([{ bearer_token: [] }]),
+		...fetchMiddlewares<RequestHandler>(StorageController),
+		...fetchMiddlewares<RequestHandler>(StorageController.prototype.replaceDatabase),
+
+		async function StorageController_replaceDatabase(
+			request: ExRequest,
+			response: ExResponse,
+			next: any
+		) {
+			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+			let validatedArgs: any[] = [];
+			try {
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsStorageController_replaceDatabase,
+					request,
+					response,
+				});
+
+				const controller = new StorageController();
+
+				await templateService.apiHandler({
+					methodName: 'replaceDatabase',
+					controller,
+					response,
+					next,
+					validatedArgs,
+					successStatus: undefined,
+				});
+			} catch (err) {
+				return next(err);
+			}
+		}
+	);
+	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsStorageController_emptyDatabase: Record<string, TsoaRoute.ParameterSchema> = {};
+	app.delete(
+		'/api/storage/database',
+		authenticateMiddleware([{ bearer_token: [] }]),
+		...fetchMiddlewares<RequestHandler>(StorageController),
+		...fetchMiddlewares<RequestHandler>(StorageController.prototype.emptyDatabase),
+
+		async function StorageController_emptyDatabase(
+			request: ExRequest,
+			response: ExResponse,
+			next: any
+		) {
+			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+			let validatedArgs: any[] = [];
+			try {
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsStorageController_emptyDatabase,
+					request,
+					response,
+				});
+
+				const controller = new StorageController();
+
+				await templateService.apiHandler({
+					methodName: 'emptyDatabase',
 					controller,
 					response,
 					next,

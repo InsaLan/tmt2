@@ -2,6 +2,7 @@ import { Controller, Delete, Get, Query, Route, Security } from '@tsoa/runtime';
 
 import { IPlayerStats, IMatchStats } from '../../common';
 
+import * as MatchService from './matchService';
 import * as StatsLogger from './statsLogger';
 
 @Route('/api/stats')
@@ -63,8 +64,12 @@ export class StatsController extends Controller {
 		return StatsLogger.getTeamPlayers(id);
 	}
 
-	@Delete('/')
+	@Delete()
 	async deleteStats() {
+		if (MatchService.getAllLive().length > 0) {
+			throw { status: 409, message: `Can't modify database while matches are running.` };
+		}
+		
 		StatsLogger.deleteAllStats();
 	}
 }
