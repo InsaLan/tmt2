@@ -347,7 +347,7 @@ export const getMatchPlayersStats = async (matchId: string): Promise<IPlayerStat
 	return playerStats;
 };
 
-export const getMatchesStats = async (steamId?: string): Promise<IMatchStats[]> => {
+export const getMatchesStats = async (): Promise<IMatchStats[]> => {
 	const cached = cache.get('matches') as IMatchStats[];
 	if (cached) return cached;
 

@@ -1,4 +1,5 @@
 import { IPlayerStats } from '../../../common';
+import { currentMode } from './theme';
 
 export const assemblePlayers = (players: IPlayerStats[]) => {
 	let addedSteamIds: Set<string> = new Set();
@@ -40,7 +41,7 @@ const getStatColor = (value: number | string, lowest: number, highest: number) =
 	if (typeof value === 'string') {
 		value = Number(value);
 	}
-	const lightness = 0.79;
+	const lightness = currentMode() === 'dark' ? 0.79 : 0.65;
 	const chroma = 0.125;
 	const hue_low = 20;
 	const hue_high = 154;
