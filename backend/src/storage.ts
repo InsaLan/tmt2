@@ -9,7 +9,7 @@ const DATABASE_PATH = path.join(STORAGE_FOLDER, 'database.sqlite');
 if (!fs.existsSync(STORAGE_FOLDER)) {
 	fs.mkdirSync(STORAGE_FOLDER, { recursive: true });
 }
-const DATABASE = new Database(DATABASE_PATH);
+let DATABASE = new Database(DATABASE_PATH);
 
 function normalizeBindValue(v: any): any {
 	if (v === undefined) return null;
@@ -155,4 +155,45 @@ export const queryDB = async (query: string) => {
 export const list = async (prefix: string, suffix: string) => {
 	const files = await fsp.readdir(STORAGE_FOLDER);
 	return files.filter((fileName) => fileName.startsWith(prefix) && fileName.endsWith(suffix));
+};
+
+export const downloadDB = async (): Promise<NodeJS.ReadableStream> => {
+	await fs.promises.access(DATABASE_PATH, fs.constants.F_OK);
+	const stream = fs.createReadStream(DATABASE_PATH);
+	return stream;
+};
+
+export const replaceDB = async (buffer: any) => {
+	const tempPath = path.join(STORAGE_FOLDER, 'temp.sqlite');
+	fs.writeFileSync(tempPath, buffer);
+	const tempDb = new Database(tempPath);
+	// Verify it's a valid SQLite database
+	try {
+		try {
+			tempDb.prepare('SELECT name FROM sqlite_master LIMIT 1').get();
+			tempDb.close();
+		} catch (err) {
+			tempDb.close();
+			fs.unlinkSync(tempPath);
+			throw new Error('Invalid SQLite database file');
+		}
+	} catch (error) {
+		throw { status: 415, message: `Invalid file format. Should be an SQLite database.` };
+	}
+	DATABASE.close();
+	fs.renameSync(tempPath, DATABASE_PATH);
+	DATABASE = new Database(DATABASE_PATH);
+	console.info('[STORAGE] Database replaced successfully.');
+};
+
+export const emptyDB = async () => {
+	const tables = (
+		(await queryDB(
+			`SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%';`
+		)) as Array<{ name: string }>
+	).map((table) => table.name);
+	for (const table of tables) {
+		flushDB(table);
+	}
+	console.info('[STORAGE] Database emptied successfully.');
 };

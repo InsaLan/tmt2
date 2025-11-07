@@ -7,6 +7,103 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
+			"IPlayerStats": {
+				"properties": {
+					"steamId": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"kills": {
+						"type": "number",
+						"format": "double"
+					},
+					"deaths": {
+						"type": "number",
+						"format": "double"
+					},
+					"assists": {
+						"type": "number",
+						"format": "double"
+					},
+					"hits": {
+						"type": "number",
+						"format": "double"
+					},
+					"headshots": {
+						"type": "number",
+						"format": "double"
+					},
+					"rounds": {
+						"type": "number",
+						"format": "double"
+					},
+					"damages": {
+						"type": "number",
+						"format": "double"
+					},
+					"kd": {
+						"type": "number",
+						"format": "double"
+					},
+					"hsPct": {
+						"type": "number",
+						"format": "double"
+					},
+					"adr": {
+						"type": "number",
+						"format": "double"
+					},
+					"map": {
+						"type": "string"
+					},
+					"matchId": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"steamId",
+					"name",
+					"kills",
+					"deaths",
+					"assists",
+					"hits",
+					"headshots",
+					"rounds",
+					"damages"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IMatchStats": {
+				"properties": {
+					"matchId": {
+						"type": "string"
+					},
+					"teamA": {
+						"type": "string"
+					},
+					"teamAScore": {
+						"type": "number",
+						"format": "double"
+					},
+					"teamB": {
+						"type": "string"
+					},
+					"teamBScore": {
+						"type": "number",
+						"format": "double"
+					},
+					"timestamp": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": ["matchId", "teamA", "teamAScore", "teamB", "teamBScore", "timestamp"],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"TMatchState": {
 				"type": "string",
 				"enum": ["ELECTION", "MATCH_MAP", "FINISHED"],
@@ -2159,6 +2256,16 @@
 				"required": ["name", "data"],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"NodeJS.ReadableStream": {
+				"properties": {
+					"readable": {
+						"type": "boolean"
+					}
+				},
+				"required": ["readable"],
+				"type": "object",
+				"additionalProperties": false
 			}
 		},
 		"securitySchemes": {
@@ -2183,6 +2290,250 @@
 		}
 	},
 	"paths": {
+		"/api/stats/players": {
+			"get": {
+				"operationId": "GetPlayersStats",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/IPlayerStats"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get global player statistics.",
+				"security": [
+					{
+						"bearer_token_optional": []
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/api/stats/players/match": {
+			"get": {
+				"operationId": "GetMatchPlayersStats",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/IPlayerStats"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get the stats of all the players for a match.",
+				"security": [
+					{
+						"bearer_token_optional": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/stats/matches": {
+			"get": {
+				"operationId": "GetMatchesStats",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/IMatchStats"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get global match statistics.",
+				"security": [
+					{
+						"bearer_token_optional": []
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/api/stats/match": {
+			"get": {
+				"operationId": "GetMatchStats",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IMatchStats"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get match stats for a specific match.",
+				"security": [
+					{
+						"bearer_token_optional": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/stats/player": {
+			"get": {
+				"operationId": "GetPlayerStats",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IPlayerStats"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get the total stats of a player.",
+				"security": [
+					{
+						"bearer_token_optional": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/stats/matches/player": {
+			"get": {
+				"operationId": "GetPlayerMatchesStats",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/IPlayerStats"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get the stats of a player, divided by match.",
+				"security": [
+					{
+						"bearer_token_optional": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/stats/team": {
+			"get": {
+				"operationId": "GetTeamPlayers",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"type": "string"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get all the players for a team.",
+				"security": [
+					{
+						"bearer_token_optional": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/stats": {
+			"delete": {
+				"operationId": "DeleteStats",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"security": [
+					{
+						"bearer_token_optional": []
+					}
+				],
+				"parameters": []
+			}
+		},
 		"/api/matches": {
 			"post": {
 				"operationId": "CreateMatch",
@@ -3162,6 +3513,63 @@
 						}
 					}
 				]
+			}
+		},
+		"/api/storage/database": {
+			"get": {
+				"operationId": "DownloadDatabase",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/NodeJS.ReadableStream"
+										},
+										{}
+									]
+								}
+							}
+						}
+					}
+				},
+				"description": "Download the DB containing all the stats.",
+				"security": [
+					{
+						"bearer_token": []
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "ReplaceDatabase",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"security": [
+					{
+						"bearer_token": []
+					}
+				],
+				"parameters": []
+			},
+			"delete": {
+				"operationId": "EmptyDatabase",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"security": [
+					{
+						"bearer_token": []
+					}
+				],
+				"parameters": []
 			}
 		}
 	},
