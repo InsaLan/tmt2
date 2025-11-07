@@ -9,7 +9,7 @@ const DATABASE_PATH = path.join(STORAGE_FOLDER, 'database.sqlite');
 if (!fs.existsSync(STORAGE_FOLDER)) {
 	fs.mkdirSync(STORAGE_FOLDER, { recursive: true });
 }
-const DATABASE = new Database(DATABASE_PATH);
+let DATABASE = new Database(DATABASE_PATH);
 
 function normalizeBindValue(v: any): any {
 	if (v === undefined) return null;
@@ -169,20 +169,20 @@ export const replaceDB = async (buffer: any) => {
 	const tempDb = new Database(tempPath);
 	// Verify it's a valid SQLite database
 	try {
-		await new Promise((resolve, reject) => {
-			tempDb.get('SELECT name FROM sqlite_master LIMIT 1', (err) => {
-				tempDb.close();
-				if (err) {
-					fs.unlinkSync(tempPath);
-					reject(new Error('Invalid SQLite database file'));
-				}
-				resolve(null);
-			});
-		});
+		try {
+			tempDb.prepare('SELECT name FROM sqlite_master LIMIT 1').get();
+			tempDb.close();
+		} catch (err) {
+			tempDb.close();
+			fs.unlinkSync(tempPath);
+			throw new Error('Invalid SQLite database file');
+		}
 	} catch (error) {
 		throw { status: 415, message: `Invalid file format. Should be an SQLite database.` };
 	}
+	DATABASE.close();
 	fs.renameSync(tempPath, DATABASE_PATH);
+	DATABASE = new Database(DATABASE_PATH);
 	console.info('[STORAGE] Database replaced successfully.');
 };
 
