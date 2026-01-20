@@ -113,7 +113,7 @@ const Presets: Component<{
 	return (
 		<>
 			<div class="flex items-end space-x-2">
-				<div class="flex-grow">
+				<div class="grow">
 					<SelectInput
 						label={t('Select Preset')}
 						onInput={(e) => {
@@ -151,7 +151,7 @@ const Presets: Component<{
 			</div>
 			<Show when={loginType()?.type === 'GLOBAL'}>
 				<div class="flex items-end space-x-2">
-					<div class="flex-grow">
+					<div class="grow">
 						<TextInput
 							label={t('Preset Name')}
 							value={presetName()}

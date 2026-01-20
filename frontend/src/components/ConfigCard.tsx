@@ -2,7 +2,7 @@ import { Component, createEffect, createSignal, onMount } from 'solid-js';
 import { IConfig, IConfigUpdateDto } from '../../../common';
 import { Card } from './Card';
 import { t } from '../utils/locale';
-import { ToggleInput } from './Inputs';
+import { CheckboxInput } from './Inputs';
 import { createFetcher } from '../utils/fetcher';
 
 export const ConfigCard: Component = () => {
@@ -24,7 +24,7 @@ export const ConfigCard: Component = () => {
 
 	return (
 		<Card>
-			<ToggleInput
+			<CheckboxInput
 				label={t('Allow Anyone to Create Matches')}
 				labelTopRight={t(
 					'Even visitors that are not logged in with a global token will be able to create matches'
