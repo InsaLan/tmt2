@@ -3,6 +3,7 @@ import { Component, createEffect, createSignal, For, Show } from 'solid-js';
 import { t } from '../utils/locale';
 import { TStatus } from '../../../common';
 import { SvgArrowOutward } from '../assets/Icons';
+import { TextInput } from './Inputs';
 
 export const StatsTable: Component<{
 	headers: string[];
@@ -156,7 +157,7 @@ export const StatsTable: Component<{
 	return (
 		<>
 			<div class="flex justify-end mb-1">
-				<input
+				<TextInput
 					type="text"
 					placeholder={t('Search...')}
 					class="input input-sm w-full md:w-64"

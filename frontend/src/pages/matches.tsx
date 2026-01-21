@@ -211,7 +211,7 @@ export const MatchesPage: Component = () => {
 						</For>
 					</SelectInput>
 
-					<div class="flex-grow"></div>
+					<div class="flex"></div>
 
 					<div class="dropdown dropdown-end">
 						<label tabindex="0" class="btn btn-ghost m-1">
@@ -220,7 +220,7 @@ export const MatchesPage: Component = () => {
 						</label>
 						<div
 							tabindex="0"
-							class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
+							class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow"
 						>
 							<For each={MatchTableColumns}>
 								{(column) => (
