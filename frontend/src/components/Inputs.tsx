@@ -33,9 +33,11 @@ export const TextInput: Component<
 	return (
 		<div class={local.containerClass}>
 			<label>
-				<div class="flex pb-1 pt-3">
-					<span class="label grow">{local.label}</span>
-					<span class="label">{local.labelTopRight}</span>
+				<div class="flex flex-col pb-1 pt-3 md:flex-row">
+					<span class="label grow whitespace-normal wrap-break-word">{local.label}</span>
+					<span class="label whitespace-normal wrap-break-word">
+						{local.labelTopRight}
+					</span>
 				</div>
 				<input
 					class={(local.class ?? '') + ' input w-full focus:outline-none border-2'}
@@ -57,13 +59,18 @@ export const TextArea: Component<
 	return (
 		<div>
 			<label>
-				<div class="flex pb-1 pt-3">
-					<span class="label grow">{local.label}</span>
-					<span class="label">{local.labelTopRight}</span>
+				<div class="flex flex-col pb-1 pt-3 md:flex-row">
+					<span class="label grow whitespace-normal wrap-break-word">{local.label}</span>
+					<span class="label whitespace-normal wrap-break-word">
+						{local.labelTopRight}
+					</span>
 				</div>
 				<textarea
 					{...others}
-					class={(local.class ?? '') + ' textarea w-full focus:outline-none'}
+					class={
+						(local.class ?? '') +
+						' textarea w-full focus:outline-none overflow-x-auto whitespace-pre'
+					}
 				></textarea>
 			</label>
 		</div>
@@ -88,9 +95,11 @@ export const SelectInput: Component<
 	return (
 		<div>
 			<label>
-				<div class="flex pb-1 pt-3">
-					<span class="label grow">{local.label}</span>
-					<span class="label">{local.labelTopRight}</span>
+				<div class="flex flex-col pb-1 pt-3 md:flex-row">
+					<span class="label grow whitespace-normal wrap-break-word">{local.label}</span>
+					<span class="label whitespace-normal wrap-break-word">
+						{local.labelTopRight}
+					</span>
 				</div>
 				<select
 					class={(local.class ?? '') + ' select w-full focus:outline-none border-2'}

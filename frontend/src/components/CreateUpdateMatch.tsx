@@ -111,8 +111,8 @@ const Presets: Component<{
 	};
 
 	return (
-		<>
-			<div class="flex items-end space-x-2">
+		<div class="pb-4">
+			<div class="flex flex-col items-stretch space-y-2 md:flex-row md:space-x-2 md:space-y-0 md:items-end">
 				<div class="grow">
 					<SelectInput
 						label={t('Select Preset')}
@@ -138,7 +138,7 @@ const Presets: Component<{
 						</For>
 					</SelectInput>
 				</div>
-				<Show when={loginType()?.type === 'UNAUTHORIZED'}>
+				<Show when={loginType()?.type !== 'UNAUTHORIZED'}>
 					<button
 						class="btn"
 						onClick={() => deletePreset()}
@@ -150,7 +150,7 @@ const Presets: Component<{
 				</Show>
 			</div>
 			<Show when={loginType()?.type === 'GLOBAL'}>
-				<div class="flex items-end space-x-2">
+				<div class="flex flex-col items-stretch space-y-2 md:flex-row md:space-x-2 md:space-y-0 md:items-end">
 					<div class="grow">
 						<TextInput
 							label={t('Preset Name')}
@@ -187,7 +187,7 @@ const Presets: Component<{
 					</button>
 				</div>
 			</Show>
-		</>
+		</div>
 	);
 };
 
@@ -318,7 +318,7 @@ export const CreateUpdateMatch: Component<
 						}}
 					/>
 				</Show>
-				<fieldset class="fieldset">
+				<fieldset class="fieldset pb-4">
 					<legend class="fieldset-legend">{t('Teams')}</legend>
 					<TextInput
 						label={t('Team A Name')}
@@ -343,7 +343,7 @@ export const CreateUpdateMatch: Component<
 				</fieldset>
 			</Show>
 
-			<fieldset class="fieldset">
+			<fieldset class="fieldset pb-4">
 				<legend class="fieldset-legend">{t('Game Server')}</legend>
 				<Show when={props.mode === 'CREATE'}>
 					<CheckboxInput
@@ -397,7 +397,7 @@ export const CreateUpdateMatch: Component<
 			</fieldset>
 
 			<Show when={props.match.isStopped !== true}>
-				<fieldset class="fieldset">
+				<fieldset class="fieldset pb-4">
 					<legend class="fieldset-legend">{t('Maps')}</legend>
 					<TextArea
 						value={dto.mapPool.join('\n')}
@@ -556,7 +556,7 @@ export const CreateUpdateMatch: Component<
 					</Modal>
 				</fieldset>
 
-				<fieldset class="fieldset">
+				<fieldset class="fieldset pb-4">
 					<legend class="fieldset-legend">{t('RCON Commands')}</legend>
 					<div>
 						Available placeholders:
@@ -638,7 +638,7 @@ export const CreateUpdateMatch: Component<
 				</fieldset>
 			</Show>
 
-			<fieldset class="fieldset">
+			<fieldset class="fieldset pb-4">
 				<legend class="fieldset-legend">
 					{t('Advanced Settings')}
 					<Switch>
@@ -675,7 +675,7 @@ export const CreateUpdateMatch: Component<
 						(showAdvanced() ? 'collapse-open' : 'collapse-close')
 					}
 				>
-					<fieldset class="fieldset">
+					<fieldset class="fieldset pb-4">
 						<Show when={props.match.isStopped !== true}>
 							<SelectInput
 								label={t('Mode')}
