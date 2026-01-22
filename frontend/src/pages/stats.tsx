@@ -447,34 +447,34 @@ export const PlayerStatsPage = () => {
 								/>
 							</span>
 						</div>
-						<div class="prose text-center mx-auto pt-4 flex justify-center items-center">
+						<div class="overflow-x-auto prose text-center mx-auto pt-4 pb-4 flex">
 							<div class="flex items-center">
-								<div class="px-4">
+								<div class="px-4 whitespace-nowrap">
 									<h3 class="m-0">{t('Kills')}</h3>
 									{player()?.kills}
 								</div>
 								<div class="border-r border-gray-300 h-16"></div>
-								<div class="px-4">
+								<div class="px-4 whitespace-nowrap">
 									<h3 class="m-0">{t('Deaths')}</h3>
 									{player()?.deaths}
 								</div>
 								<div class="border-r border-gray-300 h-16"></div>
-								<div class="px-4">
+								<div class="px-4 whitespace-nowrap">
 									<h3 class="m-0">{t('Assists')}</h3>
 									{player()?.assists}
 								</div>
 								<div class="border-r border-gray-300 h-16"></div>
-								<div class="px-4">
+								<div class="px-4 whitespace-nowrap">
 									<h3 class="m-0">{t('K/D')}</h3>
 									{player()?.kd?.toFixed(2)}
 								</div>
 								<div class="border-r border-gray-300 h-16"></div>
-								<div class="px-4">
+								<div class="px-4 whitespace-nowrap">
 									<h3 class="m-0">{t('Headshot %')}</h3>
 									{player()?.hsPct?.toFixed(2)}
 								</div>
 								<div class="border-r border-gray-300 h-16"></div>
-								<div class="px-4">
+								<div class="px-4 whitespace-nowrap">
 									<h3 class="m-0">{t('ADR')}</h3>
 									{player()?.adr?.toFixed(2)}
 								</div>
