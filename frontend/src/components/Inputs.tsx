@@ -108,7 +108,9 @@ export const SelectInput: Component<
 					{local.children}
 				</select>
 				<div class="flex pt-2">
-					<span class="label grow whitespace-normal wrap-break-word">{local.labelBottomLeft}</span>
+					<span class="label grow whitespace-normal wrap-break-word">
+						{local.labelBottomLeft}
+					</span>
 				</div>
 			</label>
 		</div>
