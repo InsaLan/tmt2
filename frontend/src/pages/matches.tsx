@@ -184,7 +184,7 @@ export const MatchesPage: Component = () => {
 			</Show>
 
 			<Card>
-				<div class="flex w-full flex-row space-x-8 place-items-end">
+				<div class="flex flex-col space-y-2 items-center md:flex-row md:space-y-0 md:space-x-4 md:justify-between">
 					<SelectInput
 						onInput={(e) =>
 							setSearchParams(

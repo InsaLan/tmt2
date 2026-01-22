@@ -9,7 +9,7 @@ export const CheckboxInput: Component<
 	const [local, others] = splitProps(props, ['label', 'class', 'labelTopRight']);
 	return (
 		<div>
-			<label class="label">
+			<label class="label whitespace-normal wrap-break-word">
 				<input type="checkbox" class={(local.class ?? '') + ' checkbox'} {...others} />
 				{local.label}
 			</label>
@@ -107,8 +107,8 @@ export const SelectInput: Component<
 				>
 					{local.children}
 				</select>
-				<div class="flex">
-					<span class="label grow">{local.labelBottomLeft}</span>
+				<div class="flex pt-2">
+					<span class="label grow whitespace-normal wrap-break-word">{local.labelBottomLeft}</span>
 				</div>
 			</label>
 		</div>
