@@ -88,7 +88,7 @@ const NavBar: Component = () => {
 				</div>
 				<div class="align-middle text-l lg:inline-block font-bold">TMT2</div>
 			</div>
-			<div class="navbar-center hidden lg:flex">
+			<div class="navbar-center hidden lg:flex gap-4">
 				<Links />
 			</div>
 			<div class="navbar-end">
