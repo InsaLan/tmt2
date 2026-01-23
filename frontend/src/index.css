@@ -2,10 +2,6 @@
 @plugin "daisyui";
 @plugin "@tailwindcss/typography";
 
-a:hover {
-	text-decoration: underline;
-}
-
 .lds-ellipsis {
 	display: inline-block;
 	position: relative;

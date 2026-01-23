@@ -87,7 +87,7 @@ export const StatsTable: Component<{
 			fallback={
 				<A
 					href={props.details![column]![0] + d[props.details![column]![1]]}
-					class="btn btn-outline btn-sm w-full hover:no-underline"
+					class="btn btn-outline btn-sm w-full"
 				>
 					{t('Details')}
 				</A>
