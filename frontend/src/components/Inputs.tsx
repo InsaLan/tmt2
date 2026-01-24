@@ -33,7 +33,12 @@ export const TextInput: Component<
 	return (
 		<div class={local.containerClass}>
 			<label>
-				<div class="flex flex-col pb-1 pt-3 md:flex-row">
+				<div
+					class={
+						'flex flex-col md:flex-row pb-0.5' +
+						(local.label || local.labelTopRight ? '' : ' hidden')
+					}
+				>
 					<span class="label grow whitespace-normal wrap-break-word">{local.label}</span>
 					<span class="label whitespace-normal wrap-break-word">
 						{local.labelTopRight}
@@ -59,7 +64,12 @@ export const TextArea: Component<
 	return (
 		<div>
 			<label>
-				<div class="flex flex-col pb-1 pt-3 md:flex-row">
+				<div
+					class={
+						'flex flex-col md:flex-row pb-0.5' +
+						(local.label || local.labelTopRight ? '' : ' hidden')
+					}
+				>
 					<span class="label grow whitespace-normal wrap-break-word">{local.label}</span>
 					<span class="label whitespace-normal wrap-break-word">
 						{local.labelTopRight}
@@ -95,7 +105,12 @@ export const SelectInput: Component<
 	return (
 		<div>
 			<label>
-				<div class="flex flex-col pb-1 pt-3 md:flex-row">
+				<div
+					class={
+						'flex flex-col md:flex-row pb-0.5' +
+						(local.label || local.labelTopRight ? '' : ' hidden')
+					}
+				>
 					<span class="label grow whitespace-normal wrap-break-word">{local.label}</span>
 					<span class="label whitespace-normal wrap-break-word">
 						{local.labelTopRight}

@@ -81,7 +81,7 @@ const NavBar: Component = () => {
 				</div>
 				<div>
 					<img
-						class="mr-4 inline-block h-10 w-auto align-middle"
+						class="mr-4 inline-block h-10 w-auto align-middle lg:ml-8"
 						src={currentMode() === 'dark' ? logo : logo_black}
 						alt="Logo"
 					/>

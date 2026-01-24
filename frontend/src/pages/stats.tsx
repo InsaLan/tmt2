@@ -179,16 +179,16 @@ export const MatchStatsPage = () => {
 						{/* <div class="prose text-center mx-auto pb-4">
 							<h2>{t('Match') + ' ' + match()?.matchId}</h2>
 						</div> */}
-						<div class="prose text-center mx-auto flex justify-center items-center">
-							<div class="flex-1 text-right pr-4">
-								<h2 class="m-0">{match()?.teamA}</h2>
+						<div class="flex prose text-center mx-auto justify-center items-center">
+							<div class="flex flex-col text-right pr-4 gap-1">
+								<span class="text-3xl text-white font-bold">{match()?.teamA}</span>
 								{teamA().join(', ')}
 								<br />
 								<span class="text-xl">{match()?.teamAScore}</span>
 							</div>
 							<div class="border-r border-gray-300 h-20"></div>
-							<div class="flex-1 text-left pl-4">
-								<h2 class="m-0">{match()?.teamB}</h2>
+							<div class="flex flex-col text-left pl-4 gap-1">
+								<span class="text-3xl text-white font-bold">{match()?.teamB}</span>
 								{teamB().join(', ')}
 								<br />
 								<span class="text-xl">{match()?.teamBScore}</span>
@@ -439,7 +439,9 @@ export const PlayerStatsPage = () => {
 				<>
 					<Card>
 						<div class="prose text-center mx-auto">
-							<h2 class="my-0">{t('Player') + ' ' + player()?.name}</h2>
+							<span class="text-3xl text-white font-bold">
+								{t('Player') + ' ' + player()?.name}
+							</span>
 							<span class="flex items-center justify-center">
 								<CopyableText
 									text={t('steamID') + ': ' + player()?.steamId}
@@ -447,36 +449,40 @@ export const PlayerStatsPage = () => {
 								/>
 							</span>
 						</div>
-						<div class="overflow-x-auto prose text-center mx-auto pt-4 pb-4 flex">
-							<div class="flex items-center">
-								<div class="px-4 whitespace-nowrap">
-									<h3 class="m-0">{t('Kills')}</h3>
-									{player()?.kills}
+						<div class="overflow-x-auto flex text-center items-center pt-2">
+							<div class="flex items-center mx-auto">
+								<div class="flex flex-col px-4 whitespace-nowrap">
+									<span class="text-2xl text-white font-bold">{t('Kills')}</span>
+									<span>{player()?.kills}</span>
 								</div>
 								<div class="border-r border-gray-300 h-16"></div>
-								<div class="px-4 whitespace-nowrap">
-									<h3 class="m-0">{t('Deaths')}</h3>
-									{player()?.deaths}
+								<div class="flex flex-col px-4 whitespace-nowrap">
+									<span class="text-2xl text-white font-bold">{t('Deaths')}</span>
+									<span>{player()?.deaths}</span>
 								</div>
 								<div class="border-r border-gray-300 h-16"></div>
-								<div class="px-4 whitespace-nowrap">
-									<h3 class="m-0">{t('Assists')}</h3>
-									{player()?.assists}
+								<div class="flex flex-col px-4 whitespace-nowrap">
+									<span class="text-2xl text-white font-bold">
+										{t('Assists')}
+									</span>
+									<span>{player()?.assists}</span>
 								</div>
 								<div class="border-r border-gray-300 h-16"></div>
-								<div class="px-4 whitespace-nowrap">
-									<h3 class="m-0">{t('K/D')}</h3>
-									{player()?.kd?.toFixed(2)}
+								<div class="flex flex-col px-4 whitespace-nowrap">
+									<span class="text-2xl text-white font-bold">{t('K/D')}</span>
+									<span>{player()?.kd?.toFixed(2)}</span>
 								</div>
 								<div class="border-r border-gray-300 h-16"></div>
-								<div class="px-4 whitespace-nowrap">
-									<h3 class="m-0">{t('Headshot %')}</h3>
-									{player()?.hsPct?.toFixed(2)}
+								<div class="flex flex-col px-4 whitespace-nowrap">
+									<span class="text-2xl text-white font-bold">
+										{t('Headshot %')}
+									</span>
+									<span>{player()?.hsPct?.toFixed(2)}</span>
 								</div>
 								<div class="border-r border-gray-300 h-16"></div>
-								<div class="px-4 whitespace-nowrap">
-									<h3 class="m-0">{t('ADR')}</h3>
-									{player()?.adr?.toFixed(2)}
+								<div class="flex flex-col px-4 whitespace-nowrap">
+									<span class="text-2xl text-white font-bold">{t('ADR')}</span>
+									<span>{player()?.adr?.toFixed(2)}</span>
 								</div>
 							</div>
 						</div>

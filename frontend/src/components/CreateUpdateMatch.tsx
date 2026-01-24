@@ -112,7 +112,7 @@ const Presets: Component<{
 
 	return (
 		<div class="pb-4">
-			<div class="flex flex-col items-stretch space-y-2 md:flex-row md:space-x-2 md:space-y-0 md:items-end">
+			<div class="flex flex-col items-stretch space-y-2 pb-2 md:flex-row md:space-x-2 md:space-y-0 md:items-end">
 				<div class="grow">
 					<SelectInput
 						label={t('Select Preset')}
