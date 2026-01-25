@@ -9,7 +9,7 @@ export const CheckboxInput: Component<
 	const [local, others] = splitProps(props, ['label', 'class', 'labelTopRight']);
 	return (
 		<div>
-			<label class="label">
+			<label class="label whitespace-normal wrap-break-word">
 				<input type="checkbox" class={(local.class ?? '') + ' checkbox'} {...others} />
 				{local.label}
 			</label>
@@ -33,11 +33,22 @@ export const TextInput: Component<
 	return (
 		<div class={local.containerClass}>
 			<label>
-				<div class="flex">
-					<span class="label grow">{local.label}</span>
-					<span class="label">{local.labelTopRight}</span>
+				<div
+					class={
+						'flex flex-col md:flex-row pb-0.5' +
+						(local.label || local.labelTopRight ? '' : ' hidden')
+					}
+				>
+					<span class="label grow whitespace-normal wrap-break-word">{local.label}</span>
+					<span class="label whitespace-normal wrap-break-word">
+						{local.labelTopRight}
+					</span>
 				</div>
-				<input class={(local.class ?? '') + ' input w-full'} type="text" {...others} />
+				<input
+					class={(local.class ?? '') + ' input w-full focus:outline-none border-2'}
+					type="text"
+					{...others}
+				/>
 			</label>
 		</div>
 	);
@@ -53,11 +64,24 @@ export const TextArea: Component<
 	return (
 		<div>
 			<label>
-				<div class="flex">
-					<span class="label grow">{local.label}</span>
-					<span class="label">{local.labelTopRight}</span>
+				<div
+					class={
+						'flex flex-col md:flex-row pb-0.5' +
+						(local.label || local.labelTopRight ? '' : ' hidden')
+					}
+				>
+					<span class="label grow whitespace-normal wrap-break-word">{local.label}</span>
+					<span class="label whitespace-normal wrap-break-word">
+						{local.labelTopRight}
+					</span>
 				</div>
-				<textarea {...others} class={(local.class ?? '') + ' textarea w-full'}></textarea>
+				<textarea
+					{...others}
+					class={
+						(local.class ?? '') +
+						' textarea w-full focus:outline-none overflow-x-auto whitespace-pre'
+					}
+				></textarea>
 			</label>
 		</div>
 	);
@@ -81,15 +105,27 @@ export const SelectInput: Component<
 	return (
 		<div>
 			<label>
-				<div class="flex">
-					<span class="label grow">{local.label}</span>
-					<span class="label">{local.labelTopRight}</span>
+				<div
+					class={
+						'flex flex-col md:flex-row pb-0.5' +
+						(local.label || local.labelTopRight ? '' : ' hidden')
+					}
+				>
+					<span class="label grow whitespace-normal wrap-break-word">{local.label}</span>
+					<span class="label whitespace-normal wrap-break-word">
+						{local.labelTopRight}
+					</span>
 				</div>
-				<select class={(local.class ?? '') + ' select w-full'} {...others}>
+				<select
+					class={(local.class ?? '') + ' select w-full focus:outline-none border-2'}
+					{...others}
+				>
 					{local.children}
 				</select>
-				<div class="flex">
-					<span class="label grow">{local.labelBottomLeft}</span>
+				<div class={'flex' + (local.labelBottomLeft ? ' mt-2' : '')}>
+					<span class="label grow whitespace-normal wrap-break-word">
+						{local.labelBottomLeft}
+					</span>
 				</div>
 			</label>
 		</div>

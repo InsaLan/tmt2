@@ -4,8 +4,8 @@ export const NavLink = (props: AnchorProps) => {
 	return (
 		<A
 			{...props}
-			class="btn btn-ghost hover:no-underline"
-			activeClass="ring-2 ring-neutral" // This class will be added when route matches
+			class="btn btn-ghost hover:ring-2 hover:ring-primary-content"
+			activeClass="ring-2 ring-primary" // This class will be added when route matches
 		>
 			{props.children}
 		</A>

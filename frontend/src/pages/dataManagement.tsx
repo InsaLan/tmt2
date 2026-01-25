@@ -39,7 +39,7 @@ export const DataManagementPage = () => {
 				<div class="prose pb-4">
 					<h2>{t('Database Management')}</h2>
 				</div>
-				<div class="items-center justify-center flex gap-4">
+				<div class="flex flex-col items-center gap-4 md:flex-row md:justify-center">
 					<button
 						class="btn"
 						onClick={() => {
@@ -69,7 +69,7 @@ export const DataManagementPage = () => {
 				<div class="prose py-4">
 					<h2>{t('Cleanup')}</h2>
 				</div>
-				<div class="items-center justify-center flex gap-4">
+				<div class="flex flex-col items-center gap-4 md:flex-row md:justify-center">
 					<button
 						class="btn text-error"
 						onClick={async () => {

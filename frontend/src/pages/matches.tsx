@@ -184,7 +184,7 @@ export const MatchesPage: Component = () => {
 			</Show>
 
 			<Card>
-				<div class="flex w-full flex-row space-x-8 place-items-end">
+				<div class="flex flex-col space-y-2 items-center md:flex-row md:space-y-0 md:space-x-4 md:justify-between">
 					<SelectInput
 						onInput={(e) =>
 							setSearchParams(
@@ -211,7 +211,7 @@ export const MatchesPage: Component = () => {
 						</For>
 					</SelectInput>
 
-					<div class="flex-grow"></div>
+					<div class="flex"></div>
 
 					<div class="dropdown dropdown-end">
 						<label tabindex="0" class="btn btn-ghost m-1">
@@ -220,7 +220,7 @@ export const MatchesPage: Component = () => {
 						</label>
 						<div
 							tabindex="0"
-							class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
+							class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow"
 						>
 							<For each={MatchTableColumns}>
 								{(column) => (

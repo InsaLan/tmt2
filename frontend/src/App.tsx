@@ -20,69 +20,93 @@ const NavBar: Component = () => {
 		});
 	});
 
+	const Links = () => {
+		return (
+			<>
+				<NavLink href="/stats">{t('Statistics')}</NavLink>
+				<Show
+					when={
+						config()?.allowUnregisteredMatchCreation === true ||
+						loginType()?.type === 'GLOBAL'
+					}
+				>
+					<NavLink href="/create">{t('Create')}</NavLink>
+				</Show>
+				<Switch>
+					<Match when={loginType() === undefined}>...</Match>
+					<Match when={loginType()?.type === 'UNAUTHORIZED'}>
+						<NavLink href="/login">{t('Login')}</NavLink>
+					</Match>
+					<Match when={loginType()?.type === 'MATCH'}>
+						<NavLink href="/matches">{t('Matches')}</NavLink>
+						<NavLink href="/logout">{t('Logout')}</NavLink>
+					</Match>
+					<Match when={loginType()?.type === 'GLOBAL'}>
+						<NavLink href="/matches">{t('Matches')}</NavLink>
+						<NavLink href="/gameservers">{t('Game Servers')}</NavLink>
+						<NavLink href="/data">{t('Data Management')}</NavLink>
+						<NavLink href="/logout">{t('Logout')}</NavLink>
+					</Match>
+				</Switch>
+			</>
+		);
+	};
+
 	return (
-		<nav class="bg-base-300 flex items-center justify-center space-x-1 p-2 lg:space-x-6">
-			<div class="w-1 lg:w-20"></div>
-			<div>
-				<img
-					class="mr-4 inline-block h-10 w-auto align-middle"
-					src={currentMode() === 'dark' ? logo : logo_black}
-					alt="Logo"
-				/>
+		<div class="navbar bg-base-300">
+			<div class="navbar-start">
+				<div class="dropdown">
+					<div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							class="h-7 w-7"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M4 6h16M4 12h8m-8 6h12"
+							/>
+						</svg>
+					</div>
+					<ul
+						tabindex="-1"
+						class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+					>
+						<Links />
+					</ul>
+				</div>
+				<div>
+					<img
+						class="mr-4 inline-block h-10 w-auto align-middle lg:ml-8"
+						src={currentMode() === 'dark' ? logo : logo_black}
+						alt="Logo"
+					/>
+				</div>
 				<div class="align-middle text-l lg:inline-block font-bold">TMT2</div>
 			</div>
-			<div class="grow"></div>
-			<NavLink href="/stats">{t('Statistics')}</NavLink>
-			<Show
-				when={
-					config()?.allowUnregisteredMatchCreation === true ||
-					loginType()?.type === 'GLOBAL'
-				}
-			>
-				<NavLink href="/create">{t('Create')}</NavLink>
-			</Show>
-			<Switch>
-				<Match when={loginType() === undefined}>...</Match>
-				<Match when={loginType()?.type === 'UNAUTHORIZED'}>
-					<NavLink href="/login">{t('Login')}</NavLink>
-				</Match>
-				<Match when={loginType()?.type === 'MATCH'}>
-					<NavLink href="/matches">{t('Matches')}</NavLink>
-					<NavLink href="/logout">{t('Logout')}</NavLink>
-				</Match>
-				<Match when={loginType()?.type === 'GLOBAL'}>
-					<NavLink href="/matches">{t('Matches')}</NavLink>
-					<NavLink href="/gameservers">{t('Game Servers')}</NavLink>
-					<NavLink href="/data">{t('Data Management')}</NavLink>
-					<NavLink href="/logout">{t('Logout')}</NavLink>
-				</Match>
-			</Switch>
-			<div class="grow"></div>
-			<div onClick={() => cycleDarkMode()}>
-				<Switch>
-					<Match when={currentTheme() === 'system'}>
-						<SvgComputer class="fill-base-content cursor-pointer" />
-					</Match>
-					<Match when={currentTheme() === 'dark'}>
-						<SvgDarkMode class="fill-base-content cursor-pointer" />
-					</Match>
-					<Match when={currentTheme() === 'light'}>
-						<SvgLightMode class="fill-base-content cursor-pointer" />
-					</Match>
-				</Switch>
+			<div class="navbar-center hidden lg:flex gap-4">
+				<Links />
 			</div>
-			{/* <div onClick={() => cycleLocale()}>
-				<Switch>
-					<Match when={currentLocale() === 'de'}>
-						<SvgFlagDE class="h-6 w-auto cursor-pointer" />
-					</Match>
-					<Match when={currentLocale() === 'en'}>
-						<SvgFlagUS class="h-6 w-auto cursor-pointer" />
-					</Match>
-				</Switch>
-			</div> */}
-			<div class="w-1 lg:w-20"></div>
-		</nav>
+			<div class="navbar-end">
+				<div onClick={() => cycleDarkMode()} class="btn btn-ghost">
+					<Switch>
+						<Match when={currentTheme() === 'system'}>
+							<SvgComputer class="fill-base-content cursor-pointer" />
+						</Match>
+						<Match when={currentTheme() === 'dark'}>
+							<SvgDarkMode class="fill-base-content cursor-pointer" />
+						</Match>
+						<Match when={currentTheme() === 'light'}>
+							<SvgLightMode class="fill-base-content cursor-pointer" />
+						</Match>
+					</Switch>
+				</div>
+			</div>
+		</div>
 	);
 };
 

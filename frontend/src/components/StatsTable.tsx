@@ -3,6 +3,7 @@ import { Component, createEffect, createSignal, For, Show } from 'solid-js';
 import { t } from '../utils/locale';
 import { TStatus } from '../../../common';
 import { SvgArrowOutward } from '../assets/Icons';
+import { TextInput } from './Inputs';
 
 export const StatsTable: Component<{
 	headers: string[];
@@ -86,7 +87,7 @@ export const StatsTable: Component<{
 			fallback={
 				<A
 					href={props.details![column]![0] + d[props.details![column]![1]]}
-					class="btn btn-outline btn-sm w-full hover:no-underline"
+					class="btn btn-outline btn-sm w-full"
 				>
 					{t('Details')}
 				</A>
@@ -133,10 +134,10 @@ export const StatsTable: Component<{
 			const intPart = parts[0] ?? '';
 			const fracPart = parts[1] ?? '';
 			return (
-				<td class="break-all min-h-12" style={color ? { color } : undefined}>
-					<div class="grid grid-cols-2 h-full items-center">
-						<div class="w-full text-right">{intPart}</div>
-						<div class="w-full text-left">{fracPart ? `.${fracPart}` : ''}</div>
+				<td style={color ? { color } : undefined}>
+					<div class="grid grid-cols-[1fr_1fr] h-full items-center">
+						<div class="text-right">{intPart}</div>
+						<div class="text-left">{fracPart ? `.${fracPart}` : ''}</div>
 					</div>
 					{details && <div class="flex justify-end">{details}</div>}
 				</td>
@@ -144,7 +145,7 @@ export const StatsTable: Component<{
 		}
 
 		return (
-			<td class="break-all text-center min-h-12" style={color ? { color } : undefined}>
+			<td class="wrap-break-word text-center" style={color ? { color } : undefined}>
 				<div class={`flex items-center ${details ? 'justify-between' : 'justify-center'}`}>
 					<span>{result}</span>
 					{details}
@@ -156,7 +157,7 @@ export const StatsTable: Component<{
 	return (
 		<>
 			<div class="flex justify-end mb-1">
-				<input
+				<TextInput
 					type="text"
 					placeholder={t('Search...')}
 					class="input input-sm w-full md:w-64"
@@ -164,106 +165,115 @@ export const StatsTable: Component<{
 					onInput={(e) => setSearchQuery(e.currentTarget.value)}
 				/>
 			</div>
-			<table class="table table-fixed">
-				<thead>
-					<tr class="border-b border-gray-700">
-						<For each={props.headers}>
-							{(header, i) => (
-								<th
-									class="text-center"
-									onClick={
-										(props.sortable?.[i()] ?? true)
-											? () => {
-													const column = props.columns[i()];
-													setSortAsc(
-														sortColumn() === column && sortAsc()
-															? false
-															: true
-													);
-													setSortColumn(column);
-												}
-											: undefined
-									}
-									style={{
-										cursor:
-											(props.sortable?.[i()] ?? true) ? 'pointer' : 'default',
-									}}
-								>
-									{header +
-										(sortColumn() === props.columns[i()]
-											? sortAsc()
-												? ' ▴'
-												: ' ▾'
-											: '')}
-								</th>
-							)}
-						</For>
-					</tr>
-				</thead>
-				<tbody>
-					{props.groupBy && props.columns.includes(props.groupBy) ? (
-						<For each={sortedUniqueGroups()}>
-							{(group) => (
-								<>
-									{filteredData()
-										.filter((d) => props.groupBy && d[props.groupBy] === group)
-										.map((d, index, a) => {
-											let cl = '';
-											if (index === a.length - 1)
-												cl = 'border-b border-gray-700 last:border-b-0';
-											else cl = 'border-b border-gray-800 last:border-b-0';
-											return (
-												<tr class={cl}>
-													<For each={props.columns}>
-														{(column) => {
-															if (
-																column != props.groupBy ||
-																index === 0
-															)
-																return cell(d, column);
-															return <td></td>;
-														}}
-													</For>
-													<Show
-														when={
-															props.details &&
-															props.details.length >
-																props.columns.length
-														}
-													>
-														{detailsButton(
-															d,
-															props.columns.length,
-															false
-														)}
-													</Show>
-												</tr>
-											);
-										})}
-								</>
-							)}
-						</For>
-					) : (
-						<For each={filteredData()}>
-							{(d) => (
-								<tr class="border-b border-gray-800 last:border-b-0">
-									<For each={props.columns}>{(column) => cell(d, column)}</For>
-									<Show
-										when={
-											props.details &&
-											props.details.length === props.columns.length + 1
+			<div class="overflow-x-auto">
+				<table class="table table-zebra">
+					<thead>
+						<tr class="border-b border-gray-700">
+							<For each={props.headers}>
+								{(header, i) => (
+									<th
+										class="text-center"
+										onClick={
+											(props.sortable?.[i()] ?? true)
+												? () => {
+														const column = props.columns[i()];
+														setSortAsc(
+															sortColumn() === column && sortAsc()
+																? false
+																: true
+														);
+														setSortColumn(column);
+													}
+												: undefined
 										}
+										style={{
+											cursor:
+												(props.sortable?.[i()] ?? true)
+													? 'pointer'
+													: 'default',
+										}}
 									>
-										<td class="w-24 p-2">
-											{detailsButton(d, props.columns.length, false)}
-										</td>
-									</Show>
-								</tr>
-							)}
-						</For>
-					)}
-				</tbody>
-			</table>
+										{header +
+											(sortColumn() === props.columns[i()]
+												? sortAsc()
+													? ' ▴'
+													: ' ▾'
+												: '')}
+									</th>
+								)}
+							</For>
+						</tr>
+					</thead>
+					<tbody>
+						{props.groupBy && props.columns.includes(props.groupBy) ? (
+							<For each={sortedUniqueGroups()}>
+								{(group) => (
+									<>
+										{filteredData()
+											.filter(
+												(d) => props.groupBy && d[props.groupBy] === group
+											)
+											.map((d, index, a) => {
+												let cl = '';
+												if (index === a.length - 1)
+													cl = 'border-b border-gray-700 last:border-b-0';
+												else
+													cl = 'border-b border-gray-800 last:border-b-0';
+												return (
+													<tr class={cl}>
+														<For each={props.columns}>
+															{(column) => {
+																if (
+																	column != props.groupBy ||
+																	index === 0
+																)
+																	return cell(d, column);
+																return <td></td>;
+															}}
+														</For>
+														<Show
+															when={
+																props.details &&
+																props.details.length >
+																	props.columns.length
+															}
+														>
+															{detailsButton(
+																d,
+																props.columns.length,
+																false
+															)}
+														</Show>
+													</tr>
+												);
+											})}
+									</>
+								)}
+							</For>
+						) : (
+							<For each={filteredData()}>
+								{(d) => (
+									<tr class="border-b border-gray-800 last:border-b-0">
+										<For each={props.columns}>
+											{(column) => cell(d, column)}
+										</For>
+										<Show
+											when={
+												props.details &&
+												props.details.length === props.columns.length + 1
+											}
+										>
+											<td class="w-24 p-2">
+												{detailsButton(d, props.columns.length, false)}
+											</td>
+										</Show>
+									</tr>
+								)}
+							</For>
+						)}
+					</tbody>
+				</table>
+			</div>
 
 			{props.status === 'NOT_FOUND' && (
 				<div class="p-4">
