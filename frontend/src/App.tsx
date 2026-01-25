@@ -9,6 +9,7 @@ import { t } from './utils/locale';
 import { currentMode, currentTheme, cycleDarkMode, updateDarkClasses } from './utils/theme';
 import { IConfig } from '../../common';
 import { NavLink } from './components/NavLink';
+import NotificationContainer from './components/NotificationContainer';
 
 const NavBar: Component = () => {
 	const fetcher = createFetcher();
@@ -119,6 +120,7 @@ export const App: Component<RouteSectionProps> = (props) => {
 			</header>
 			<main class="container mx-auto px-4">{props.children}</main>
 			<footer class="pt-8"></footer>
+			<NotificationContainer />
 		</>
 	);
 };

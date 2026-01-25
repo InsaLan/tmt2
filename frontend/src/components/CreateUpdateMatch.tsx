@@ -288,7 +288,6 @@ export const CreateUpdateMatch: Component<
 					resp?.tmtLogAddress ?? window.location.protocol + '//' + window.location.host;
 				setDto('tmtLogAddress', tmtLogAddress);
 			})
-			.catch((err) => console.error('Cannot get config' + err));
 	};
 
 	onMount(() => {

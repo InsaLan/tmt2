@@ -14,7 +14,17 @@ import { MatchEditPage } from './pages/matchEdit';
 import { MatchesPage } from './pages/matches';
 import { NotFoundPage } from './pages/notFound';
 import { DataManagementPage } from './pages/dataManagement';
+import { addNotification } from './stores/notifications';
+import { t } from './utils/locale';
 import './index.css';
+
+window.addEventListener('error', (event) => {
+	addNotification(event.message, 'error');
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+	addNotification(event.reason?.message ?? t('Unhandled promise rejection.'), 'error');
+});
 
 render(
 	() => (

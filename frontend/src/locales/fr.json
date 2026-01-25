@@ -216,5 +216,9 @@
 	"Confirm": "Confirmer",
 	"Cancel": "Annuler",
 	"No data": "Aucune donnée",
-	"Search...": "Rechercher..."
+	"Search...": "Rechercher...",
+	"Unhandled promise rejection.": "Rejet de promesse non géré.",
+	"Text copied to clipboard.": "Texte copié dans le presse-papiers.",
+	"Action cancelled.": "Action annulée.",
+	"Upload failed with status": "Échec de l'envoi avec le statut"
 }

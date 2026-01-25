@@ -1,4 +1,5 @@
 import { createFetcher } from './fetcher';
+import { t } from './locale';
 
 export const uploadUserFile = async (url: string): Promise<Response> => {
 	return new Promise((resolve, reject) => {
@@ -10,7 +11,7 @@ export const uploadUserFile = async (url: string): Promise<Response> => {
 				const file = inputElement.files[0];
 
 				const formData = new FormData();
-				formData.append('database', file);
+				formData.append('file', file);
 
 				const fetcher = createFetcher();
 				try {
@@ -21,6 +22,9 @@ export const uploadUserFile = async (url: string): Promise<Response> => {
 						undefined,
 						false
 					)) as Response;
+					if (!response.ok) {
+						throw new Error(t('Upload failed with status') + ' ' + response.status);
+					}
 					resolve(response);
 				} catch (error) {
 					reject(error);
