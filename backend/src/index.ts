@@ -4,29 +4,17 @@ import { existsSync, readFileSync } from 'fs';
 import http from 'http';
 import path from 'path';
 import * as Auth from './auth';
+import * as Config from './config';
 import * as Election from './election';
 import * as ManagedGameServers from './managedGameServers';
 import * as Match from './match';
-import { checkAndNormalizeLogAddress } from './match';
 import * as MatchMap from './matchMap';
 import * as MatchService from './matchService';
 import * as Presets from './presets';
 import { RegisterRoutes } from './routes';
 import * as Storage from './storage';
 import * as WebSocket from './webSocket';
-
-export const TMT_LOG_ADDRESS: string | null = (() => {
-	if (!process.env['TMT_LOG_ADDRESS']) {
-		console.warn('Environment variable TMT_LOG_ADDRESS is not set');
-		console.warn('Every match must be init with tmtLogAddress');
-		return null;
-	}
-	const addr = checkAndNormalizeLogAddress(process.env['TMT_LOG_ADDRESS']);
-	if (!addr) {
-		throw 'invalid environment variable: TMT_LOG_ADDRESS';
-	}
-	return addr;
-})();
+import * as StatsLogger from './statsLogger';
 
 const APP_DIR = (() => {
 	if (__dirname.endsWith(path.join('/backend/dist/backend/src'))) {
@@ -116,8 +104,8 @@ app.get('/api', (req, res) => {
 	res.sendFile('swagger.json', { root: '.' });
 });
 
-app.get('*', express.static(FRONTEND_DIR));
-app.get('*', (req, res) => res.sendFile(path.join(FRONTEND_DIR, 'index.html')));
+app.get('{*any}', express.static(FRONTEND_DIR));
+app.get('{*any}', (req, res) => res.sendFile(path.join(FRONTEND_DIR, 'index.html')));
 
 const main = async () => {
 	console.info(
@@ -126,15 +114,17 @@ const main = async () => {
 	console.info(`App dir: ${APP_DIR}, frontend dir: ${FRONTEND_DIR}`);
 	await Storage.setup();
 	await ManagedGameServers.setup();
+	await StatsLogger.setup();
 	await Auth.setup();
 	await WebSocket.setup(httpServer);
+	await Config.setup();
 	await Presets.setup();
 	Match.registerCommandHandlers();
 	MatchMap.registerCommandHandlers();
 	Election.registerCommandHandlers();
 
 	httpServer.listen(PORT, async () => {
-		console.info(`App listening on port ${PORT}`);
+		console.info(`Backend listening on port ${PORT}`);
 		await MatchService.setup(); // can only be done when http server is up and running (so that incoming logs can be handled)
 	});
 };

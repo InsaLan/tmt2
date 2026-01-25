@@ -12,80 +12,86 @@ export const ManagedGameServerList: Component<{
 }> = (props) => {
 	return (
 		<Card>
-			<table class="table-zebra table">
-				<thead>
-					<tr>
-						<th>{t('#')}</th>
-						<th>{t('IP')}</th>
-						<th>{t('Port')}</th>
-						<th>{t('RCON Password')}</th>
-						<th>{t('Can Be Used?')}</th>
-						<th>{t('Used By')}</th>
-						<th>{t('Actions')}</th>
-					</tr>
-				</thead>
-				<tbody>
-					<For each={props.managedGameServers}>
-						{(managedGameServer, i) => (
-							<tr>
-								<td>{i() + 1}</td>
-								<td>{managedGameServer.ip}</td>
-								<td>{managedGameServer.port}</td>
-								<td>{managedGameServer.rconPassword}</td>
-								<td>
-									<button
-										class="btn btn-circle btn-outline"
-										onClick={() =>
-											props.update({
-												...managedGameServer,
-												canBeUsed: !managedGameServer.canBeUsed,
-											})
-										}
-									>
-										{managedGameServer.canBeUsed ? <SvgCheck /> : <SvgClear />}
-									</button>
-								</td>
-								<td>
-									{managedGameServer.usedBy && (
-										<>
-											<A href={`/matches/${managedGameServer.usedBy}`}>
-												{managedGameServer.usedBy}
-											</A>{' '}
-											<button
-												class="btn btn-circle btn-outline"
-												onClick={() =>
-													props.update({
-														...managedGameServer,
-														usedBy: null,
-													})
-												}
-											>
-												<SvgClear />
-											</button>
-										</>
-									)}
-								</td>
-								<td class="space-x-2">
-									<div class="tooltip" data-tip={t('RCON')}>
-										<A
-											href={`/gameservers/${managedGameServer.ip}:${managedGameServer.port}`}
+			<div class="overflow-x-auto">
+				<table class="table-zebra table">
+					<thead>
+						<tr>
+							<th>{t('#')}</th>
+							<th>{t('IP')}</th>
+							<th>{t('Port')}</th>
+							<th>{t('RCON Password')}</th>
+							<th>{t('Can Be Used?')}</th>
+							<th>{t('Used By')}</th>
+							<th>{t('Actions')}</th>
+						</tr>
+					</thead>
+					<tbody>
+						<For each={props.managedGameServers}>
+							{(managedGameServer, i) => (
+								<tr>
+									<td>{i() + 1}</td>
+									<td>{managedGameServer.ip}</td>
+									<td>{managedGameServer.port}</td>
+									<td>{managedGameServer.rconPassword}</td>
+									<td>
+										<button
 											class="btn btn-circle btn-outline"
+											onClick={() =>
+												props.update({
+													...managedGameServer,
+													canBeUsed: !managedGameServer.canBeUsed,
+												})
+											}
 										>
-											<SvgTerminal />
-										</A>
-									</div>
-									<button
-										class="btn btn-circle btn-outline"
-										onClick={() => props.delete(managedGameServer)}
-									>
-										<SvgDelete />
-									</button>
-								</td>
-							</tr>
-						)}
-					</For>
-				</tbody>
-			</table>
+											{managedGameServer.canBeUsed ? (
+												<SvgCheck />
+											) : (
+												<SvgClear />
+											)}
+										</button>
+									</td>
+									<td>
+										{managedGameServer.usedBy && (
+											<div class="flex items-center space-x-2">
+												<A href={`/matches/${managedGameServer.usedBy}`}>
+													{managedGameServer.usedBy}
+												</A>
+												<button
+													class="btn btn-circle btn-outline"
+													onClick={() =>
+														props.update({
+															...managedGameServer,
+															usedBy: null,
+														})
+													}
+												>
+													<SvgClear />
+												</button>
+											</div>
+										)}
+									</td>
+									<td class="flex items-center space-x-2">
+										<div class="tooltip" data-tip={t('RCON')}>
+											<A
+												href={`/gameservers/${managedGameServer.ip}:${managedGameServer.port}`}
+												class="btn btn-circle btn-outline"
+											>
+												<SvgTerminal />
+											</A>
+										</div>
+										<button
+											class="btn btn-circle btn-outline"
+											onClick={() => props.delete(managedGameServer)}
+										>
+											<SvgDelete />
+										</button>
+									</td>
+								</tr>
+							)}
+						</For>
+					</tbody>
+				</table>
+			</div>
 		</Card>
 	);
 };

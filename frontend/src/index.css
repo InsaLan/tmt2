@@ -1,9 +1,31 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@plugin "@tailwindcss/typography";
+@plugin "daisyui" {
+	themes:
+		light --default,
+		dark --prefersdark;
+}
+@plugin "daisyui/theme" {
+	name: 'light';
+	default: true;
 
-a:hover {
-	text-decoration: underline;
+	--depth: 0;
+	--noise: 0;
+
+	--radius-box: 1rem;
+	--radius-field: 1rem;
+	--radius-selector: 1rem;
+}
+@plugin "daisyui/theme" {
+	name: 'dark';
+	prefersdark: true;
+
+	--depth: 0;
+	--noise: 0;
+
+	--radius-box: 1rem;
+	--radius-field: 1rem;
+	--radius-selector: 1rem;
 }
 
 .lds-ellipsis {

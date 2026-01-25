@@ -14,6 +14,8 @@ import * as Events from './events';
 import { colors, formatMapName } from './gameServer';
 import * as Match from './match';
 import * as MatchService from './matchService';
+import * as StatsLogger from './statsLogger';
+import * as Storage from './storage';
 
 export const create = (
 	map: string,
@@ -235,6 +237,15 @@ const startMatch = async (match: Match.Match, matchMap: IMatchMap) => {
 	await Match.say(match, 'MAP IS LIVE!');
 
 	Events.onMapStart(match, matchMap);
+	const matchMapExists =
+		(
+			(await Storage.queryDB(
+				`SELECT * FROM ${StatsLogger.MATCH_MAPS_TABLE} WHERE matchId = '${match.data.id}' AND map = '${matchMap.name}'`
+			)) as any[]
+		).length > 0;
+	if (!matchMapExists) {
+		StatsLogger.onNewMap(match.data, match.data.mapPool[match.data.currentMap]!);
+	}
 };
 
 export const parseMapParts = (mapName: string) => {

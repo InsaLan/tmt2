@@ -20,7 +20,9 @@ import {
 	IMatchResponse,
 	IMatchUpdateDto,
 } from '../../common';
-import { ExpressRequest, IAuthResponse, IAuthResponseOptional } from './auth';
+import { ExpressRequest, isAuthorized } from './auth';
+import { IAuthResponse, IAuthResponseOptional } from '../../common';
+import * as Config from './config';
 import * as Events from './events';
 import * as Match from './match';
 import * as MatchMap from './matchMap';
@@ -58,7 +60,13 @@ export class MatchesController extends Controller {
 	async createMatch(
 		@Body() requestBody: IMatchCreateDto,
 		@Request() req: ExpressRequest<IAuthResponseOptional>
-	): Promise<IMatch> {
+	): Promise<IMatch | void> {
+		if ((await Config.get()).allowUnregisteredMatchCreation === false) {
+			if (!isAuthorized(req.get('authorization'))) {
+				this.setStatus(401);
+				return;
+			}
+		}
 		if (requestBody.gameServer === null) {
 			checkRconCommands(requestBody.rconCommands, req.user.type === 'GLOBAL');
 		}

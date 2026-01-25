@@ -5,7 +5,7 @@ export const Card: Component<{
 	class?: string;
 }> = (props) => {
 	return (
-		<div class="bg-base-300 relative min-w-fit rounded-lg p-5 shadow transition-all hover:shadow-lg">
+		<div class="bg-base-300 relative rounded-2xl p-5 shadow transition-all hover:shadow-lg">
 			<div class={props.class}>{props.children}</div>
 		</div>
 	);

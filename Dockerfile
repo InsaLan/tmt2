@@ -1,4 +1,4 @@
-FROM node:20 AS backend_build_image
+FROM node:24 AS backend_build_image
 WORKDIR /app/backend
 COPY backend/package-lock.json .
 COPY backend/package.json .
@@ -10,7 +10,7 @@ COPY backend/tsoa.json .
 RUN npm run build
 RUN npm prune --production
 
-FROM node:20 AS frontend_build_image
+FROM node:24 AS frontend_build_image
 WORKDIR /app/frontend
 COPY frontend/package-lock.json .
 COPY frontend/package.json .
@@ -18,13 +18,11 @@ RUN npm ci
 COPY common ../common
 COPY frontend/src src
 COPY frontend/index.html .
-COPY frontend/postcss.config.js .
-COPY frontend/tailwind.config.js .
 COPY frontend/tsconfig.json .
 COPY frontend/vite.config.mts .
 RUN npm run build
 
-FROM node:20
+FROM node:24
 ENV TINI_VERSION=v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 RUN chmod +x /tini
