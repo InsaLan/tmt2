@@ -181,14 +181,18 @@ export const MatchStatsPage = () => {
 						</div> */}
 						<div class="flex prose text-center mx-auto justify-center items-center">
 							<div class="flex flex-col text-right pr-4 gap-1">
-								<span class="text-3xl text-white font-bold">{match()?.teamA}</span>
+								<span class="text-3xl text-base-content font-bold">
+									{match()?.teamA}
+								</span>
 								{teamA().join(', ')}
 								<br />
 								<span class="text-xl">{match()?.teamAScore}</span>
 							</div>
 							<div class="border-r border-gray-300 h-20"></div>
 							<div class="flex flex-col text-left pl-4 gap-1">
-								<span class="text-3xl text-white font-bold">{match()?.teamB}</span>
+								<span class="text-3xl text-base-content font-bold">
+									{match()?.teamB}
+								</span>
 								{teamB().join(', ')}
 								<br />
 								<span class="text-xl">{match()?.teamBScore}</span>
@@ -439,7 +443,7 @@ export const PlayerStatsPage = () => {
 				<>
 					<Card>
 						<div class="prose text-center mx-auto">
-							<span class="text-3xl text-white font-bold">
+							<span class="text-3xl text-base-content font-bold">
 								{t('Player') + ' ' + player()?.name}
 							</span>
 							<span class="flex items-center justify-center">
@@ -452,36 +456,44 @@ export const PlayerStatsPage = () => {
 						<div class="overflow-x-auto flex text-center items-center pt-2">
 							<div class="flex items-center mx-auto">
 								<div class="flex flex-col px-4 whitespace-nowrap">
-									<span class="text-2xl text-white font-bold">{t('Kills')}</span>
+									<span class="text-2xl text-base-content font-bold">
+										{t('Kills')}
+									</span>
 									<span>{player()?.kills}</span>
 								</div>
 								<div class="border-r border-gray-300 h-16"></div>
 								<div class="flex flex-col px-4 whitespace-nowrap">
-									<span class="text-2xl text-white font-bold">{t('Deaths')}</span>
+									<span class="text-2xl text-base-content font-bold">
+										{t('Deaths')}
+									</span>
 									<span>{player()?.deaths}</span>
 								</div>
 								<div class="border-r border-gray-300 h-16"></div>
 								<div class="flex flex-col px-4 whitespace-nowrap">
-									<span class="text-2xl text-white font-bold">
+									<span class="text-2xl text-base-content font-bold">
 										{t('Assists')}
 									</span>
 									<span>{player()?.assists}</span>
 								</div>
 								<div class="border-r border-gray-300 h-16"></div>
 								<div class="flex flex-col px-4 whitespace-nowrap">
-									<span class="text-2xl text-white font-bold">{t('K/D')}</span>
+									<span class="text-2xl text-base-content font-bold">
+										{t('K/D')}
+									</span>
 									<span>{player()?.kd?.toFixed(2)}</span>
 								</div>
 								<div class="border-r border-gray-300 h-16"></div>
 								<div class="flex flex-col px-4 whitespace-nowrap">
-									<span class="text-2xl text-white font-bold">
+									<span class="text-2xl text-base-content font-bold">
 										{t('Headshot %')}
 									</span>
 									<span>{player()?.hsPct?.toFixed(2)}</span>
 								</div>
 								<div class="border-r border-gray-300 h-16"></div>
 								<div class="flex flex-col px-4 whitespace-nowrap">
-									<span class="text-2xl text-white font-bold">{t('ADR')}</span>
+									<span class="text-2xl text-base-content font-bold">
+										{t('ADR')}
+									</span>
 									<span>{player()?.adr?.toFixed(2)}</span>
 								</div>
 							</div>
