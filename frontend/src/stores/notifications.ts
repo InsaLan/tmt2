@@ -11,7 +11,7 @@ const [notifications, setNotifications] = createSignal<Notification[]>([]);
 export function addNotification(
 	message: string,
 	type: Notification['type'] = 'info',
-	timeout = 3000
+	timeout = 4000
 ) {
 	const id = Date.now();
 	setNotifications((n) => [...n, { id, message, type }]);

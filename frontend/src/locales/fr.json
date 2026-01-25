@@ -220,5 +220,7 @@
 	"Unhandled promise rejection.": "Rejet de promesse non géré.",
 	"Text copied to clipboard.": "Texte copié dans le presse-papiers.",
 	"Action cancelled.": "Action annulée.",
-	"Upload failed with status": "Échec de l'envoi avec le statut"
+	"Upload failed with status": "Échec de l'envoi avec le statut",
+	"Headers must be in the format of \"key: value\"": "Les en-têtes doivent être au format \"clé: valeur\"",
+	"Multiple headers with the same key are not possible.": "Plusieurs en-têtes avec la même clé ne sont pas possibles."
 }

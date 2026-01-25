@@ -1,10 +1,10 @@
 import { useParams } from '@solidjs/router';
 import { Component, createSignal, onMount } from 'solid-js';
-import { ErrorComponent } from '../components/ErrorComponent';
 import { GameServerCard } from '../components/GameServerCard';
 import { RconServer } from '../components/Rcon';
 import { createFetcher } from '../utils/fetcher';
 import { t } from '../utils/locale';
+import { addNotification } from '../stores/notifications';
 
 export const GameServerPage: Component = () => {
 	const params = useParams();
@@ -25,10 +25,12 @@ export const GameServerPage: Component = () => {
 			}
 		);
 	});
+	
+	if (Number.isNaN(port)) {
+		addNotification(t('ip: port invalid'), 'error');
+	}
 
-	return Number.isNaN(port) ? (
-		<ErrorComponent errorMessage={t('ip: port invalid')} />
-	) : (
+	return (
 		<div class="space-y-5">
 			<GameServerCard ipPort={ip + ':' + port} serverPassword={serverPassword()} />
 			<RconServer ip={ip} port={port} />

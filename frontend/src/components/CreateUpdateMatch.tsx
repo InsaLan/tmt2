@@ -27,9 +27,9 @@ import { copyObject } from '../utils/copyObject';
 import { createFetcher, loginType } from '../utils/fetcher';
 import { t } from '../utils/locale';
 import { AddElectionStep, getElectionStepString } from './ElectionStep';
-import { ErrorComponent } from './ErrorComponent';
 import { SelectInput, TextArea, TextInput, CheckboxInput } from './Inputs';
 import { Modal } from './Modal';
+import { addNotification } from '../stores/notifications';
 
 const Presets: Component<{
 	onSelect: (preset: IMatchCreateDto) => void;
@@ -258,12 +258,9 @@ export const CreateUpdateMatch: Component<
 	let addElectionStepIndex = 0;
 	let electionStepModalRef: HTMLDialogElement | undefined;
 	let electionStepsRef: HTMLDivElement | undefined;
-	const [errorMessage, setErrorMessage] = createSignal('');
-	const [electionErrorMessage, setElectionErrorMessage] = createSignal('');
 	const [dto, setDto] = createStore<IMatchUpdateDto & IMatchCreateDto>(copyObject(props.match));
 	const [showAdvanced, setShowAdvanced] = createSignal(false);
 	const [json, setJson] = createSignal('');
-	const [webhookHeadersErrorMessage, setWebhookHeadersErrorMessage] = createSignal('');
 
 	createEffect(() => {
 		try {
@@ -420,15 +417,10 @@ export const CreateUpdateMatch: Component<
 								class="btn btn-sm join-item"
 								onClick={() => {
 									setDto('mapPool', minifyMapPool(dto.mapPool));
-									try {
-										setDto(
-											'electionSteps',
-											getSimpleElectionSteps('BO1', dto.mapPool)
-										);
-										setElectionErrorMessage('');
-									} catch (err) {
-										setElectionErrorMessage(err + '');
-									}
+									setDto(
+										'electionSteps',
+										getSimpleElectionSteps('BO1', dto.mapPool)
+									);
 								}}
 							>
 								{t('Best of 1')}
@@ -437,15 +429,10 @@ export const CreateUpdateMatch: Component<
 								class="btn btn-sm join-item"
 								onClick={() => {
 									setDto('mapPool', minifyMapPool(dto.mapPool));
-									try {
-										setDto(
-											'electionSteps',
-											getSimpleElectionSteps('BO3', dto.mapPool)
-										);
-										setElectionErrorMessage('');
-									} catch (err) {
-										setElectionErrorMessage(err + '');
-									}
+									setDto(
+										'electionSteps',
+										getSimpleElectionSteps('BO3', dto.mapPool)
+									);
 								}}
 							>
 								{t('Best of 3')}
@@ -454,14 +441,12 @@ export const CreateUpdateMatch: Component<
 								class="btn btn-sm join-item"
 								onClick={() => {
 									setDto('electionSteps', []);
-									setElectionErrorMessage('');
 								}}
 							>
 								{t('Empty')}
 							</button>
 						</div>
 					</div>
-					<ErrorComponent errorMessage={electionErrorMessage()} />
 					<div
 						class={
 							'space-y-1 pt-4 ' +
@@ -773,22 +758,25 @@ export const CreateUpdateMatch: Component<
 										}
 										const colonIndex = line.indexOf(':');
 										if (colonIndex === -1) {
-											setWebhookHeadersErrorMessage(
-												'Headers must be in the format of "key: value"'
+											addNotification(
+												t('Headers must be in the format of "key: value"'),
+												'error'
 											);
 											return;
 										}
 										const key = line.substring(0, colonIndex).trim();
 										const value = line.substring(colonIndex + 1).trimStart();
 										if (newWebhookHeaders[key] !== undefined) {
-											setWebhookHeadersErrorMessage(
-												'Multiple headers with the same key are not possible.'
+											addNotification(
+												t(
+													'Multiple headers with the same key are not possible.'
+												),
+												'error'
 											);
 											return;
 										}
 										newWebhookHeaders[key] = value;
 									}
-									setWebhookHeadersErrorMessage('');
 									setDto('webhookHeaders', (prev) => {
 										if (prev) {
 											Object.keys(prev).forEach((key) => {
@@ -801,7 +789,6 @@ export const CreateUpdateMatch: Component<
 									});
 								}}
 							/>
-							<ErrorComponent errorMessage={webhookHeadersErrorMessage()} />
 							<TextInput
 								label={t('Match Passthrough')}
 								labelTopRight={t(
@@ -973,23 +960,15 @@ export const CreateUpdateMatch: Component<
 					</fieldset>
 				</div>
 			</div>
-
-			<ErrorComponent errorMessage={errorMessage()} />
 			<div class="pt-4 text-center">
 				<button
 					class="btn btn-primary"
 					onClick={() => {
-						let dtoFromJson;
-						try {
-							dtoFromJson = JSON.parse(json());
-						} catch (err) {
-							setErrorMessage(t('JSON parse error: Invalid JSON'));
-							return;
-						}
+						let dtoFromJson = JSON.parse(json());
 						if (dtoFromJson.mapPool) {
 							dtoFromJson.mapPool = minifyMapPool(dtoFromJson.mapPool);
 						}
-						props.callback(dtoFromJson).catch((err) => setErrorMessage(err + ''));
+						props.callback(dtoFromJson);
 					}}
 				>
 					{props.mode === 'CREATE' ? t('Create Match') : t('Update Match')}
