@@ -1,5 +1,6 @@
 /* @refresh reload */
 import { Navigate, Route, Router } from '@solidjs/router';
+import { ErrorBoundary } from 'solid-js';
 import { render } from 'solid-js/web';
 import { App } from './App';
 import { PlayersStatsPage, PlayerStatsPage, MatchesStatsPage, MatchStatsPage } from './pages/stats';
@@ -18,35 +19,38 @@ import { addNotification } from './stores/notifications';
 import { t } from './utils/locale';
 import './index.css';
 
-window.addEventListener('error', (event) => {
-	addNotification(event.message, 'error');
-});
-
 window.addEventListener('unhandledrejection', (event) => {
-	addNotification(event.reason?.message ?? t('Unhandled promise rejection.'), 'error');
+	addNotification(event.reason?.message ?? event.reason ?? t('Unspecified error'), 'error');
 });
 
 render(
 	() => (
-		<Router root={App}>
-			<Route path="/" component={() => <Navigate href="/stats" />} />
-			<Route path="/stats" component={() => <Navigate href="/stats/players" />} />
-			<Route path="/stats/players" component={PlayersStatsPage} />
-			<Route path="/stats/player/:id" component={PlayerStatsPage} />
-			<Route path="/stats/matches" component={MatchesStatsPage} />
-			<Route path="/stats/match/:id" component={MatchStatsPage} />
-			<Route path="/data" component={DataManagementPage} />
-			<Route path="/matches" component={MatchesPage} />
-			<Route path="/matches/:id" component={MatchPage} />
-			<Route path="/matches/:id/edit" component={MatchEditPage} />
-			<Route path="/gameservers/:ipPort" component={GameServerPage} />
-			<Route path="/gameservers" component={GameServersPage} />
-			<Route path="/login" component={LoginPage} />
-			<Route path="/logout" component={LogoutPage} />
-			<Route path="/create" component={CreatePage} />
-			<Route path="/debug" component={DebugPage} />
-			<Route path="/*" component={NotFoundPage} />
-		</Router>
+		<ErrorBoundary
+			fallback={(err) => {
+				addNotification(err?.message ?? err ?? t('Unspecified error'), 'error');
+				return <div>Error: {err.message}</div>;
+			}}
+		>
+			<Router root={App}>
+				<Route path="/" component={() => <Navigate href="/stats" />} />
+				<Route path="/stats" component={() => <Navigate href="/stats/players" />} />
+				<Route path="/stats/players" component={PlayersStatsPage} />
+				<Route path="/stats/player/:id" component={PlayerStatsPage} />
+				<Route path="/stats/matches" component={MatchesStatsPage} />
+				<Route path="/stats/match/:id" component={MatchStatsPage} />
+				<Route path="/data" component={DataManagementPage} />
+				<Route path="/matches" component={MatchesPage} />
+				<Route path="/matches/:id" component={MatchPage} />
+				<Route path="/matches/:id/edit" component={MatchEditPage} />
+				<Route path="/gameservers/:ipPort" component={GameServerPage} />
+				<Route path="/gameservers" component={GameServersPage} />
+				<Route path="/login" component={LoginPage} />
+				<Route path="/logout" component={LogoutPage} />
+				<Route path="/create" component={CreatePage} />
+				<Route path="/debug" component={DebugPage} />
+				<Route path="/*" component={NotFoundPage} />
+			</Router>
+		</ErrorBoundary>
 	),
 	document.getElementById('root') as HTMLElement
 );
