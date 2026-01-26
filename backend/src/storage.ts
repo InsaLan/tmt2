@@ -70,7 +70,7 @@ export const readLinesJson = async (
 	try {
 		const fullPath = path.join(STORAGE_FOLDER, fileName);
 		if (!fs.existsSync(fullPath) && fallback) {
-			throw 'file does not exist';
+			throw 'File does not exist';
 		}
 		const content = await fsp.readFile(fullPath, { encoding: 'utf8' });
 		return content

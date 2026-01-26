@@ -21,11 +21,9 @@ export const Chat: Component<{
 					const input = e.currentTarget;
 					const msg = input.value.trim();
 					if (msg) {
-						props
-							.sendMessage(msg)
-							.then(() => {
-								input.value = '';
-							})
+						props.sendMessage(msg).then(() => {
+							input.value = '';
+						});
 					}
 				})}
 				placeholder={t('Send chat message...')}

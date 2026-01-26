@@ -63,7 +63,7 @@ export const getAll = () => {
 
 export const add = async (managedGameServer: IManagedGameServer, writeToDisk = true) => {
 	if (managedGameServers.has(key(managedGameServer))) {
-		throw 'this is already a managed game server';
+		throw 'This is already a managed game server';
 	}
 	managedGameServers.set(key(managedGameServer), managedGameServer);
 	if (writeToDisk) {
@@ -74,7 +74,7 @@ export const add = async (managedGameServer: IManagedGameServer, writeToDisk = t
 export const update = async (dto: IManagedGameServerUpdateDto) => {
 	const managedGameServer = managedGameServers.get(key(dto));
 	if (!managedGameServer) {
-		throw 'this is not a managed game server';
+		throw 'This is not a managed game server';
 	}
 	const updated = { ...managedGameServer, ...dto };
 	managedGameServers.set(key(dto), updated);

@@ -25,9 +25,9 @@ export const GameServerPage: Component = () => {
 			}
 		);
 	});
-	
+
 	if (Number.isNaN(port)) {
-		addNotification(t('ip: port invalid'), 'error');
+		addNotification(t('IP: port invalid'), 'error');
 	}
 
 	return (

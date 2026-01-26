@@ -74,17 +74,17 @@ export const createFromData = async (data: IMatch, logMessage?: string) => {
 	if (match.data.tmtLogAddress) {
 		const la = checkAndNormalizeLogAddress(match.data.tmtLogAddress);
 		if (!la) {
-			throw 'invalid tmtLogAddress';
+			throw 'Invalid tmtLogAddress';
 		}
 		match.data.tmtLogAddress = la;
 	} else if (!(await Config.get()).tmtLogAddress) {
-		throw 'tmtLogAddress must be set';
+		throw 'TmtLogAddress must be set';
 	}
 
 	const otherMatches = MatchService.getLiveMatchesByGameServer(data.gameServer);
 	if (otherMatches.length > 0) {
 		throw new GameServerInUseError(
-			'game server already in use by ' + otherMatches.map((match) => match.id).join(', ')
+			'Game server already in use by ' + otherMatches.map((match) => match.id).join(', ')
 		);
 	}
 
@@ -95,7 +95,7 @@ export const createFromData = async (data: IMatch, logMessage?: string) => {
 export const createFromCreateDto = async (dto: IMatchCreateDto, id: string, logSecret: string) => {
 	const gameServer = dto.gameServer ?? (await ManagedGameServers.getFree(id));
 	if (!gameServer) {
-		throw 'no free game server available';
+		throw 'No free game server available';
 	}
 	const data: IMatch = {
 		...dto,
@@ -1251,10 +1251,10 @@ export const update = async (match: Match, dto: IMatchUpdateDto) => {
 			throw new ValidateError(
 				{
 					tmtLogAddress: {
-						message: 'invalid url',
+						message: 'Invalid url',
 					},
 				},
-				'invalid tmtLogAddress'
+				'Invalid tmtLogAddress'
 			);
 		}
 		match.data.tmtLogAddress = addr;
@@ -1270,10 +1270,10 @@ export const update = async (match: Match, dto: IMatchUpdateDto) => {
 			throw new ValidateError(
 				{
 					currentMap: {
-						message: 'invalid number',
+						message: 'Invalid number',
 					},
 				},
-				'invalid currentMap'
+				'Invalid currentMap'
 			);
 		}
 	}

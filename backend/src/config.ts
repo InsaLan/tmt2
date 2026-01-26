@@ -18,7 +18,7 @@ const defaults = (): IConfig => {
 	} else {
 		tmtLogAdress = checkAndNormalizeLogAddress(process.env['TMT_LOG_ADDRESS']);
 		if (!tmtLogAdress) {
-			throw 'invalid environment variable: TMT_LOG_ADDRESS';
+			throw 'Invalid environment variable: TMT_LOG_ADDRESS';
 		}
 	}
 
@@ -37,7 +37,7 @@ export const set = async (data: IConfigUpdateDto) => {
 	if ('tmtLogAddress' in data && data.tmtLogAddress) {
 		tmtLogAdress = checkAndNormalizeLogAddress(data.tmtLogAddress);
 		if (!tmtLogAdress) {
-			throw 'invalid tmtLogAddress';
+			throw 'Invalid tmtLogAddress';
 		}
 	} else if ('tmtLogAddress' in data) {
 		tmtLogAdress = null;

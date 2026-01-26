@@ -279,12 +279,11 @@ export const CreateUpdateMatch: Component<
 	});
 
 	const setTmtLogAddress = () => {
-		fetcher<IConfig>('GET', `/api/config`)
-			.then((resp) => {
-				const tmtLogAddress =
-					resp?.tmtLogAddress ?? window.location.protocol + '//' + window.location.host;
-				setDto('tmtLogAddress', tmtLogAddress);
-			})
+		fetcher<IConfig>('GET', `/api/config`).then((resp) => {
+			const tmtLogAddress =
+				resp?.tmtLogAddress ?? window.location.protocol + '//' + window.location.host;
+			setDto('tmtLogAddress', tmtLogAddress);
+		});
 	};
 
 	onMount(() => {

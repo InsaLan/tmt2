@@ -10,13 +10,9 @@ export const NotLiveCard: Component<{
 	const fetcher = createFetcher(props.match.tmtSecret);
 	const reload = () => location.reload();
 
-	const revive = () =>
-		fetcher('PATCH', `/api/matches/${props.match.id}/revive`)
-			.then(reload)
+	const revive = () => fetcher('PATCH', `/api/matches/${props.match.id}/revive`).then(reload);
 
-	const stop = () =>
-		fetcher('DELETE', `/api/matches/${props.match.id}`)
-			.then(reload)
+	const stop = () => fetcher('DELETE', `/api/matches/${props.match.id}`).then(reload);
 
 	return (
 		<Card class="text-center">

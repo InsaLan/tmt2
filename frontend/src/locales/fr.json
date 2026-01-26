@@ -160,7 +160,7 @@
 	"Offline": "Hors-Ligne",
 	"Execute RCON command...": "Lancer une commande RCON...",
 	"Select Round Backup File": "Choisir Fichier de Sauvegarde de Round",
-	"ip: port invalid": "ip: port invalide",
+	"IP: port invalid": "IP: port invalide",
 	"Game servers managed by TMT can be used to automatically assign them to new matches.": "Les serveurs de jeu gérés par TMT peuvent automatiquement être assignés aux nouveaux matchs.",
 	"Anonymous (not logged in) users can then also use them for their games.": "Les utilisateurs anonymes (non connectés) peuvent alors aussi les utiliser pour leurs parties.",
 	"Add Game Server": "Ajouter Serveur de Jeu",
