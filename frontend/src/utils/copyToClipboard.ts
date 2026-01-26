@@ -1,3 +1,6 @@
+import { addNotification } from '../stores/notifications';
+import { t } from './locale';
+
 /**
  * Based on https://stackoverflow.com/a/65996386
  *
@@ -8,6 +11,7 @@ export const copyToClipboard = async (textToCopy: string, node?: HTMLElement) =>
 	// Navigator clipboard api needs a secure context (https)
 	if (navigator.clipboard && window.isSecureContext) {
 		await navigator.clipboard.writeText(textToCopy);
+		addNotification(t('Text copied to clipboard.'));
 	} else {
 		// Use the 'out of viewport hidden text area' trick
 		const textArea = document.createElement('textarea');
@@ -22,8 +26,7 @@ export const copyToClipboard = async (textToCopy: string, node?: HTMLElement) =>
 
 		try {
 			document.execCommand('copy');
-		} catch (error) {
-			console.error(error);
+			addNotification(t('Text copied to clipboard.'));
 		} finally {
 			textArea.remove();
 		}

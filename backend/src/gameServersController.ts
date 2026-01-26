@@ -40,7 +40,7 @@ export class GameServersController extends Controller {
 			usedBy: null,
 		};
 		if (!requestBody.ip) {
-			throw 'invalid ip';
+			throw 'Invalid ip';
 		}
 		await ManagedGameServers.add(managedGameServer);
 		return managedGameServer;

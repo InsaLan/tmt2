@@ -44,7 +44,7 @@ const checkRconCommands = (
 				...(rconCommands?.end ?? []),
 			];
 	if (allRconCommands.find((cmd) => cmd.toLowerCase().includes('rcon_password'))) {
-		throw 'not allowed to set rcon_password (text "rcon_password" found in rcon commands)';
+		throw 'Not allowed to set rcon_password (text "rcon_password" found in rcon commands)';
 	}
 };
 

@@ -11,7 +11,7 @@ export const CopyableText = (props: { text: string; copyText: string }) => {
 		>
 			{props.text}
 			<button class="align-middle">
-				<SvgCopy class="size-4" />
+				<SvgCopy class="size-4 cursor-pointer" />
 			</button>
 		</div>
 	);

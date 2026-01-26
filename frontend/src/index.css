@@ -94,3 +94,21 @@
 		transform: translate(24px, 0);
 	}
 }
+
+.slide-enter-active,
+.slide-exit-active {
+	transition:
+		opacity 0.3s,
+		transform 0.3s;
+}
+.slide-enter,
+.slide-exit-to {
+	transform: translateX(20px);
+	opacity: 0;
+}
+.slide-enter {
+	transform: translateX(20px);
+}
+.slide-move {
+	transition: transform 0.3s;
+}

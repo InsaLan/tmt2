@@ -4,7 +4,6 @@ import { createFetcher } from '../utils/fetcher';
 import { t } from '../utils/locale';
 import { onEnter } from '../utils/onEnter';
 import { Card } from './Card';
-import { ErrorComponent } from './ErrorComponent';
 import { TextInput } from './Inputs';
 import { ScrollArea } from './ScrollArea';
 
@@ -19,28 +18,20 @@ const RconCard: Component<{
 		setHistory([command, ...history()].filter((v, i, arr) => arr.indexOf(v) === i));
 		setHistoryIndex(-1);
 		setNotSent('');
-		setErrorMessage('');
-		try {
-			const response = await props.exec([command]);
-			if (response) {
-				const newLines = response.reduce((pv: string[], cv) => {
-					return [...pv, ...formatRconResponse(cv)];
-				}, []);
-				setOutput([...output(), command, ...newLines]);
-			} else {
-				setOutput([...output(), command, 'error']);
-			}
-		} catch (err) {
-			if (typeof err === 'string') {
-				setErrorMessage(err);
-			}
+		const response = await props.exec([command]);
+		if (response) {
+			const newLines = response.reduce((pv: string[], cv) => {
+				return [...pv, ...formatRconResponse(cv)];
+			}, []);
+			setOutput([...output(), command, ...newLines]);
+		} else {
+			setOutput([...output(), command, 'error']);
 		}
 	};
 	const [output, setOutput] = createSignal<string[]>([]);
 	const [history, setHistory] = createSignal<string[]>([]);
 	const [historyIndex, setHistoryIndex] = createSignal(-1);
 	const [notSent, setNotSent] = createSignal('');
-	const [errorMessage, setErrorMessage] = createSignal('');
 
 	const saveNotSent = (value: string) => {
 		if (historyIndex() === -1) {
@@ -79,7 +70,6 @@ const RconCard: Component<{
 				)}
 				placeholder={t('Execute RCON command...')}
 			/>
-			<ErrorComponent errorMessage={errorMessage()} />
 		</Card>
 	);
 };

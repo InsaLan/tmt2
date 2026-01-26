@@ -37,7 +37,7 @@ export const create = async (dto: IGameServer, log: (msg: string) => void): Prom
 export const exec = async (match: Match.Match, command: string, suppressError: boolean = true) => {
 	try {
 		if (!match.rconConnection) {
-			throw 'rconConnection is falsy';
+			throw 'RconConnection is falsy';
 		}
 		return await match.rconConnection.send(command);
 	} catch (err) {

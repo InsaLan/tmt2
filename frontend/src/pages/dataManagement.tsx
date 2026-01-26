@@ -5,7 +5,7 @@ import { uploadUserFile } from '../utils/uploadUserFile';
 import { t } from '../utils/locale';
 import { mustConfirm } from '../utils/mustConfirm';
 import { IMatchResponse } from '../../../common/types/match';
-import { Modal } from '../components/Modal';
+import { addNotification } from '../stores/notifications';
 
 const checkLiveMatches = async (): Promise<boolean> => {
 	const fetcher = createFetcher();
@@ -31,7 +31,6 @@ const downloadDB = async () => {
 
 export const DataManagementPage = () => {
 	const fetcher = createFetcher();
-	let errorModalRef: HTMLDialogElement | undefined;
 
 	return (
 		<div class="w-full max-w-4xl mx-auto px-4 sm:px-6">
@@ -53,11 +52,17 @@ export const DataManagementPage = () => {
 						class="btn text-error"
 						onClick={async () => {
 							if (await checkLiveMatches()) {
-								errorModalRef?.showModal();
+								addNotification(
+									t(
+										'Cannot perform this operation while there are live matches. Please end all matches and try again.'
+									),
+									'error'
+								);
 							} else {
-								mustConfirm(() => {
+								mustConfirm(async () => {
 									downloadDB();
-									uploadUserFile('/api/storage/database');
+									await uploadUserFile('/api/storage/database');
+									addNotification(t('Database imported successfully.'));
 								}, t('This action will overwrite the current DB. A backup will be downloaded, just in case.'))();
 							}
 						}}
@@ -74,7 +79,12 @@ export const DataManagementPage = () => {
 						class="btn text-error"
 						onClick={async () => {
 							if (await checkLiveMatches()) {
-								errorModalRef?.showModal();
+								addNotification(
+									t(
+										'Cannot perform this operation while there are live matches. Please end all matches and try again.'
+									),
+									'error'
+								);
 							} else {
 								mustConfirm(() => {
 									downloadDB();
@@ -90,7 +100,12 @@ export const DataManagementPage = () => {
 						class="btn text-error"
 						onClick={async () => {
 							if (await checkLiveMatches()) {
-								errorModalRef?.showModal();
+								addNotification(
+									t(
+										'Cannot perform this operation while there are live matches. Please end all matches and try again.'
+									),
+									'error'
+								);
 							} else {
 								mustConfirm(() => {
 									downloadDB();
@@ -104,22 +119,6 @@ export const DataManagementPage = () => {
 					</button>
 				</div>
 			</Card>
-			<Modal ref={errorModalRef}>
-				{/* TODO: replace with a notification once that's implemented */}
-				<div class="prose">
-					<h2 class="text-error">{t('Error')}</h2>
-					<p>
-						{t(
-							'Cannot perform this operation while there are live matches. Please end all matches and try again.'
-						)}
-					</p>
-					<div class="flex justify-end">
-						<button class="btn btn-neutral" onClick={() => errorModalRef?.close()}>
-							{t('OK')}
-						</button>
-					</div>
-				</div>
-			</Modal>
 		</div>
 	);
 };

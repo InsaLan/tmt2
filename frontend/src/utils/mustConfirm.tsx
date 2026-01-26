@@ -1,5 +1,7 @@
 import { render } from 'solid-js/web';
 import { ConfirmationModal } from '../components/ConfirmationModal';
+import { addNotification } from '../stores/notifications';
+import { t } from './locale';
 
 export const mustConfirm = (fn: Function, msg?: string) => () => {
 	const host = document.createElement('div');
@@ -17,6 +19,7 @@ export const mustConfirm = (fn: Function, msg?: string) => () => {
 				onCancel={() => {
 					dispose();
 					host.remove();
+					addNotification(t('Action cancelled.'));
 				}}
 			/>
 		),

@@ -34,7 +34,7 @@ export class StorageController extends Controller {
 		}
 
 		try {
-			const upload = multer().single('database');
+			const upload = multer().single('file');
 
 			await new Promise((resolve, reject) => {
 				upload(request, request.res, (err: any) => {
