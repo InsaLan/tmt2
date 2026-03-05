@@ -646,28 +646,41 @@ const onPlayerLogLine = async (
 			player = match.data.players[match.data.players.length - 1]!; // re-assign to work nicely with changeListener (ProxyHandler)
 			MatchService.scheduleSave(match);
 		}
-		const playerMapStatsExists =
-			(
-				(await Storage.queryDB(
-					`SELECT * FROM ${StatsLogger.PLAYER_MAP_STATS_TABLE} WHERE steamId = '${steamId}' AND matchId = '${match.data.id}' AND map = '${match.data.matchMaps[match.data.currentMap]?.name}'`
-				)) as any[]
-			).length > 0;
-		if (!playerMapStatsExists) {
-			await Storage.insertDB(
-				StatsLogger.PLAYER_MAP_STATS_TABLE,
-				new Map<string, string | number>([
-					['steamId', steamId],
-					['matchId', match.data.id],
-					['map', match.data.matchMaps[match.data.currentMap]?.name ?? ''],
-					['kills', 0],
-					['deaths', 0],
-					['assists', 0],
-					['hits', 0],
-					['headshots', 0],
-					['rounds', 0],
-					['damages', 0],
-				])
-			);
+		const currentMapName = match.data.matchMaps[match.data.currentMap]?.name;
+		if (currentMapName) {
+			const matchMapExists =
+				(
+					(await Storage.queryDB(
+						`SELECT * FROM ${StatsLogger.MATCH_MAPS_TABLE} WHERE matchId = '${match.data.id}' AND map = '${currentMapName}'`
+					)) as any[]
+				).length > 0;
+			if (!matchMapExists) {
+				await StatsLogger.onNewMap(match.data, currentMapName);
+			}
+
+			const playerMapStatsExists =
+				(
+					(await Storage.queryDB(
+						`SELECT * FROM ${StatsLogger.PLAYER_MAP_STATS_TABLE} WHERE steamId = '${steamId}' AND matchId = '${match.data.id}' AND map = '${currentMapName}'`
+					)) as any[]
+				).length > 0;
+			if (!playerMapStatsExists) {
+				await Storage.insertDB(
+					StatsLogger.PLAYER_MAP_STATS_TABLE,
+					new Map<string, string | number>([
+						['steamId', steamId],
+						['matchId', match.data.id],
+						['map', currentMapName],
+						['kills', 0],
+						['deaths', 0],
+						['assists', 0],
+						['hits', 0],
+						['headshots', 0],
+						['rounds', 0],
+						['damages', 0],
+					])
+				);
+			}
 		}
 		if (player.name !== name) {
 			match.log(`Player ${player.steamId64} (${player.name}) renamed to: ${name}`);

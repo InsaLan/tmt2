@@ -70,7 +70,7 @@ export const setup = async () => {
 		{
 			name: 'steamId',
 			type: 'TEXT',
-			constraints: `REFERENCES ${PLAYERS_TABLE} (steamId)`,
+			constraints: `REFERENCES ${PLAYERS_TABLE}(steamId)`,
 		},
 	] as SqlAttribute[];
 	const teamsTableSchema = new TableSchema(TEAMS_TABLE, teamsAttributes, ['teamName', 'steamId']);
@@ -88,11 +88,7 @@ export const setup = async () => {
 			type: 'TEXT',
 			constraints: `REFERENCES ${MATCHES_TABLE}(matchId)`,
 		},
-		{
-			name: 'map',
-			type: 'TEXT',
-			constraints: `REFERENCES ${MATCHES_TABLE}(map)`,
-		},
+		{ name: 'map', type: 'TEXT' },
 		{ name: 'kills', type: 'INTEGER' },
 		{ name: 'deaths', type: 'INTEGER' },
 		{ name: 'assists', type: 'INTEGER' },
@@ -104,7 +100,8 @@ export const setup = async () => {
 	const playerMapStatsTableSchema = new TableSchema(
 		PLAYER_MAP_STATS_TABLE,
 		playerMapStatsAttributes,
-		['steamId', 'matchId', 'map']
+		['steamId', 'matchId', 'map'],
+		[`FOREIGN KEY (matchId, map) REFERENCES ${MATCH_MAPS_TABLE}(matchId, map)`]
 	);
 	await createTableDB(playerMapStatsTableSchema);
 };

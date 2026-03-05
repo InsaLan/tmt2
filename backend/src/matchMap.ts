@@ -244,7 +244,7 @@ const startMatch = async (match: Match.Match, matchMap: IMatchMap) => {
 			)) as any[]
 		).length > 0;
 	if (!matchMapExists) {
-		StatsLogger.onNewMap(match.data, match.data.mapPool[match.data.currentMap]!);
+		await StatsLogger.onNewMap(match.data, matchMap.name);
 	}
 };
 

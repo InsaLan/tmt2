@@ -11,11 +11,18 @@ export class TableSchema {
 	tableName: string;
 	attributes: SqlAttribute[];
 	primaryKey?: string[];
+	tableConstraints?: string[];
 
-	constructor(tableName: string, attributes: SqlAttribute[], primaryKey?: string[]) {
+	constructor(
+		tableName: string,
+		attributes: SqlAttribute[],
+		primaryKey?: string[],
+		tableConstraints?: string[]
+	) {
 		this.tableName = tableName;
 		this.attributes = attributes;
 		this.primaryKey = primaryKey;
+		this.tableConstraints = tableConstraints;
 	}
 
 	generateCreateTableParameters(): string {
@@ -30,6 +37,11 @@ export class TableSchema {
 			? `, PRIMARY KEY (${this.primaryKey.join(', ')})`
 			: '';
 
-		return `${this.tableName} (${attributes}${primaryKeyDefinition});`;
+		const tableConstraintsDefinition =
+			this.tableConstraints && this.tableConstraints.length > 0
+				? `, ${this.tableConstraints.join(', ')}`
+				: '';
+
+		return `${this.tableName} (${attributes}${primaryKeyDefinition}${tableConstraintsDefinition});`;
 	}
 }
