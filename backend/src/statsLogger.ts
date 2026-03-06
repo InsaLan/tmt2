@@ -1,6 +1,6 @@
 import { SqlAttribute, TableSchema } from './tableSchema';
 import { createTableDB, flushDB, insertDB, queryDB, updateDB } from './storage';
-import { IMatch, IMatchMap } from '../../common';
+import { IMatch, IMatchMap, IMatchMapStats } from '../../common';
 import { IPlayerStats, IMatchStats } from '../../common';
 import NodeCache from 'node-cache';
 
@@ -378,6 +378,22 @@ export const getMatchStats = async (matchId: string): Promise<IMatchStats> => {
 		return matchStats;
 	}
 	throw { status: 404, message: `Match stats not found for matchId: ${matchId}` };
+};
+
+export const getMatchMapStats = async (matchId: string, map: string): Promise<IMatchMapStats> => {
+	const cached = cache.get('matchMaps/' + matchId + '/' + map) as IMatchMapStats;
+	if (cached) return cached;
+
+	const matchMapStats = (
+		(await queryDB(
+			`SELECT * FROM ${MATCH_MAPS_TABLE} WHERE matchId = '${matchId}' AND map = '${map}'`
+		)) as IMatchMapStats[]
+	)[0];
+	if (matchMapStats) {
+		cache.set('matchMaps/' + matchId + '/' + map, matchMapStats);
+		return matchMapStats;
+	}
+	throw { status: 404, message: `Match map stats not found for matchId: ${matchId} and map: {}` };
 };
 
 export const getPlayerStats = async (steamId: string): Promise<IPlayerStats> => {

@@ -67,6 +67,20 @@ const models: TsoaRoute.Models = {
 		additionalProperties: false,
 	},
 	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	IMatchMapStats: {
+		dataType: 'refObject',
+		properties: {
+			matchId: { dataType: 'string', required: true },
+			map: { dataType: 'string', required: true },
+			teamA: { dataType: 'string', required: true },
+			teamAScore: { dataType: 'double', required: true },
+			teamB: { dataType: 'string', required: true },
+			teamBScore: { dataType: 'double', required: true },
+			timestamp: { dataType: 'datetime', required: true },
+		},
+		additionalProperties: false,
+	},
+	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 	TMatchState: {
 		dataType: 'refAlias',
 		type: {
@@ -1499,6 +1513,47 @@ export function RegisterRoutes(app: Router) {
 
 				await templateService.apiHandler({
 					methodName: 'getMatchStats',
+					controller,
+					response,
+					next,
+					validatedArgs,
+					successStatus: undefined,
+				});
+			} catch (err) {
+				return next(err);
+			}
+		}
+	);
+	// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+	const argsStatsController_getMatchMapStats: Record<string, TsoaRoute.ParameterSchema> = {
+		id: { in: 'query', name: 'id', required: true, dataType: 'string' },
+		map: { in: 'query', name: 'map', required: true, dataType: 'string' },
+	};
+	app.get(
+		'/api/stats/match/map',
+		authenticateMiddleware([{ bearer_token_optional: [] }]),
+		...fetchMiddlewares<RequestHandler>(StatsController),
+		...fetchMiddlewares<RequestHandler>(StatsController.prototype.getMatchMapStats),
+
+		async function StatsController_getMatchMapStats(
+			request: ExRequest,
+			response: ExResponse,
+			next: any
+		) {
+			// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+			let validatedArgs: any[] = [];
+			try {
+				validatedArgs = templateService.getValidatedArgs({
+					args: argsStatsController_getMatchMapStats,
+					request,
+					response,
+				});
+
+				const controller = new StatsController();
+
+				await templateService.apiHandler({
+					methodName: 'getMatchMapStats',
 					controller,
 					response,
 					next,

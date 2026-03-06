@@ -1,6 +1,6 @@
 import { Controller, Delete, Get, Query, Route, Security } from '@tsoa/runtime';
 
-import { IPlayerStats, IMatchStats } from '../../common';
+import { IPlayerStats, IMatchStats, IMatchMapStats } from '../../common';
 
 import * as MatchService from './matchService';
 import * as StatsLogger from './statsLogger';
@@ -38,6 +38,17 @@ export class StatsController extends Controller {
 	@Get('/match')
 	async getMatchStats(@Query('id') id: string): Promise<IMatchStats> {
 		return StatsLogger.getMatchStats(id);
+	}
+
+	/**
+	 * Get match map stats for a specific match map.
+	 */
+	@Get('/match/map')
+	async getMatchMapStats(
+		@Query('id') id: string,
+		@Query('map') map: string
+	): Promise<IMatchMapStats> {
+		return StatsLogger.getMatchMapStats(id, map);
 	}
 
 	/**

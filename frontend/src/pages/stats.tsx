@@ -5,7 +5,13 @@ import { t } from '../utils/locale';
 import { useParams } from '@solidjs/router';
 import { createEffect } from 'solid-js';
 import { createFetcher } from '../utils/fetcher';
-import { IPlayerStats, IMatchStats, TStatus, combinedStatus } from '../../../common';
+import {
+	IPlayerStats,
+	IMatchStats,
+	IMatchMapStats,
+	TStatus,
+	combinedStatus,
+} from '../../../common';
 import {
 	assemblePlayers,
 	calculatePlayerRatios,
@@ -84,6 +90,7 @@ export const MatchStatsPage = () => {
 	const [teamB, setTeamB] = createSignal<string[]>([]);
 	const [players, setPlayers] = createSignal<IPlayerStats[]>([]);
 	const [assembledPlayers, setAssembledPlayers] = createSignal<IPlayerStats[]>([]);
+	const [mapScores, setMapScores] = createSignal<IMatchMapStats[]>([]);
 	const [permap, setPermap] = createSignal(false);
 
 	const updateStatus = (index: number, value: TStatus) => {
@@ -152,10 +159,36 @@ export const MatchStatsPage = () => {
 
 	createEffect(() => {
 		fetcher<IPlayerStats[]>('GET', `/api/stats/players/match?id=${matchId}`)
-			.then((data) => {
+			.then(async (data) => {
 				if (data) {
 					setPlayers(data.map(calculatePlayerRatios));
 					setAssembledPlayers(assemblePlayers(data));
+
+					const maps = [
+						...new Set(data.map((p) => p.map).filter((map) => !!map)),
+					] as string[];
+					const mapStats = await Promise.all(
+						maps.map((map) =>
+							fetcher<IMatchMapStats>(
+								'GET',
+								`/api/stats/match/map?id=${matchId}&map=${encodeURIComponent(map)}`
+							)
+								.then((stat) => {
+									if (!stat) return undefined;
+									return {
+										...stat,
+										timestamp: new Date(stat.timestamp),
+									};
+								})
+								.catch(() => undefined)
+						)
+					);
+					setMapScores(
+						mapStats
+							.filter((stat): stat is IMatchMapStats => !!stat)
+							.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
+					);
+
 					updateStatus(3, 'OK');
 				} else {
 					updateStatus(3, 'ERROR');
@@ -207,6 +240,23 @@ export const MatchStatsPage = () => {
 								copyText={match()?.matchId ?? ''}
 							/>
 						</span>
+						{mapScores().length > 0 && (
+							<div class="pt-4 max-w-xl mx-auto w-full">
+								<div class="text-center text-sm opacity-70 pb-1">
+									{t('Per-map')}
+								</div>
+								<div class="flex flex-col gap-1">
+									{mapScores().map((mapStat) => (
+										<div class="flex justify-between items-center px-3 py-1 rounded-xl bg-base-100">
+											<span class="font-medium">{mapStat.map}</span>
+											<span>
+												{mapStat.teamAScore} - {mapStat.teamBScore}
+											</span>
+										</div>
+									))}
+								</div>
+							</div>
+						)}
 					</Card>
 					<div class="h-8" />
 				</>

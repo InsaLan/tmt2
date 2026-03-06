@@ -23,3 +23,13 @@ export interface IMatchStats {
 	teamBScore: number;
 	timestamp: Date;
 }
+
+export interface IMatchMapStats {
+	matchId: string;
+	map: string;
+	teamA: string;
+	teamAScore: number;
+	teamB: string;
+	teamBScore: number;
+	timestamp: Date;
+}
