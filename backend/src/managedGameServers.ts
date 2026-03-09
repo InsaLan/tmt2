@@ -9,10 +9,10 @@ const managedGameServers = new Map<string, IManagedGameServer>();
 const GAME_SERVERS_TABLE = 'gameServers';
 const JSON_NAME = 'managed_game_servers.json';
 
-const write = async () => {
-	await Storage.flushDB(GAME_SERVERS_TABLE);
+const write = () => {
+	Storage.flushDB(GAME_SERVERS_TABLE);
 	for (const managedGameServer of managedGameServers.values()) {
-		await Storage.insertDB(
+		Storage.insertDB(
 			GAME_SERVERS_TABLE,
 			new Map<string, any>(Object.entries(managedGameServer))
 		);
@@ -33,7 +33,7 @@ export const setup = async () => {
 		{ name: 'canBeUsed', type: 'BOOLEAN' },
 	] as SqlAttribute[];
 	const tableSchema = new TableSchema(GAME_SERVERS_TABLE, attributes, ['ip', 'port']);
-	await Storage.createTableDB(tableSchema);
+	Storage.createTableDB(tableSchema);
 
 	let data: IManagedGameServer[];
 	if (fs.existsSync(path.join(Storage.STORAGE_FOLDER, JSON_NAME))) {
@@ -44,13 +44,11 @@ export const setup = async () => {
 			path.join(Storage.STORAGE_FOLDER, JSON_NAME + '.old')
 		);
 	} else {
-		data = (await Storage.queryDB(
-			`SELECT * FROM ${GAME_SERVERS_TABLE}`
-		)) as IManagedGameServer[];
+		data = Storage.queryDB(`SELECT * FROM ${GAME_SERVERS_TABLE}`) as IManagedGameServer[];
 	}
 
 	data.forEach((managedGameServer) => add(managedGameServer, false));
-	await write();
+	write();
 };
 
 export const get = (ip: string, port: number) => {
@@ -61,41 +59,41 @@ export const getAll = () => {
 	return Array.from(managedGameServers.values());
 };
 
-export const add = async (managedGameServer: IManagedGameServer, writeToDisk = true) => {
+export const add = (managedGameServer: IManagedGameServer, writeToDisk = true) => {
 	if (managedGameServers.has(key(managedGameServer))) {
 		throw 'This is already a managed game server';
 	}
 	managedGameServers.set(key(managedGameServer), managedGameServer);
 	if (writeToDisk) {
-		await write();
+		write();
 	}
 };
 
-export const update = async (dto: IManagedGameServerUpdateDto) => {
+export const update = (dto: IManagedGameServerUpdateDto) => {
 	const managedGameServer = managedGameServers.get(key(dto));
 	if (!managedGameServer) {
 		throw 'This is not a managed game server';
 	}
 	const updated = { ...managedGameServer, ...dto };
 	managedGameServers.set(key(dto), updated);
-	await write();
+	write();
 	return updated;
 };
 
-export const remove = async (gameServer: IManagedGameServerUpdateDto) => {
+export const remove = (gameServer: IManagedGameServerUpdateDto) => {
 	const removed = managedGameServers.delete(key(gameServer));
 	if (removed) {
-		await write();
+		write();
 	}
 };
 
-export const getFree = async (matchId: string): Promise<IGameServer | undefined> => {
+export const getFree = (matchId: string): IGameServer | undefined => {
 	const free = getAll().find(
 		(managedGameServer) => managedGameServer.usedBy === null && managedGameServer.canBeUsed
 	);
 	if (free) {
 		free.usedBy = matchId;
-		await write();
+		write();
 		return {
 			ip: free.ip,
 			port: free.port,
@@ -106,11 +104,11 @@ export const getFree = async (matchId: string): Promise<IGameServer | undefined>
 	return;
 };
 
-export const free = async (gameServer: IManagedGameServerUpdateDto, matchId: string) => {
+export const free = (gameServer: IManagedGameServerUpdateDto, matchId: string) => {
 	const managedGameServer = managedGameServers.get(key(gameServer));
 	if (managedGameServer?.usedBy === matchId) {
 		managedGameServer.usedBy = null;
-		await write();
+		write();
 	}
 };
 

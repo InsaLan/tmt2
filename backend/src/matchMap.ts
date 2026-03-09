@@ -239,12 +239,12 @@ const startMatch = async (match: Match.Match, matchMap: IMatchMap) => {
 	Events.onMapStart(match, matchMap);
 	const matchMapExists =
 		(
-			(await Storage.queryDB(
+			Storage.queryDB(
 				`SELECT * FROM ${StatsLogger.MATCH_MAPS_TABLE} WHERE matchId = '${match.data.id}' AND map = '${matchMap.name}'`
-			)) as any[]
+			) as any[]
 		).length > 0;
 	if (!matchMapExists) {
-		await StatsLogger.onNewMap(match.data, matchMap.name);
+		StatsLogger.onNewMap(match.data, matchMap.name);
 	}
 };
 

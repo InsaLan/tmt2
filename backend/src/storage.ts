@@ -9,7 +9,17 @@ const DATABASE_PATH = path.join(STORAGE_FOLDER, 'database.sqlite');
 if (!fs.existsSync(STORAGE_FOLDER)) {
 	fs.mkdirSync(STORAGE_FOLDER, { recursive: true });
 }
-let DATABASE = new Database(DATABASE_PATH);
+
+const createDatabaseConnection = (dbPath: string) => {
+	const db = new Database(dbPath);
+	// Foreign key enforcement is connection-local in SQLite.
+	db.pragma('foreign_keys = ON');
+	return db;
+};
+
+const escapeIdentifier = (identifier: string) => `"${identifier.replace(/"/g, '""')}"`;
+
+let DATABASE = createDatabaseConnection(DATABASE_PATH);
 
 function normalizeBindValue(v: any): any {
 	if (v === undefined) return null;
@@ -84,7 +94,7 @@ export const readLinesJson = async (
 	}
 };
 
-export const createTableDB = async (tableSchema: TableSchema): Promise<void> => {
+export const createTableDB = (tableSchema: TableSchema): void => {
 	try {
 		DATABASE.exec(`CREATE TABLE IF NOT EXISTS ${tableSchema.generateCreateTableParameters()}`);
 	} catch (err: any) {
@@ -93,16 +103,16 @@ export const createTableDB = async (tableSchema: TableSchema): Promise<void> => 
 	}
 };
 
-export const flushDB = async (table: string): Promise<void> => {
+export const flushDB = (table: string): void => {
 	try {
-		DATABASE.exec(`DELETE FROM ${table}`);
+		DATABASE.exec(`DELETE FROM ${escapeIdentifier(table)}`);
 	} catch (err: any) {
 		console.error('[DATABASE] ERROR flushing the table:', err?.message ?? err);
 		throw err;
 	}
 };
 
-export const insertDB = async (table: string, values: Map<string, any>): Promise<void> => {
+export const insertDB = (table: string, values: Map<string, any>): void => {
 	try {
 		const columns = Array.from(values.keys()).join(', ');
 		const placeholders = Array.from(values.keys())
@@ -118,11 +128,7 @@ export const insertDB = async (table: string, values: Map<string, any>): Promise
 	}
 };
 
-export const updateDB = async (
-	table: string,
-	values: Map<string, any>,
-	where: string
-): Promise<void> => {
+export const updateDB = (table: string, values: Map<string, any>, where: string): void => {
 	try {
 		const placeholders = Array.from(values.entries())
 			.map(([key]) => `${key} = ?`)
@@ -137,7 +143,7 @@ export const updateDB = async (
 	}
 };
 
-export const queryDB = async (query: string) => {
+export const queryDB = (query: string) => {
 	try {
 		const stmt = DATABASE.prepare(query);
 		const rows = stmt.all();
@@ -182,18 +188,30 @@ export const replaceDB = async (buffer: any) => {
 	}
 	DATABASE.close();
 	fs.renameSync(tempPath, DATABASE_PATH);
-	DATABASE = new Database(DATABASE_PATH);
+	DATABASE = createDatabaseConnection(DATABASE_PATH);
 	console.info('[STORAGE] Database replaced successfully.');
 };
 
-export const emptyDB = async () => {
-	const tables = (
-		(await queryDB(
-			`SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%';`
-		)) as Array<{ name: string }>
-	).map((table) => table.name);
-	for (const table of tables) {
-		flushDB(table);
+export const emptyDB = (): void => {
+	try {
+		const tables = (
+			queryDB(
+				`SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%';`
+			) as Array<{ name: string }>
+		).map((table) => table.name);
+
+		const flushAllTables = DATABASE.transaction((tableNames: string[]) => {
+			// Defer FK checks to COMMIT so delete order does not matter.
+			DATABASE.exec('PRAGMA defer_foreign_keys = ON');
+			for (const tableName of tableNames) {
+				DATABASE.exec(`DELETE FROM ${escapeIdentifier(tableName)}`);
+			}
+		});
+
+		flushAllTables(tables);
+		console.info('[STORAGE] Database emptied successfully.');
+	} catch (err: any) {
+		console.error('[DATABASE] ERROR emptying the database:', err?.message ?? err);
+		throw err;
 	}
-	console.info('[STORAGE] Database emptied successfully.');
 };

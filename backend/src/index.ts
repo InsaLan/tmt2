@@ -114,7 +114,7 @@ const main = async () => {
 	console.info(`App dir: ${APP_DIR}, frontend dir: ${FRONTEND_DIR}`);
 	await Storage.setup();
 	await ManagedGameServers.setup();
-	await StatsLogger.setup();
+	StatsLogger.setup();
 	await Auth.setup();
 	await WebSocket.setup(httpServer);
 	await Config.setup();

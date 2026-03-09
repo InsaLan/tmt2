@@ -12,7 +12,7 @@ export const MATCHES_TABLE = 'matches';
 export const PLAYER_MAP_STATS_TABLE = 'playerMapStats';
 export const TEAMS_TABLE = 'teams';
 
-export const setup = async () => {
+export const setup = () => {
 	// Create players global stats table
 	const playersAttributes = [
 		{ name: 'steamId', type: 'TEXT' },
@@ -26,7 +26,7 @@ export const setup = async () => {
 		{ name: 'tDamages', type: 'INTEGER' },
 	] as SqlAttribute[];
 	const playersTableSchema = new TableSchema(PLAYERS_TABLE, playersAttributes, ['steamId']);
-	await createTableDB(playersTableSchema);
+	createTableDB(playersTableSchema);
 
 	// Create match map table
 	const matchMapsAttributes = [
@@ -46,7 +46,7 @@ export const setup = async () => {
 		'matchId',
 		'map',
 	]);
-	await createTableDB(matchMapsTableSchema);
+	createTableDB(matchMapsTableSchema);
 
 	// Create matches table
 	const matchesAttributes = [
@@ -62,7 +62,7 @@ export const setup = async () => {
 		},
 	] as SqlAttribute[];
 	const matchesTableSchema = new TableSchema(MATCHES_TABLE, matchesAttributes, ['matchId']);
-	await createTableDB(matchesTableSchema);
+	createTableDB(matchesTableSchema);
 
 	//Create teams table
 	const teamsAttributes = [
@@ -74,7 +74,7 @@ export const setup = async () => {
 		},
 	] as SqlAttribute[];
 	const teamsTableSchema = new TableSchema(TEAMS_TABLE, teamsAttributes, ['teamName', 'steamId']);
-	await createTableDB(teamsTableSchema);
+	createTableDB(teamsTableSchema);
 
 	// Create player match stats table
 	const playerMapStatsAttributes = [
@@ -103,11 +103,11 @@ export const setup = async () => {
 		['steamId', 'matchId', 'map'],
 		[`FOREIGN KEY (matchId, map) REFERENCES ${MATCH_MAPS_TABLE}(matchId, map)`]
 	);
-	await createTableDB(playerMapStatsTableSchema);
+	createTableDB(playerMapStatsTableSchema);
 };
 
-export const onNewMatch = async (data: IMatch) => {
-	await insertDB(
+export const onNewMatch = (data: IMatch) => {
+	insertDB(
 		MATCHES_TABLE,
 		new Map<string, string | number>([
 			['matchId', data.id],
@@ -119,8 +119,8 @@ export const onNewMatch = async (data: IMatch) => {
 	);
 };
 
-export const onNewMap = async (match: IMatch, map: string) => {
-	await insertDB(
+export const onNewMap = (match: IMatch, map: string) => {
+	insertDB(
 		MATCH_MAPS_TABLE,
 		new Map<string, string | number>([
 			['matchId', match.id],
@@ -133,7 +133,7 @@ export const onNewMap = async (match: IMatch, map: string) => {
 	);
 };
 
-export const onDamage = async (
+export const onDamage = (
 	matchId: string,
 	map: string,
 	attackerId: string,
@@ -141,15 +141,15 @@ export const onDamage = async (
 	damageArmor: number,
 	headshot: boolean
 ) => {
-	const currentAttackerMapStats = (await queryDB(
+	const currentAttackerMapStats = queryDB(
 		`SELECT hits,headshots,damages FROM ${PLAYER_MAP_STATS_TABLE} WHERE steamId = '${attackerId}' AND matchId = '${matchId}' AND map = '${map}'`
-	)) as Array<{ hits: number; headshots: number; damages: number }>;
-	const currentAttackerGlobalStats = (await queryDB(
+	) as Array<{ hits: number; headshots: number; damages: number }>;
+	const currentAttackerGlobalStats = queryDB(
 		`SELECT tHits,tHeadshots,tDamages FROM ${PLAYERS_TABLE} WHERE steamId = '${attackerId}'`
-	)) as Array<{ tHits: number; tHeadshots: number; tDamages: number }>;
+	) as Array<{ tHits: number; tHeadshots: number; tDamages: number }>;
 
 	if (currentAttackerMapStats.length > 0 && currentAttackerGlobalStats.length > 0) {
-		await updateDB(
+		updateDB(
 			PLAYER_MAP_STATS_TABLE,
 			new Map<string, number>([
 				['hits', (currentAttackerMapStats[0]!.hits ?? 0) + 1],
@@ -158,7 +158,7 @@ export const onDamage = async (
 			]),
 			`steamId = '${attackerId}' AND matchId = '${matchId}' AND map = '${map}'`
 		);
-		await updateDB(
+		updateDB(
 			PLAYERS_TABLE,
 			new Map<string, number>([
 				['tHits', (currentAttackerGlobalStats[0]!.tHits ?? 0) + 1],
@@ -173,101 +173,101 @@ export const onDamage = async (
 	}
 };
 
-export const onKill = async (matchId: string, map: string, killerId: string, victimId: string) => {
-	const currentKillerMapStats = (await queryDB(
+export const onKill = (matchId: string, map: string, killerId: string, victimId: string) => {
+	const currentKillerMapStats = queryDB(
 		`SELECT kills FROM ${PLAYER_MAP_STATS_TABLE} WHERE steamId = '${killerId}' AND matchId = '${matchId}' AND map = '${map}'`
-	)) as Array<{ kills: number }>;
-	const currentVictimMapStats = (await queryDB(
+	) as Array<{ kills: number }>;
+	const currentVictimMapStats = queryDB(
 		`SELECT deaths FROM ${PLAYER_MAP_STATS_TABLE} WHERE steamId = '${victimId}' AND matchId = '${matchId}' AND map = '${map}'`
-	)) as Array<{ deaths: number }>;
-	const currentKillerGlobalStats = (await queryDB(
+	) as Array<{ deaths: number }>;
+	const currentKillerGlobalStats = queryDB(
 		`SELECT tKills FROM ${PLAYERS_TABLE} WHERE steamId = '${killerId}'`
-	)) as Array<{ tKills: number }>;
-	const currentVictimGlobalStats = (await queryDB(
+	) as Array<{ tKills: number }>;
+	const currentVictimGlobalStats = queryDB(
 		`SELECT tDeaths FROM ${PLAYERS_TABLE} WHERE steamId = '${victimId}'`
-	)) as Array<{ tDeaths: number }>;
+	) as Array<{ tDeaths: number }>;
 
-	await updateDB(
+	updateDB(
 		PLAYER_MAP_STATS_TABLE,
 		new Map<string, number>([['kills', (currentKillerMapStats[0]?.kills ?? 0) + 1]]),
 		`steamId = '${killerId}' AND matchId = '${matchId}' AND map = '${map}'`
 	);
-	await updateDB(
+	updateDB(
 		PLAYER_MAP_STATS_TABLE,
 		new Map<string, number>([['deaths', (currentVictimMapStats[0]?.deaths ?? 0) + 1]]),
 		`steamId = '${victimId}' AND matchId = '${matchId}' AND map = '${map}'`
 	);
-	await updateDB(
+	updateDB(
 		PLAYERS_TABLE,
 		new Map<string, number>([['tKills', (currentKillerGlobalStats[0]?.tKills ?? 0) + 1]]),
 		`steamId = '${killerId}'`
 	);
-	await updateDB(
+	updateDB(
 		PLAYERS_TABLE,
 		new Map<string, number>([['tDeaths', (currentVictimGlobalStats[0]?.tDeaths ?? 0) + 1]]),
 		`steamId = '${victimId}'`
 	);
 };
 
-export const onAssist = async (matchId: string, map: string, attackerId: string) => {
-	const currentAttackerMapStats = (await queryDB(
+export const onAssist = (matchId: string, map: string, attackerId: string) => {
+	const currentAttackerMapStats = queryDB(
 		`SELECT assists FROM ${PLAYER_MAP_STATS_TABLE} WHERE steamId = '${attackerId}' AND matchId = '${matchId}' AND map = '${map}'`
-	)) as Array<{ assists: number }>;
-	const currentAttackerGlobalStats = (await queryDB(
+	) as Array<{ assists: number }>;
+	const currentAttackerGlobalStats = queryDB(
 		`SELECT tAssists FROM ${PLAYERS_TABLE} WHERE steamId = '${attackerId}'`
-	)) as Array<{ tAssists: number }>;
+	) as Array<{ tAssists: number }>;
 
-	await updateDB(
+	updateDB(
 		PLAYER_MAP_STATS_TABLE,
 		new Map<string, number>([['assists', (currentAttackerMapStats[0]?.assists ?? 0) + 1]]),
 		`steamId = '${attackerId}' AND matchId = '${matchId}' AND map = '${map}'`
 	);
-	await updateDB(
+	updateDB(
 		PLAYERS_TABLE,
 		new Map<string, number>([['tAssists', (currentAttackerGlobalStats[0]?.tAssists ?? 0) + 1]]),
 		`steamId = '${attackerId}'`
 	);
 };
 
-export const onOtherDeath = async (matchId: string, map: string, victimId: string) => {
-	const currentVictimMapStats = (await queryDB(
+export const onOtherDeath = (matchId: string, map: string, victimId: string) => {
+	const currentVictimMapStats = queryDB(
 		`SELECT deaths FROM ${PLAYER_MAP_STATS_TABLE} WHERE steamId = '${victimId}' AND matchId = '${matchId}' AND map = '${map}'`
-	)) as Array<{ deaths: number }>;
-	const currentVictimGlobalStats = (await queryDB(
+	) as Array<{ deaths: number }>;
+	const currentVictimGlobalStats = queryDB(
 		`SELECT tDeaths FROM ${PLAYERS_TABLE} WHERE steamId = '${victimId}'`
-	)) as Array<{ tDeaths: number }>;
+	) as Array<{ tDeaths: number }>;
 
-	await updateDB(
+	updateDB(
 		PLAYER_MAP_STATS_TABLE,
 		new Map<string, number>([['deaths', (currentVictimMapStats[0]?.deaths ?? 0) + 1]]),
 		`steamId = '${victimId}' AND matchId = '${matchId}' AND map = '${map}'`
 	);
-	await updateDB(
+	updateDB(
 		PLAYERS_TABLE,
 		new Map<string, number>([['tDeaths', (currentVictimGlobalStats[0]?.tDeaths ?? 0) + 1]]),
 		`steamId = '${victimId}'`
 	);
 };
 
-export const updateRoundCount = async (match: IMatch, matchMap: IMatchMap) => {
+export const updateRoundCount = (match: IMatch, matchMap: IMatchMap) => {
 	if (matchMap.state === 'IN_PROGRESS') {
-		const currentPlayersMapStats = (await queryDB(
+		const currentPlayersMapStats = queryDB(
 			`SELECT steamId,rounds FROM ${PLAYER_MAP_STATS_TABLE} WHERE matchId = '${match.id}' AND map = '${matchMap.name}'`
-		)) as Array<{ steamId: string; rounds: number }>;
+		) as Array<{ steamId: string; rounds: number }>;
 
 		for (const player of currentPlayersMapStats) {
-			const currentPlayerGlobalStats = (await queryDB(
+			const currentPlayerGlobalStats = queryDB(
 				`SELECT tRounds FROM ${PLAYERS_TABLE} WHERE steamId = '${player.steamId}'`
-			)) as Array<{ tRounds: number }>;
+			) as Array<{ tRounds: number }>;
 
-			await updateDB(
+			updateDB(
 				PLAYERS_TABLE,
 				new Map<string, number>([
 					['tRounds', (currentPlayerGlobalStats[0]?.tRounds ?? 0) + 1],
 				]),
 				`steamId = '${player.steamId}'`
 			);
-			await updateDB(
+			updateDB(
 				PLAYER_MAP_STATS_TABLE,
 				new Map<string, number>([['rounds', (player.rounds ?? 0) + 1]]),
 				`steamId = '${player.steamId}' AND matchId = '${match.id}' AND map = '${matchMap.name}'`
@@ -275,7 +275,7 @@ export const updateRoundCount = async (match: IMatch, matchMap: IMatchMap) => {
 		}
 	}
 
-	await updateDB(
+	updateDB(
 		MATCH_MAPS_TABLE,
 		new Map<string, number>([
 			['teamAScore', matchMap.score.teamA],
@@ -285,7 +285,7 @@ export const updateRoundCount = async (match: IMatch, matchMap: IMatchMap) => {
 	);
 };
 
-export const updateMapCount = async (data: IMatch) => {
+export const updateMapCount = (data: IMatch) => {
 	updateDB(
 		MATCHES_TABLE,
 		new Map<string, number>([
@@ -298,11 +298,11 @@ export const updateMapCount = async (data: IMatch) => {
 
 const cache = new NodeCache({ stdTTL: 10 });
 
-export const getPlayersStats = async (): Promise<IPlayerStats[]> => {
+export const getPlayersStats = (): IPlayerStats[] => {
 	const cached = cache.get('players') as IPlayerStats[];
 	if (cached) return cached;
 
-	const playerStats = (await queryDB(
+	const playerStats = queryDB(
 		`SELECT
 		steamId,
 		name,
@@ -314,16 +314,16 @@ export const getPlayersStats = async (): Promise<IPlayerStats[]> => {
 		tRounds AS rounds,
 		tDamages AS damages
 		FROM ${PLAYERS_TABLE}`
-	)) as IPlayerStats[];
+	) as IPlayerStats[];
 	cache.set('players', playerStats);
 	return playerStats;
 };
 
-export const getMatchPlayersStats = async (matchId: string): Promise<IPlayerStats[]> => {
+export const getMatchPlayersStats = (matchId: string): IPlayerStats[] => {
 	const cached = cache.get('players/match/' + matchId) as IPlayerStats[];
 	if (cached) return cached;
 
-	const playerStats = (await queryDB(
+	const playerStats = queryDB(
 		`SELECT
 		t1.steamId,
 		t1.name,
@@ -339,39 +339,37 @@ export const getMatchPlayersStats = async (matchId: string): Promise<IPlayerStat
 		INNER JOIN ${PLAYER_MAP_STATS_TABLE} t2
 		ON t1.steamId = t2.steamId
 		WHERE t2.matchId = '${matchId}'`
-	)) as IPlayerStats[];
+	) as IPlayerStats[];
 	cache.set('players/match/' + matchId, playerStats);
 	return playerStats;
 };
 
-export const getMatchesStats = async (): Promise<IMatchStats[]> => {
+export const getMatchesStats = (): IMatchStats[] => {
 	const cached = cache.get('matches') as IMatchStats[];
 	if (cached) return cached;
 
-	const matchStats = (await queryDB(`SELECT * FROM ${MATCHES_TABLE}`)) as IMatchStats[];
+	const matchStats = queryDB(`SELECT * FROM ${MATCHES_TABLE}`) as IMatchStats[];
 	cache.set('matches', matchStats);
 	return matchStats;
 };
 
-export const getPlayerMatchesStats = async (steamId: string): Promise<IPlayerStats[]> => {
+export const getPlayerMatchesStats = (steamId: string): IPlayerStats[] => {
 	const cached = cache.get('matches/player/' + steamId) as IPlayerStats[];
 	if (cached) return cached;
 
-	const playerStats = (await queryDB(
+	const playerStats = queryDB(
 		`SELECT * FROM ${PLAYER_MAP_STATS_TABLE} WHERE steamId = '${steamId}'`
-	)) as IPlayerStats[];
+	) as IPlayerStats[];
 	cache.set('matches/player/' + steamId, playerStats);
 	return playerStats;
 };
 
-export const getMatchStats = async (matchId: string): Promise<IMatchStats> => {
+export const getMatchStats = (matchId: string): IMatchStats => {
 	const cached = cache.get('matches/' + matchId) as IMatchStats;
 	if (cached) return cached;
 
 	const matchStats = (
-		(await queryDB(
-			`SELECT * FROM ${MATCHES_TABLE} WHERE matchId = '${matchId}'`
-		)) as IMatchStats[]
+		queryDB(`SELECT * FROM ${MATCHES_TABLE} WHERE matchId = '${matchId}'`) as IMatchStats[]
 	)[0];
 	if (matchStats) {
 		cache.set('matches/' + matchId, matchStats);
@@ -380,14 +378,14 @@ export const getMatchStats = async (matchId: string): Promise<IMatchStats> => {
 	throw { status: 404, message: `Match stats not found for matchId: ${matchId}` };
 };
 
-export const getMatchMapStats = async (matchId: string, map: string): Promise<IMatchMapStats> => {
+export const getMatchMapStats = (matchId: string, map: string): IMatchMapStats => {
 	const cached = cache.get('matchMaps/' + matchId + '/' + map) as IMatchMapStats;
 	if (cached) return cached;
 
 	const matchMapStats = (
-		(await queryDB(
+		queryDB(
 			`SELECT * FROM ${MATCH_MAPS_TABLE} WHERE matchId = '${matchId}' AND map = '${map}'`
-		)) as IMatchMapStats[]
+		) as IMatchMapStats[]
 	)[0];
 	if (matchMapStats) {
 		cache.set('matchMaps/' + matchId + '/' + map, matchMapStats);
@@ -396,12 +394,12 @@ export const getMatchMapStats = async (matchId: string, map: string): Promise<IM
 	throw { status: 404, message: `Match map stats not found for matchId: ${matchId} and map: {}` };
 };
 
-export const getPlayerStats = async (steamId: string): Promise<IPlayerStats> => {
+export const getPlayerStats = (steamId: string): IPlayerStats => {
 	const cached = cache.get('players/' + steamId) as IPlayerStats;
 	if (cached) return cached;
 
 	const playerStats = (
-		(await queryDB(
+		queryDB(
 			`SELECT
 			steamId,
 			name,
@@ -414,7 +412,7 @@ export const getPlayerStats = async (steamId: string): Promise<IPlayerStats> => 
 			tDamages AS damages
 			FROM ${PLAYERS_TABLE}
 			WHERE steamId = '${steamId}'`
-		)) as IPlayerStats[]
+		) as IPlayerStats[]
 	)[0];
 	if (playerStats) {
 		cache.set('players/' + steamId, playerStats);
@@ -423,29 +421,29 @@ export const getPlayerStats = async (steamId: string): Promise<IPlayerStats> => 
 	throw { status: 404, message: `Player stats not found for steamId: ${steamId}` };
 };
 
-export const getTeamPlayers = async (teamName: string): Promise<string[]> => {
+export const getTeamPlayers = (teamName: string): string[] => {
 	const cached = cache.get('team/' + teamName) as string[];
 	if (cached) return cached;
 
 	const teamPlayers = (
-		(await queryDB(
+		queryDB(
 			`SELECT p.name
 			FROM teams t
 			INNER JOIN ${PLAYERS_TABLE} p
 			ON t.steamId = p.steamId
 			WHERE t.teamName = '${teamName}'`
-		)) as Array<{ name: string }>
+		) as Array<{ name: string }>
 	).map((row: { name: string }) => row.name) as string[];
 	cache.set('team/' + teamName, teamPlayers);
 	return teamPlayers;
 };
 
-export const deleteAllStats = async () => {
-	await flushDB(PLAYERS_TABLE);
-	await flushDB(MATCH_MAPS_TABLE);
-	await flushDB(MATCHES_TABLE);
-	await flushDB(PLAYER_MAP_STATS_TABLE);
-	await flushDB(TEAMS_TABLE);
+export const deleteAllStats = () => {
+	flushDB(MATCH_MAPS_TABLE);
+	flushDB(PLAYER_MAP_STATS_TABLE);
+	flushDB(TEAMS_TABLE);
+	flushDB(MATCHES_TABLE);
+	flushDB(PLAYERS_TABLE);
 	invalidateStatsCache();
 	console.info('[DATABASE] All stats have been deleted.');
 };

@@ -57,12 +57,12 @@ export const createFromData = async (data: IMatch, logMessage?: string) => {
 	};
 	const matchExists =
 		(
-			(await Storage.queryDB(
+			Storage.queryDB(
 				`SELECT * FROM ${StatsLogger.MATCHES_TABLE} WHERE matchId = '${data.id}'`
-			)) as Array<any>
+			) as Array<any>
 		).length > 0;
 	if (!matchExists) {
-		await StatsLogger.onNewMatch(data);
+		StatsLogger.onNewMatch(data);
 	}
 	match.data = addChangeListener(data, createOnDataChangeHandler(match));
 	match.log = createLogger(match);
@@ -93,7 +93,7 @@ export const createFromData = async (data: IMatch, logMessage?: string) => {
 };
 
 export const createFromCreateDto = async (dto: IMatchCreateDto, id: string, logSecret: string) => {
-	const gameServer = dto.gameServer ?? (await ManagedGameServers.getFree(id));
+	const gameServer = dto.gameServer ?? ManagedGameServers.getFree(id);
 	if (!gameServer) {
 		throw 'No free game server available';
 	}
@@ -134,8 +134,8 @@ export const createFromCreateDto = async (dto: IMatchCreateDto, id: string, logS
 		return match;
 	} catch (err) {
 		if (!dto.gameServer) {
-			await ManagedGameServers.free(gameServer, id);
-			await ManagedGameServers.update({ ...gameServer, canBeUsed: false });
+			ManagedGameServers.free(gameServer, id);
+			ManagedGameServers.update({ ...gameServer, canBeUsed: false });
 		}
 		throw err;
 	}
@@ -553,7 +553,7 @@ const onLogLine = async (match: Match, line: string) => {
 					tScore,
 					winningTeam === 'CT' ? 'CT' : 'T'
 				);
-				await StatsLogger.updateRoundCount(match.data, currentMatchMap);
+				StatsLogger.updateRoundCount(match.data, currentMatchMap);
 			}
 			return;
 		}
@@ -621,12 +621,12 @@ const onPlayerLogLine = async (
 			player = Player.create(match, steamId, name);
 			const playerExists =
 				(
-					(await Storage.queryDB(
+					Storage.queryDB(
 						`SELECT * FROM ${StatsLogger.PLAYERS_TABLE} WHERE steamId = '${steamId}'`
-					)) as Array<any>
+					) as Array<any>
 				).length > 0;
 			if (!playerExists) {
-				await Storage.insertDB(
+				Storage.insertDB(
 					StatsLogger.PLAYERS_TABLE,
 					new Map<string, string | number>([
 						['steamId', steamId],
@@ -650,22 +650,22 @@ const onPlayerLogLine = async (
 		if (currentMapName) {
 			const matchMapExists =
 				(
-					(await Storage.queryDB(
+					Storage.queryDB(
 						`SELECT * FROM ${StatsLogger.MATCH_MAPS_TABLE} WHERE matchId = '${match.data.id}' AND map = '${currentMapName}'`
-					)) as any[]
+					) as any[]
 				).length > 0;
 			if (!matchMapExists) {
-				await StatsLogger.onNewMap(match.data, currentMapName);
+				StatsLogger.onNewMap(match.data, currentMapName);
 			}
 
 			const playerMapStatsExists =
 				(
-					(await Storage.queryDB(
+					Storage.queryDB(
 						`SELECT * FROM ${StatsLogger.PLAYER_MAP_STATS_TABLE} WHERE steamId = '${steamId}' AND matchId = '${match.data.id}' AND map = '${currentMapName}'`
-					)) as any[]
+					) as any[]
 				).length > 0;
 			if (!playerMapStatsExists) {
-				await Storage.insertDB(
+				Storage.insertDB(
 					StatsLogger.PLAYER_MAP_STATS_TABLE,
 					new Map<string, string | number>([
 						['steamId', steamId],
@@ -760,7 +760,7 @@ const onPlayerLogLine = async (
 			const damage = Number(damageMatch[2]);
 			const damageArmor = Number(damageMatch[3]);
 			const headshot = damageMatch[6] === 'head';
-			await StatsLogger.onDamage(
+			StatsLogger.onDamage(
 				match.data.id,
 				match.data.matchMaps[match.data.currentMap]?.name ?? '',
 				steamId,
@@ -780,7 +780,7 @@ const onPlayerLogLine = async (
 	if (killMatch && getCurrentMatchMap(match)?.state === 'IN_PROGRESS') {
 		const victimId = killMatch[1]!;
 		if (victimId !== 'BOT' && victimId !== steamId) {
-			await StatsLogger.onKill(
+			StatsLogger.onKill(
 				match.data.id,
 				match.data.matchMaps[match.data.currentMap]?.name ?? '',
 				steamId,
@@ -798,7 +798,7 @@ const onPlayerLogLine = async (
 	if (assistMatch && getCurrentMatchMap(match)?.state === 'IN_PROGRESS') {
 		const victimId = assistMatch[1]!;
 		if (victimId !== 'BOT' && victimId !== steamId) {
-			await StatsLogger.onAssist(
+			StatsLogger.onAssist(
 				match.data.id,
 				match.data.matchMaps[match.data.currentMap]?.name ?? '',
 				steamId
@@ -814,7 +814,7 @@ const onPlayerLogLine = async (
 		/^(?:was killed by the bomb|committed suicide with)/
 	);
 	if (otherDeathMatch && getCurrentMatchMap(match)?.state === 'IN_PROGRESS') {
-		await StatsLogger.onOtherDeath(
+		StatsLogger.onOtherDeath(
 			match.data.id,
 			match.data.matchMaps[match.data.currentMap]?.name ?? '',
 			steamId
@@ -1026,7 +1026,7 @@ const onMapEnd = async (match: Match) => {
 	const currentMatchMap = getCurrentMatchMap(match);
 	if (currentMatchMap) {
 		await MatchMap.onMapEnd(match, currentMatchMap);
-		await StatsLogger.updateMapCount(match.data);
+		StatsLogger.updateMapCount(match.data);
 		if (isMatchEnd(match)) {
 			match.log('Match finished');
 			await onMatchEnd(match);
@@ -1132,7 +1132,7 @@ export const stop = async (match: Match) => {
 	});
 	await say(match, `TMT IS OFFLINE`).catch(() => {});
 	await GameServer.disconnect(match);
-	await ManagedGameServers.free(match.data.gameServer, match.data.id);
+	ManagedGameServers.free(match.data.gameServer, match.data.id);
 	Events.onMatchStop(match);
 };
 
@@ -1227,7 +1227,7 @@ export const update = async (match: Match, dto: IMatchUpdateDto) => {
 	}
 
 	if (dto.gameServer) {
-		await ManagedGameServers.free(match.data.gameServer, match.data.id);
+		ManagedGameServers.free(match.data.gameServer, match.data.id);
 		match.data.gameServer = dto.gameServer;
 		match.rconConnection?.end().catch((err) => {
 			match.log(`Error end rcon connection ${err}`);
