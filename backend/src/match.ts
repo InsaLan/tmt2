@@ -758,14 +758,12 @@ const onPlayerLogLine = async (
 	if (damageMatch && getCurrentMatchMap(match)?.state === 'IN_PROGRESS') {
 		if (damageMatch[1] !== 'BOT' && damageMatch[1] !== steamId) {
 			const damage = Number(damageMatch[2]);
-			const damageArmor = Number(damageMatch[3]);
 			const headshot = damageMatch[6] === 'head';
 			StatsLogger.onDamage(
 				match.data.id,
 				match.data.matchMaps[match.data.currentMap]?.name ?? '',
 				steamId,
 				damage,
-				damageArmor,
 				headshot
 			);
 		}

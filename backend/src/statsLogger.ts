@@ -138,7 +138,6 @@ export const onDamage = (
 	map: string,
 	attackerId: string,
 	damage: number,
-	damageArmor: number,
 	headshot: boolean
 ) => {
 	const currentAttackerMapStats = queryDB(
@@ -154,7 +153,7 @@ export const onDamage = (
 			new Map<string, number>([
 				['hits', (currentAttackerMapStats[0]!.hits ?? 0) + 1],
 				['headshots', (currentAttackerMapStats[0]!.headshots ?? 0) + (headshot ? 1 : 0)],
-				['damages', (currentAttackerMapStats[0]!.damages ?? 0) + damage + damageArmor],
+				['damages', (currentAttackerMapStats[0]!.damages ?? 0) + damage],
 			]),
 			`steamId = '${attackerId}' AND matchId = '${matchId}' AND map = '${map}'`
 		);
@@ -166,7 +165,7 @@ export const onDamage = (
 					'tHeadshots',
 					(currentAttackerGlobalStats[0]!.tHeadshots ?? 0) + (headshot ? 1 : 0),
 				],
-				['tDamages', (currentAttackerGlobalStats[0]!.tDamages ?? 0) + damage + damageArmor],
+				['tDamages', (currentAttackerGlobalStats[0]!.tDamages ?? 0) + damage],
 			]),
 			`steamId = '${attackerId}'`
 		);
