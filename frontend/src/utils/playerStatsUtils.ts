@@ -56,14 +56,16 @@ const getStatColor = (value: number | string, lowest: number, highest: number) =
 	return `oklch(${lightness * 100}% ${chroma} ${hue})`;
 };
 
+// TODO: Get these values from statistics ?
+
 export const getKDColor = (value: number | string) => {
-	return getStatColor(value, 0, 2.5);
+	return getStatColor(value, 0.4, 1.6);
 };
 
 export const getHSPctColor = (value: number | string) => {
-	return getStatColor(value, 0, 80);
+	return getStatColor(value, 0, 40);
 };
 
 export const getADRColor = (value: number | string) => {
-	return getStatColor(value, 0, 220);
+	return getStatColor(value, 40, 150);
 };

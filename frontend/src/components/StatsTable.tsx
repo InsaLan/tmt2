@@ -216,9 +216,11 @@ export const StatsTable: Component<{
 											.map((d, index, a) => {
 												let cl = '';
 												if (index === a.length - 1)
-													cl = 'border-b border-gray-700 last:border-b-0';
+													cl =
+														'border-b border-gray-700 last:border-b-0 font-medium';
 												else
-													cl = 'border-b border-gray-800 last:border-b-0';
+													cl =
+														'border-b border-gray-800 last:border-b-0 font-medium';
 												return (
 													<tr class={cl}>
 														<For each={props.columns}>
@@ -253,7 +255,7 @@ export const StatsTable: Component<{
 						) : (
 							<For each={filteredData()}>
 								{(d) => (
-									<tr class="border-b border-gray-800 last:border-b-0">
+									<tr class="border-b border-gray-800 last:border-b-0 font-medium">
 										<For each={props.columns}>
 											{(column) => cell(d, column)}
 										</For>
