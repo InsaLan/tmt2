@@ -1,5 +1,5 @@
 import { A } from '@solidjs/router';
-import { Component, createEffect, createSignal, For, Show } from 'solid-js';
+import { Component, createEffect, createSignal, For, onCleanup, onMount, Show } from 'solid-js';
 import { t } from '../utils/locale';
 import { TStatus } from '../../../common';
 import { SvgArrowOutward } from '../assets/Icons';
@@ -154,8 +154,85 @@ export const StatsTable: Component<{
 		);
 	};
 
+	let scrollerEl: HTMLDivElement | undefined;
+	let tableEl: HTMLTableElement | undefined;
+	let fixedRowEl: HTMLTableRowElement | undefined;
+
+	const realHeaderCells: HTMLTableCellElement[] = [];
+	const fixedHeaderCells: HTMLTableCellElement[] = [];
+	let ro: ResizeObserver | undefined;
+
+	const syncFixedHeader = () => {
+		if (!tableEl || !fixedRowEl) return;
+
+		for (let i = 0; i < realHeaderCells.length; i++) {
+			const src = realHeaderCells[i];
+			const dst = fixedHeaderCells[i];
+			if (!src || !dst) continue;
+
+			const w = src.getBoundingClientRect().width;
+			dst.style.width = `${w}px`;
+			dst.style.minWidth = `${w}px`;
+			dst.style.maxWidth = `${w}px`;
+		}
+
+		const rect = tableEl.getBoundingClientRect();
+		fixedRowEl.style.left = `${rect.left}px`;
+		fixedRowEl.style.width = `${rect.width}px`;
+	};
+
+	const updateFixedHeaderVisibility = () => {
+		let navBar = document.querySelector('.navbar') as HTMLElement | null;
+
+		if (!tableEl || !fixedRowEl || !navBar) return;
+
+		const navBottom = navBar.getBoundingClientRect().bottom;
+		const tableTop = tableEl?.getBoundingClientRect().top ?? 0;
+
+		if (tableTop < navBottom) {
+			fixedRowEl.classList.remove('hidden-header');
+		} else {
+			fixedRowEl.classList.add('hidden-header');
+		}
+	};
+
+	onMount(() => {
+		syncFixedHeader();
+
+		window.addEventListener('resize', syncFixedHeader);
+		scrollerEl?.addEventListener('scroll', syncFixedHeader, { passive: true });
+
+		ro = new ResizeObserver(syncFixedHeader);
+		if (tableEl) ro.observe(tableEl);
+
+		updateFixedHeaderVisibility();
+		window.addEventListener('scroll', updateFixedHeaderVisibility, { passive: true });
+	});
+
+	onCleanup(() => {
+		window.removeEventListener('resize', syncFixedHeader);
+		scrollerEl?.removeEventListener('scroll', syncFixedHeader);
+		window.removeEventListener('scroll', updateFixedHeaderVisibility);
+		ro?.disconnect();
+	});
+
+	createEffect(() => {
+		sortColumn();
+		sortAsc();
+		queueMicrotask(syncFixedHeader);
+	});
+
 	return (
 		<>
+			<style>{`
+			.hidden-header {
+				opacity: 0;
+			}
+			
+			.fixed-header {
+				transition: opacity 0.2s;
+			}
+		`}</style>
 			<div class="flex justify-end mb-1">
 				<TextInput
 					type="text"
@@ -165,13 +242,53 @@ export const StatsTable: Component<{
 					onInput={(e) => setSearchQuery(e.currentTarget.value)}
 				/>
 			</div>
-			<div class="overflow-x-auto">
-				<table class="table table-zebra">
+			<div class="overflow-x-auto" ref={scrollerEl}>
+				<table class="table table-zebra" ref={tableEl}>
 					<thead>
 						<tr class="border-b border-gray-700">
 							<For each={props.headers}>
 								{(header, i) => (
 									<th
+										ref={(el) => (realHeaderCells[i()] = el)}
+										class="text-center"
+										onClick={
+											(props.sortable?.[i()] ?? true)
+												? () => {
+														const column = props.columns[i()];
+														setSortAsc(
+															sortColumn() === column && sortAsc()
+																? false
+																: true
+														);
+														setSortColumn(column);
+													}
+												: undefined
+										}
+										style={{
+											cursor:
+												(props.sortable?.[i()] ?? true)
+													? 'pointer'
+													: 'default',
+										}}
+									>
+										{header +
+											(sortColumn() === props.columns[i()]
+												? sortAsc()
+													? ' ▴'
+													: ' ▾'
+												: '')}
+									</th>
+								)}
+							</For>
+						</tr>
+						<tr
+							ref={fixedRowEl}
+							class="fixed z-20 top-16 border-0 bg-base-100 rounded-2xl fixed-header hidden-header"
+						>
+							<For each={props.headers}>
+								{(header, i) => (
+									<th
+										ref={(el) => (fixedHeaderCells[i()] = el)}
 										class="text-center"
 										onClick={
 											(props.sortable?.[i()] ?? true)
