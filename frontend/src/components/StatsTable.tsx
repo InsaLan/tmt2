@@ -188,8 +188,9 @@ export const StatsTable: Component<{
 
 		const navBottom = navBar.getBoundingClientRect().bottom;
 		const tableTop = tableEl?.getBoundingClientRect().top ?? 0;
+		const tableBottom = tableEl?.getBoundingClientRect().bottom ?? 0;
 
-		if (tableTop < navBottom) {
+		if (tableTop < navBottom && tableBottom > navBottom) {
 			fixedRowEl.classList.remove('hidden-header');
 		} else {
 			fixedRowEl.classList.add('hidden-header');
