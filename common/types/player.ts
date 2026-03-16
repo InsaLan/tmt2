@@ -9,6 +9,7 @@ export interface IPlayer {
 	steamId64: string;
 	/** Name. */
 	name: string;
+	health: number;
 	/**
 	 * Current team as they joined with `.team`.
 	 * If the player's steam id is in the team's `playerSteamIds64`
