@@ -665,6 +665,10 @@
 						"type": "string",
 						"description": "Name."
 					},
+					"health": {
+						"type": "number",
+						"format": "double"
+					},
 					"team": {
 						"$ref": "#/components/schemas/TTeamAB",
 						"description": "Current team as they joined with `.team`.\nIf the player's steam id is in the team's `playerSteamIds64`\nthis cannot be changed and is always set to the team."
@@ -683,7 +687,7 @@
 						"description": "Player currently on the game server (online)?"
 					}
 				},
-				"required": ["steamId64", "name"],
+				"required": ["steamId64", "name", "health"],
 				"type": "object",
 				"additionalProperties": false
 			},
