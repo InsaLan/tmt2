@@ -753,21 +753,28 @@ const onPlayerLogLine = async (
 
 	//[2397 2079 133] attacked "PlayerName<1><U:1:12345678><CT>" [2397 2079 133] with "glock" (damage "117") (damage_armor "0") (health "0") (armor "0") (hitgroup "head")
 	const damageMatch = remainingLine.match(
-		/^\[-?\d+ -?\d+ -?\d+\] attacked ".+<\d+><([\[\]\w:]+)><(?:TERRORIST|CT)>" \[-?\d+ -?\d+ -?\d+\] with "\w+" \(damage "(\d+)"\) \(damage_armor "(\d+)"\) \(health "(\d+)"\) \(armor "(\d+)"\) \(hitgroup "([\w ]+)"\)$/
+		/^\[-?\d+ -?\d+ -?\d+\] attacked ".+<\d+><([\[\]\w:]+)><(TERRORIST|CT)>" \[-?\d+ -?\d+ -?\d+\] with "\w+" \(damage "\d+"\) \(damage_armor "\d+"\) \(health "(\d+)"\) \(armor "\d+"\) \(hitgroup "([\w ]+)"\)$/
 	);
 	if (damageMatch && getCurrentMatchMap(match)?.state === 'IN_PROGRESS') {
-		if (damageMatch[1] !== 'BOT' && damageMatch[1] !== steamId) {
-			const damage = Number(damageMatch[2]);
-			const headshot = damageMatch[6] === 'head';
+		if (damageMatch[1] !== 'BOT' && damageMatch[2] !== (player.side === 'CT' ? 'CT' : 'T')) {
+			const target = match.data.players.find((p) => p.steamId64 === player.steamId64);
+			if (!target) {
+				console.warn(`Player not found for damage log line: ${remainingLine}`);
+				return;
+			}
+			const old_health = target.health ?? 100;
+			const new_health = Number(damageMatch[3]);
 			StatsLogger.onDamage(
 				match.data.id,
 				match.data.matchMaps[match.data.currentMap]?.name ?? '',
 				steamId,
-				damage,
-				headshot
+				old_health - new_health,
+				damageMatch[4] === 'head'
 			);
+			target.health = new_health;
+			MatchService.scheduleSave(match);
 		}
-		// Ignore log if it was against a bot or himself
+		// Ignore log if it was against a bot, a teammate, or himself
 		return;
 	}
 

@@ -7,6 +7,7 @@ export const create = (match: Match.Match, steamId: string, name: string): IPlay
 	return {
 		name: name,
 		steamId64: steamId64,
+		health: 100,
 		team: getForcedTeam(match, steamId64),
 	};
 };

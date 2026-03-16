@@ -497,6 +497,7 @@ const models: TsoaRoute.Models = {
 		properties: {
 			steamId64: { dataType: 'string', required: true },
 			name: { dataType: 'string', required: true },
+			health: { dataType: 'double', required: true },
 			team: { ref: 'TTeamAB' },
 			side: {
 				dataType: 'union',
